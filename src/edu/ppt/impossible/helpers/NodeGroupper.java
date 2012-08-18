@@ -7,6 +7,6 @@ import edu.ppt.impossible.model.Node;
 
 public interface NodeGroupper {
 
-	List<Node> group(Graph clone, int groupSize);
+	List<Node> group(Graph graph, int groupSize);
 
 }

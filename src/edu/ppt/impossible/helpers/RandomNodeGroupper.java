@@ -17,13 +17,13 @@ public class RandomNodeGroupper implements NodeGroupper {
 	}
 
 	@Override
-	public List<Node> group(Graph clone, int groupSize) {
+	public List<Node> group(Graph graph, int groupSize) {
 		List<Node> result = new ArrayList<>();
 		for (int n = 0; n < groupSize; ++n) {
 			Node candidate;
 			do {
-				int index = random.nextInt() % clone.getNumNodes();
-				candidate = result.get(index);
+				int index = random.nextInt(graph.getNumNodes());
+				candidate = graph.getNode(index);
 
 			} while (result.contains(candidate));
 			result.add(candidate);
