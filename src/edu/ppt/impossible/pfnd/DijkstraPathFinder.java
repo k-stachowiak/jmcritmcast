@@ -39,7 +39,12 @@ public class DijkstraPathFinder implements PathFinder {
 				if (closed.contains(neighbor))
 					continue;
 
-				dijkstraRelaxation.relax(graph, from, to);
+				boolean relaxed = dijkstraRelaxation.relax(graph, current,
+						neighbor);
+				
+				if (relaxed) {
+					open.add(neighbor);
+				}
 			}
 		}
 

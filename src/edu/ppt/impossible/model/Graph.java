@@ -16,4 +16,7 @@ public interface Graph {
 	Edge getEdge(int from, int to);
 
 	List<Node> getNeighbors(Node from);
+	
+	public int hashCode();
+	public boolean equals(Object obj);
 }

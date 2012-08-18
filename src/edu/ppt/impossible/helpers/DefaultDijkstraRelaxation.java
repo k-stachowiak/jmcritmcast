@@ -44,7 +44,7 @@ public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
 	}
 
 	@Override
-	public void relax(Graph graph, Node from, Node to) {
+	public boolean relax(Graph graph, Node from, Node to) {
 
 		Edge edge = graph.getEdge(from.getId(), to.getId());
 
@@ -61,7 +61,11 @@ public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
 			labels.put(to, label);
 			aggregatedLabels.put(to, candidateDistance);
 			predecessors.put(to, from);
+			
+			return true;
 		}
+		
+		return false;
 	}
 
 	@Override

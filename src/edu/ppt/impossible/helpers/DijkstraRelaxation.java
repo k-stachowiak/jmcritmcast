@@ -1,6 +1,7 @@
 package edu.ppt.impossible.helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public abstract class DijkstraRelaxation {
 
 	public abstract void reset(Graph graph, Node from);
 
-	public abstract void relax(Graph graph, Node from, Node to);
+	public abstract boolean relax(Graph graph, Node from, Node to);
 
 	public abstract boolean isCheaper(Node from, Node to);
 
@@ -34,6 +35,8 @@ public abstract class DijkstraRelaxation {
 		}
 
 		nodes.add(from.getId());
+		
+		Collections.reverse(nodes);
 
 		return new Path(graph, nodes);
 	}

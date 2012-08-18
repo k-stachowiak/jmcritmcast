@@ -77,7 +77,7 @@ public class SubGraph {
 	}
 
 	public boolean containsNode(int node) {
-		return nodes.contains(nodes);
+		return nodes.contains(node);
 	}
 
 	public boolean containsEdge(int from, int to) {
@@ -101,5 +101,68 @@ public class SubGraph {
 
 	public List<EdgeDefinition> getEdgeDefinitions() {
 		return edgeDefinitions;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((edgeDefinitions == null) ? 0 : edgeDefinitions.hashCode());
+		result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+
+		// Note that parent isn't taken into account.
+
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SubGraph other = (SubGraph) obj;
+		if (edgeDefinitions == null) {
+			if (other.edgeDefinitions != null)
+				return false;
+		} else if (!compareEdgesLists(edgeDefinitions, other.edgeDefinitions))
+			return false;
+		if (nodes == null) {
+			if (other.nodes != null)
+				return false;
+		} else if (!compareNodesLists(nodes, other.nodes))
+			return false;
+
+		// Note that parent isn't taken into account.
+
+		return true;
+	}
+
+	private static boolean compareNodesLists(List<Integer> lhs,
+			List<Integer> rhs) {
+
+		for (Integer left : lhs) {
+			if (!rhs.contains(left))
+				return false;
+		}
+		return true;
+	}
+
+	private static boolean compareEdgesLists(List<EdgeDefinition> lhs,
+			List<EdgeDefinition> rhs) {
+
+		for (EdgeDefinition left : lhs) {
+			boolean containsDirect = rhs.contains(left);
+			boolean containsReverse = rhs.contains(new EdgeDefinition(left
+					.getTo(), left.getFrom()));
+
+			if (!containsDirect && !containsReverse)
+				return false;
+		}
+
+		return true;
 	}
 }
