@@ -1,6 +1,7 @@
 package edu.ppt.impossible.helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,10 @@ public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
 
 	@Override
 	public void reset(Graph graph, Node from) {
+
+		labels = new HashMap<>();
+		aggregatedLabels = new HashMap<>();
+		predecessors = new HashMap<>();
 
 		for (Node node : graph.getNodes()) {
 
