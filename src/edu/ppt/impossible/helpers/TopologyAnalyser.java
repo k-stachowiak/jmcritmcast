@@ -4,6 +4,6 @@ import edu.ppt.impossible.model.Graph;
 
 public interface TopologyAnalyser {
 
-	boolean isConnected(Graph copy);
+	boolean isConnected(Graph graph);
 
 }

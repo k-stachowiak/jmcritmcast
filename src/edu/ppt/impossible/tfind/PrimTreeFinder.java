@@ -13,7 +13,7 @@ import edu.ppt.impossible.model.Tree;
 
 public class PrimTreeFinder implements SpanningTreeFinder {
 
-	private class Cut {
+	public class Cut {
 		private final Graph graph;
 		private final MetricProvider metricProvider;
 
@@ -31,7 +31,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 			edgesInside = new ArrayList<>();
 
 			Node initialNode = graph.getNodes().get(0);
-			nodesInside.add(initialNode);
+			nodesInside.add(initialNode);			
 			addValidEdges(initialNode);
 		}
 
@@ -107,7 +107,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 			for (Edge edge : cutEdges) {
 				Node from = graph.getNode(edge.getFrom());
 				Node to = graph.getNode(edge.getTo());
-				if (nodesInside.contains(from) || nodesInside.contains(to))
+				if (nodesInside.contains(from) && nodesInside.contains(to))
 					toBeRemoved.add(edge);
 			}
 

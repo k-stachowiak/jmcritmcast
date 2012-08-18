@@ -13,8 +13,8 @@ public class TopologyAnalyserImpl implements TopologyAnalyser {
 	}
 
 	@Override
-	public boolean isConnected(Graph copy) {
-		Tree spanningTree = spanningTreeFinder.find(copy);
-		return copy.getNumNodes() == spanningTree.getNumNodes();
+	public boolean isConnected(Graph graph) {
+		Tree spanningTree = spanningTreeFinder.find(graph);
+		return graph.getNumNodes() == spanningTree.getNumNodes();
 	}
 }
