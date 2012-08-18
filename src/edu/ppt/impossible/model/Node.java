@@ -7,7 +7,6 @@ public class Node {
 	private final double y;
 	
 	public Node(int id, double x, double y) {
-		super();
 		this.id = id;
 		this.x = x;
 		this.y = y;

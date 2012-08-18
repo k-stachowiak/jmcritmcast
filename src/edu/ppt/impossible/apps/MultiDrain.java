@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import edu.ppt.impossible.helpers.FengGroupConstraintsChooser;
+import edu.ppt.impossible.helpers.GraphDebug;
 import edu.ppt.impossible.helpers.GroupConstraintsChooser;
 import edu.ppt.impossible.helpers.IndexMetricProvider;
 import edu.ppt.impossible.helpers.MetricProvider;
@@ -38,6 +39,7 @@ public class MultiDrain {
 		final double baseBandwidth = 10000.0;
 		final double drainedBandwidth = 100.0;
 		final double fengDelta = 0.9;
+		final long randomSeed = 1L;
 
 		// Factories.
 		// ==========
@@ -47,7 +49,7 @@ public class MultiDrain {
 
 		// Helpers.
 		// ========
-		final Random random = new Random(System.currentTimeMillis());
+		final Random random = new Random(randomSeed);
 
 		final GroupConstraintsChooser constraintsChooser = new FengGroupConstraintsChooser(
 				fengDelta, pathFinderFactory);
@@ -67,15 +69,19 @@ public class MultiDrain {
 
 		final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl(
 				helperSpanningTreeFinder);
+		
+		final GraphDebug GRAPH_DEBUG = new GraphDebug();
 
 		// Model.
 		// ======
 		final Graph graph = graphFactory.createTest();
+		System.out.println("Graph: \n" + GRAPH_DEBUG.printGraph(graph));
 
 		// Procedure.
 		// ==========
 		int successCount = 0;
 		Graph copy = graph.copy();
+		System.out.println("Copy: \n" + GRAPH_DEBUG.printGraph(copy));
 
 		StringBuilder resultStringBuilder = new StringBuilder();
 

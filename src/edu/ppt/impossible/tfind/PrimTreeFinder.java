@@ -3,6 +3,7 @@ package edu.ppt.impossible.tfind;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ppt.impossible.helpers.GraphDebug;
 import edu.ppt.impossible.helpers.MetricProvider;
 import edu.ppt.impossible.model.Edge;
 import edu.ppt.impossible.model.Graph;
@@ -100,23 +101,23 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 		}
 
 		private void removeInvalidEdges() {
-			
+
 			List<Edge> toBeRemoved = new ArrayList<>();
-			
-			for(Edge edge : cutEdges) {
+
+			for (Edge edge : cutEdges) {
 				Node from = graph.getNode(edge.getFrom());
 				Node to = graph.getNode(edge.getTo());
-				if(nodesInside.contains(from) || nodesInside.contains(to))
+				if (nodesInside.contains(from) || nodesInside.contains(to))
 					toBeRemoved.add(edge);
 			}
-			
-			for(Edge edge : toBeRemoved)
+
+			for (Edge edge : toBeRemoved)
 				cutEdges.remove(edge);
 		}
 	}
-	
+
 	private final MetricProvider metricProvider;
-	
+
 	public PrimTreeFinder(MetricProvider metricProvider) {
 		super();
 		this.metricProvider = metricProvider;
@@ -125,7 +126,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 	@Override
 	public Tree find(Graph graph) {
 		Cut cut = new Cut(graph, metricProvider);
-		while(!cut.graphContained())
+		while (!cut.graphContained())
 			cut.expand();
 		return cut.buildTree();
 	}

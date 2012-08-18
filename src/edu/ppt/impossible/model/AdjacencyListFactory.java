@@ -12,12 +12,19 @@ public class AdjacencyListFactory extends GraphFactory {
 	@Override
 	public Graph createFromLists(List<Node> nodes, List<Edge> edges) {
 
+		// Allocate the object.
+		// --------------------
 		AdjacencyList result = new AdjacencyList();
+		result.map = new HashMap<>();
 
+		// Generate helper map.
+		// --------------------
 		Map<Integer, Node> intNodeMap = new HashMap<>();
 		for (Node node : nodes)
 			intNodeMap.put(node.getId(), node);
 
+		// Process edges.
+		// --------------
 		for (Edge edge : edges) {
 			Node from = intNodeMap.get(edge.getFrom());
 			Node to = intNodeMap.get(edge.getTo());
@@ -27,13 +34,12 @@ public class AdjacencyListFactory extends GraphFactory {
 				result.map.put(from,
 						new ArrayList<AdjacencyList.AdjacencyDefinition>());
 
-			result.map.get(from).add(new AdjacencyDefinition(edge, to.getId()));
-
 			// Add reverse.
 			if (!result.map.containsKey(to))
 				result.map.put(to,
 						new ArrayList<AdjacencyList.AdjacencyDefinition>());
 
+			result.map.get(from).add(new AdjacencyDefinition(edge, to.getId()));			
 			result.map.get(to).add(new AdjacencyDefinition(edge, from.getId()));
 		}
 

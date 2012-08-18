@@ -1,9 +1,12 @@
 package edu.ppt.impossible.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.ppt.impossible.exceptions.IllegalOperationException;
 import edu.ppt.impossible.exceptions.InvalidObjectsStateException;
@@ -28,6 +31,34 @@ public class AdjacencyList implements Graph {
 		public int getDestination() {
 			return destination;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + destination;
+			result = prime * result + ((edge == null) ? 0 : edge.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AdjacencyDefinition other = (AdjacencyDefinition) obj;
+			if (destination != other.destination)
+				return false;
+			if (edge == null) {
+				if (other.edge != null)
+					return false;
+			} else if (!edge.equals(other.edge))
+				return false;
+			return true;
+		}
 	}
 
 	Map<Node, List<AdjacencyDefinition>> map;
@@ -38,6 +69,8 @@ public class AdjacencyList implements Graph {
 		// Note: only references are copied as the objects in question are
 		// immutable.
 		AdjacencyList copy = new AdjacencyList();
+		copy.map = new HashMap<>();
+
 		for (Map.Entry<Node, List<AdjacencyDefinition>> entry : map.entrySet()) {
 			copy.map.put(entry.getKey(), entry.getValue());
 		}
@@ -98,12 +131,13 @@ public class AdjacencyList implements Graph {
 	public Edge getEdge(int from, int to) {
 
 		String errorMessage = "Attempt to get a non-existent edge from an adjacency list.";
+		
+		Node nodeFrom = getNode(from);
 
-		if (!map.containsKey(Integer.valueOf(from)))
+		if (!map.containsKey(nodeFrom))
 			throw new IllegalOperationException(errorMessage);
 
-		List<AdjacencyDefinition> adjacencyDefinitions = map.get(Integer
-				.valueOf(from));
+		List<AdjacencyDefinition> adjacencyDefinitions = map.get(nodeFrom);
 
 		for (AdjacencyDefinition adjacencyDefinition : adjacencyDefinitions) {
 			if (adjacencyDefinition.getDestination() == to)
@@ -115,29 +149,29 @@ public class AdjacencyList implements Graph {
 
 	@Override
 	public List<Node> getNodes() {
-		List<Node> result = new ArrayList<>();
+		Set<Node> result = new HashSet<>();
 		for (Map.Entry<Node, List<AdjacencyDefinition>> entry : map.entrySet())
 			result.add(entry.getKey());
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	@Override
 	public List<Edge> getEdges() {
-		List<Edge> result = new ArrayList<>();
+		Set<Edge> result = new HashSet<>();
 		for (Map.Entry<Node, List<AdjacencyDefinition>> entry : map.entrySet())
 			for (AdjacencyDefinition adjacencyDefinition : entry.getValue())
 				result.add(adjacencyDefinition.getEdge());
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	@Override
 	public List<Node> getNeighbors(Node from) {
-		List<Node> result = new ArrayList<>();
+		Set<Node> result = new HashSet<>();
 		for (AdjacencyDefinition adjacencyDefinition : map.get(from)) {
 			Node node = getNode(adjacencyDefinition.getDestination());
 			result.add(node);
 		}
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	@Override

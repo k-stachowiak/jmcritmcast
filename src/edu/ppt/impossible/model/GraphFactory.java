@@ -22,14 +22,14 @@ public abstract class GraphFactory {
 
 		List<Edge> edges = new ArrayList<>();
 		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
-		edges.add(new Edge(0, 3, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(3, 1, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(1, 4, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(4, 2, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(2, 5, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(5, 0, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(3, 4, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(4, 5, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(5, 3, new ArrayList<Double>(metrics)));
 
 		return createFromLists(nodes, edges);
 	}
