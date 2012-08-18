@@ -1,8 +1,7 @@
 package edu.ppt.impossible.tfind;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.ppt.impossible.helpers.IndexMetricProvider;

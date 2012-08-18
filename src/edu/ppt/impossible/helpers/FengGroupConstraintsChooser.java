@@ -60,8 +60,7 @@ public class FengGroupConstraintsChooser implements GroupConstraintsChooser {
 					return null;
 
 				if (!extremePathsMap.containsKey(m)) {
-					extremePathsMap.put(Integer.valueOf(m),
-							new ArrayList<Path>());
+					extremePathsMap.put(m, new ArrayList<Path>());
 				}
 
 				extremePathsMap.get(m).add(path);
@@ -85,12 +84,14 @@ public class FengGroupConstraintsChooser implements GroupConstraintsChooser {
 
 			// Find the maximum value. It will be the maximal metric from the
 			// cost optimized paths.
-			for (Path path : extremePathsMap.get(m)) {
-				double metric = path.getMetrics().get(0);
+			for (Path path : extremePathsMap.get(0)) {
+				double metric = path.getMetrics().get(m);
 				if (metric > max)
 					max = metric;
 			}
-			extremeMetrics.put(Integer.valueOf(m), new MetricPair(min, max));
+			
+			// Store extrema.
+			extremeMetrics.put(m, new MetricPair(min, max));
 		}
 		
 		// Interpolate the extrema and return.

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.ppt.impossible.helpers.TopologyDebug;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;
 import edu.ppt.impossible.model.Path;
@@ -41,6 +42,7 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 			Path path = pathFinder.find(graph, source, destination);
 			if (path == null)
 				return null;
+			paths.add(path);
 		}
 
 		// Aggregate paths
@@ -60,6 +62,9 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 				edgeDefinitionsSet);
 
 		List<Integer> nodes = new ArrayList<>(nodesSet);
+
+		if (nodes.isEmpty())
+			return null;
 
 		SubGraph ripley7 = new SubGraph(graph, nodes, edgeDefinitions);
 		SubGraphToGraphAdapter subGraphToGraphAdapter = new SubGraphToGraphAdapter(

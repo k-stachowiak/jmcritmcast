@@ -3,7 +3,6 @@ package edu.ppt.impossible.tfind;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ppt.impossible.helpers.GraphDebug;
 import edu.ppt.impossible.helpers.MetricProvider;
 import edu.ppt.impossible.model.Edge;
 import edu.ppt.impossible.model.Graph;
@@ -21,6 +20,28 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 		private final List<Node> nodesInside;
 		private final List<Edge> edgesInside;
 
+		/*
+		 * private void DEBUG_STATE() {
+		 * 
+		 * StringBuilder stringBuilder = new StringBuilder();
+		 * 
+		 * stringBuilder.append("cutEdges : \n"); for (Edge edge : cutEdges) {
+		 * stringBuilder.append(edge.getFrom()); stringBuilder.append(" - > ");
+		 * stringBuilder.append(edge.getTo()); stringBuilder.append('\n'); }
+		 * stringBuilder.append('\n');
+		 * 
+		 * stringBuilder.append("edgesInside : \n"); for (Edge edge :
+		 * edgesInside) { stringBuilder.append(edge.getFrom());
+		 * stringBuilder.append(" - > "); stringBuilder.append(edge.getTo());
+		 * stringBuilder.append('\n'); } stringBuilder.append('\n');
+		 * 
+		 * stringBuilder.append("nodesInside : \n"); for (Node node :
+		 * nodesInside) { stringBuilder.append(node.getId());
+		 * stringBuilder.append(' '); } stringBuilder.append('\n');
+		 * 
+		 * System.out.println(stringBuilder.toString()); }
+		 */
+
 		public Cut(Graph graph, MetricProvider metricProvider) {
 
 			this.graph = graph;
@@ -31,7 +52,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 			edgesInside = new ArrayList<>();
 
 			Node initialNode = graph.getNodes().get(0);
-			nodesInside.add(initialNode);			
+			nodesInside.add(initialNode);
 			addValidEdges(initialNode);
 		}
 
@@ -125,6 +146,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 
 	@Override
 	public Tree find(Graph graph) {
+		
 		Cut cut = new Cut(graph, metricProvider);
 		while (!cut.graphContained())
 			cut.expand();

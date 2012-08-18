@@ -93,7 +93,7 @@ public class MultiDrain {
 			SteinerTreeFinder treeFinder = treeFinderFactory.createPathAggr(
 					constraints, helperPathFinder, helperSpanningTreeFinder);
 
-			Tree tree = treeFinder.find(graph, group);
+			Tree tree = treeFinder.find(copy, group);
 			if (tree == null)
 				break;
 

@@ -53,7 +53,7 @@ public class SubGraphToGraphAdapter implements Graph {
 	public Node getNode(int node) {
 		if (!subGraph.containsNode(node))
 			throw new IllegalOperationException(
-					"Attenpt to get non-existent node from sub-graph");
+					"Attempt to get non-existent node from sub-graph");
 		return parent.getNode(node);
 	}
 
@@ -61,7 +61,7 @@ public class SubGraphToGraphAdapter implements Graph {
 	public Edge getEdge(int from, int to) {
 		if (!subGraph.containsEdge(from, to))
 			throw new IllegalOperationException(
-					"Attenpt to get non-existent edge from sub-graph");
+					"Attempt to get non-existent edge from sub-graph");
 		return parent.getEdge(from, to);
 	}
 
@@ -69,9 +69,15 @@ public class SubGraphToGraphAdapter implements Graph {
 	public List<Node> getNeighbors(Node from) {
 		List<Node> allNeighbors = parent.getNeighbors(from);
 		List<Node> subGraphNeighbors = new ArrayList<>();
-		for (Node node : allNeighbors)
-			if (subGraph.containsNode(node.getId()))
-				subGraphNeighbors.add(node);
+		for (Node node : allNeighbors) {
+			if (!subGraph.containsNode(node.getId()))
+				continue;
+
+			if (!subGraph.containsEdge(from.getId(), node.getId()))
+				continue;
+
+			subGraphNeighbors.add(node);
+		}
 		return subGraphNeighbors;
 	}
 
