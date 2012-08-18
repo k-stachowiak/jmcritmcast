@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.ppt.impossible.helpers.DijkstraRelaxation;
+import edu.ppt.impossible.helpers.dkstrrel.DijkstraRelaxation;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;
 import edu.ppt.impossible.model.Path;

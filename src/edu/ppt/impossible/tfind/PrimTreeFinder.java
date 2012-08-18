@@ -3,7 +3,7 @@ package edu.ppt.impossible.tfind;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ppt.impossible.helpers.MetricProvider;
+import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.model.Edge;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;

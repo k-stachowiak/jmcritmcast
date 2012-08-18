@@ -3,6 +3,7 @@ package edu.ppt.impossible.model;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public abstract class GraphFactory {
 
 	public Graph createTest() {

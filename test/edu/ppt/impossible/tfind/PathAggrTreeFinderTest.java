@@ -9,12 +9,12 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.helpers.FengGroupConstraintsChooser;
-import edu.ppt.impossible.helpers.GroupConstraintsChooser;
-import edu.ppt.impossible.helpers.IndexMetricProvider;
-import edu.ppt.impossible.helpers.MetricProvider;
-import edu.ppt.impossible.helpers.NodeGroupper;
-import edu.ppt.impossible.helpers.RandomNodeGroupper;
+import edu.ppt.impossible.helpers.cstrch.FengGroupConstraintsChooser;
+import edu.ppt.impossible.helpers.cstrch.GroupConstraintsChooser;
+import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
+import edu.ppt.impossible.helpers.metrprov.MetricProvider;
+import edu.ppt.impossible.helpers.nodegrp.NodeGroupper;
+import edu.ppt.impossible.helpers.nodegrp.RandomNodeGroupper;
 import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Edge;
 import edu.ppt.impossible.model.Graph;

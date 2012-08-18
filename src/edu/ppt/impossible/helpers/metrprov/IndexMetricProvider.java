@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers;
+package edu.ppt.impossible.helpers.metrprov;
 
 import edu.ppt.impossible.model.Edge;
 

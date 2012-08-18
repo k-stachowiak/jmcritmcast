@@ -1,10 +1,11 @@
-package edu.ppt.impossible.helpers;
+package edu.ppt.impossible.helpers.dkstrrel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.model.Edge;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;

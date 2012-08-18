@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers;
+package edu.ppt.impossible.helpers.cstrch;
 
 import java.util.List;
 

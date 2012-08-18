@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 public class Tree extends SubGraph {
 
 	public Tree(Graph parent, List<EdgeDefinition> edges) {

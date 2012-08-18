@@ -2,7 +2,7 @@ package edu.ppt.impossible.tfind;
 
 import java.util.List;
 
-import edu.ppt.impossible.helpers.MetricProvider;
+import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.pfnd.PathFinder;
 
 public class TreeFinderFactoryImpl implements TreeFinderFactory {

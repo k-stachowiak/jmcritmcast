@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.helpers.IndexMetricProvider;
-import edu.ppt.impossible.helpers.MetricProvider;
 import edu.ppt.impossible.helpers.TopologyAnalyser;
 import edu.ppt.impossible.helpers.TopologyAnalyserImpl;
+import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
+import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.GraphFactory;

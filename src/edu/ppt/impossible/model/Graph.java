@@ -2,6 +2,7 @@ package edu.ppt.impossible.model;
 
 import java.util.List;
 
+
 public interface Graph {
 	
 	Graph copy();

@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers;
+package edu.ppt.impossible.helpers.nodegrp;
 
 import java.util.ArrayList;
 import java.util.List;

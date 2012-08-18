@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.ppt.impossible.model.AdjacencyList.AdjacencyDefinition;
-
 public class AdjacencyListFactory extends GraphFactory {
 
 	@Override
@@ -39,8 +37,11 @@ public class AdjacencyListFactory extends GraphFactory {
 				result.map.put(to,
 						new ArrayList<AdjacencyList.AdjacencyDefinition>());
 
-			result.map.get(from).add(new AdjacencyDefinition(edge, to.getId()));			
-			result.map.get(to).add(new AdjacencyDefinition(edge, from.getId()));
+			result.map.get(from).add(
+					new AdjacencyList.AdjacencyDefinition(edge, to.getId()));
+			
+			result.map.get(to).add(
+					new AdjacencyList.AdjacencyDefinition(edge, from.getId()));
 		}
 
 		return result;

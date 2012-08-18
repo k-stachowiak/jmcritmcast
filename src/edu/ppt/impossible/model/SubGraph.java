@@ -3,6 +3,7 @@ package edu.ppt.impossible.model;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SubGraph {
 
 	public static class EdgeDefinition {

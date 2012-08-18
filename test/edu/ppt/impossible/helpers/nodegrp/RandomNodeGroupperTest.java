@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers;
+package edu.ppt.impossible.helpers.nodegrp;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import edu.ppt.impossible.helpers.nodegrp.NodeGroupper;
+import edu.ppt.impossible.helpers.nodegrp.RandomNodeGroupper;
 import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.GraphFactory;
