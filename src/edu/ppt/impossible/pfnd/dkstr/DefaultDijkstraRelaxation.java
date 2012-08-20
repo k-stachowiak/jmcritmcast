@@ -70,8 +70,8 @@ public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
 	}
 
 	@Override
-	public boolean isCheaper(Node from, Node to) {
-		return aggregatedLabels.get(from) < aggregatedLabels.get(to);
+	public boolean isCheaper(Node a, Node b) {
+		return aggregatedLabels.get(a) < aggregatedLabels.get(b);
 	}
 
 }

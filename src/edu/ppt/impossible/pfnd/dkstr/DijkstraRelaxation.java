@@ -17,7 +17,7 @@ public abstract class DijkstraRelaxation {
 
 	public abstract boolean relax(Graph graph, Node from, Node to);
 
-	public abstract boolean isCheaper(Node from, Node to);
+	public abstract boolean isCheaper(Node a, Node b);
 
 	public Path buildPath(Graph graph, Node from, Node to) {
 
