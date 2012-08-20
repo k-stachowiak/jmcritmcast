@@ -1,6 +1,9 @@
 package edu.ppt.impossible.helpers.nodegrp;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Random;
@@ -37,6 +40,31 @@ public class RandomNodeGroupperTest {
 
 		// Assertions.
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public final void testGroup() {
+
+		// Constants.
+		final int NON_EXISTENT_NODE_ID_BUT_VALID_INDEX = 0;
+		final int GROUP_SIZE = 1;
+		
+		// Helpers.
+		GraphFactory graphFactory = new AdjacencyListFactory();
+		
+		// Model.
+		Graph graph = graphFactory.createNontruncatedNodeIds();
+
+		// Mock random kernel.
+		final Random random = mock(Random.class);
+		when(random.nextInt(anyInt())).thenReturn(
+				NON_EXISTENT_NODE_ID_BUT_VALID_INDEX);
+
+		// Instantiate SUT.
+		final NodeGroupper sut = new RandomNodeGroupper(random);
+
+		// Exercise SUT.
+		sut.group(graph, GROUP_SIZE);		
 	}
 
 }

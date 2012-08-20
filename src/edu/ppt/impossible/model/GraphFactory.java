@@ -39,10 +39,10 @@ public abstract class GraphFactory {
 		
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(new Node(0, 0, 0));
-		nodes.add(new Node(1, 2, 2));
-		nodes.add(new Node(2, 4, 0));
-		nodes.add(new Node(3, 1, 1));
-		nodes.add(new Node(4, 3, 1));
+		nodes.add(new Node(1, 1, 1));
+		nodes.add(new Node(2, 2, 2));
+		nodes.add(new Node(3, 3, 3));
+		nodes.add(new Node(4, 4, 4));
 
 		List<Double> metrics = new ArrayList<>();
 		metrics.add(100.0);
@@ -57,6 +57,22 @@ public abstract class GraphFactory {
 
 		return createFromLists(nodes, edges);
 		
+	}
+	
+	public Graph createNontruncatedNodeIds() {
+		List<Node> nodes = new ArrayList<>();
+		nodes.add(new Node(3, 0, 0));
+		nodes.add(new Node(7, 1, 1));
+
+		List<Double> metrics = new ArrayList<>();
+		metrics.add(100.0);
+		metrics.add(100.0);
+		metrics.add(100.0);
+
+		List<Edge> edges = new ArrayList<>();
+		edges.add(new Edge(3, 7, new ArrayList<Double>(metrics)));
+
+		return createFromLists(nodes, edges);
 	}
 
 	public abstract Graph createFromLists(List<Node> nodes, List<Edge> edges);

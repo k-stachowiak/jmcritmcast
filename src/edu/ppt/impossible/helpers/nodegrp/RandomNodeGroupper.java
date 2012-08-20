@@ -22,8 +22,10 @@ public class RandomNodeGroupper implements NodeGroupper {
 		for (int n = 0; n < groupSize; ++n) {
 			Node candidate;
 			do {
-				int index = random.nextInt(graph.getNumNodes());
-				candidate = graph.getNode(index);
+				List<Node> nodes = graph.getNodes();
+				
+				int index = random.nextInt(nodes.size());				
+				candidate = nodes.get(index);
 
 			} while (result.contains(candidate));
 			result.add(candidate);
