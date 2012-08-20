@@ -34,7 +34,7 @@ public class OspfResourceDrainer implements ResourceDrainer {
 				translated -= drainedBandwidth;
 
 				if (translated < 1.0) {
-					translated = -1.0;
+					continue;
 				}
 
 				double retranslated = baseBandwidth / translated;

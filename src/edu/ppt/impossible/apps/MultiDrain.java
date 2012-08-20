@@ -253,9 +253,9 @@ public class MultiDrain {
 		long randomSeed = 1L;
 		double fengDelta = 0.9;
 		double baseBandwidth = 10000.0;
-		double drainedBandwidth = 100.0;
+		double drainedBandwidth = 10.0;
 
-		int graphs = 10;
+		int graphs = 100;
 
 		List<Integer> nodeSizes = new ArrayList<>();
 		nodeSizes.add(50);
