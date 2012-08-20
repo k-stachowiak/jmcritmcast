@@ -3,7 +3,6 @@ package edu.ppt.impossible.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SubGraph {
 
 	public static class EdgeDefinition {
@@ -81,6 +80,14 @@ public class SubGraph {
 		return nodes.contains(node);
 	}
 
+	public List<Integer> getNodes() {
+		return nodes;
+	}
+
+	public int getNumNodes() {
+		return nodes.size();
+	}
+
 	public boolean containsEdge(int from, int to) {
 		for (EdgeDefinition edgeDefinition : edgeDefinitions) {
 
@@ -96,12 +103,28 @@ public class SubGraph {
 		return false;
 	}
 
-	public List<Integer> getNodes() {
-		return nodes;
-	}
-
 	public List<EdgeDefinition> getEdgeDefinitions() {
 		return edgeDefinitions;
+	}
+
+	public int getNumEdges() {
+		return edgeDefinitions.size();
+	}
+
+	public List<Double> getMetrics() {
+		List<Double> result = new ArrayList<>();
+		for (EdgeDefinition edgeDefinition : edgeDefinitions) {
+			Edge edge = parent.getEdge(edgeDefinition.getFrom(),
+					edgeDefinition.getTo());
+
+			if (result.isEmpty())
+				result.addAll(edge.getMetrics());
+
+			else
+				for (int m = 0; m < edge.getMetrics().size(); ++m)
+					result.set(m, result.get(m) + edge.getMetrics().get(m));
+		}
+		return result;
 	}
 
 	@Override

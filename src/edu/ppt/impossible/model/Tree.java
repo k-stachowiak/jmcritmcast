@@ -12,10 +12,6 @@ public class Tree extends SubGraph {
 		super(parent, deriveNodesFromEdges(edges), edges);
 	}
 
-	public int getNumNodes() {
-		return nodes.size();
-	}
-
 	private static List<Integer> deriveNodesFromEdges(List<EdgeDefinition> edges) {
 		Set<Integer> resultSet = new HashSet<>();
 		for (EdgeDefinition edgeDefinition : edges) {
