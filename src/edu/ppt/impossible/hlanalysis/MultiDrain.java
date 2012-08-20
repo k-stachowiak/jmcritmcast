@@ -1,9 +1,8 @@
-package edu.ppt.impossible.apps;
+package edu.ppt.impossible.hlanalysis;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,68 +33,6 @@ import edu.ppt.impossible.tfind.TreeFinderFactoryImpl;
 
 public class MultiDrain {
 
-	private static class Setup {
-
-		private final long randomSeed;
-
-		private final double fengDelta;
-
-		private final double baseBandwidth;
-		private final double drainedBandwidth;
-
-		private final int graphs;
-
-		private final List<Integer> nodeSizes;
-		private final List<Integer> criteriaCounts;
-		private final List<Integer> groupSizes;
-
-		public Setup(long randomSeed, double fengDelta, double baseBandwidth,
-				double drainedBandwidth, int graphs, List<Integer> nodeSizes,
-				List<Integer> criteriaCounts, List<Integer> groupSizes) {
-
-			this.randomSeed = randomSeed;
-			this.fengDelta = fengDelta;
-			this.baseBandwidth = baseBandwidth;
-			this.drainedBandwidth = drainedBandwidth;
-			this.graphs = graphs;
-			this.nodeSizes = nodeSizes;
-			this.criteriaCounts = criteriaCounts;
-			this.groupSizes = groupSizes;
-		}
-
-		public long getRandomSeed() {
-			return randomSeed;
-		}
-
-		public double getFengDelta() {
-			return fengDelta;
-		}
-
-		public double getBaseBandwidth() {
-			return baseBandwidth;
-		}
-
-		public double getDrainedBandwidth() {
-			return drainedBandwidth;
-		}
-
-		public int getGraphs() {
-			return graphs;
-		}
-
-		public List<Integer> getNodeSizes() {
-			return nodeSizes;
-		}
-
-		public List<Integer> getCriteriaCounts() {
-			return criteriaCounts;
-		}
-
-		public List<Integer> getGroupSizes() {
-			return groupSizes;
-		}
-	}
-
 	// General utilities.
 	final Random random;
 
@@ -118,9 +55,9 @@ public class MultiDrain {
 	final TopologyAnalyser topologyAnalyser;
 
 	// Procedure setup.
-	Setup setup;
+	MultiDrainSetup setup;
 
-	private MultiDrain(Setup setup) {
+	public MultiDrain(MultiDrainSetup setup) {
 
 		random = new Random(setup.getRandomSeed());
 		graphFactory = new AdjacencyListFactory();
@@ -145,7 +82,7 @@ public class MultiDrain {
 		this.setup = setup;
 	}
 
-	private void run(String[] args) {
+	public void run(String[] args) {
 
 		StringBuilder result = new StringBuilder();
 
@@ -226,12 +163,9 @@ public class MultiDrain {
 
 	private InputGraphStreamer prepareGraphStreamer(int nodeSize) {
 
-		final String TOPOLOGIES_DIRECTORY = "data/new";
-		final String TOPOLOGY = "ASBarabasi";
-		final int NUM_GRAPHS = 1000;
-
-		String topologyFilename = TOPOLOGIES_DIRECTORY + '/' + TOPOLOGY + '_'
-				+ nodeSize + '_' + NUM_GRAPHS;
+		String topologyFilename = setup.getTopologiesDirectory() + '/'
+				+ setup.getTopology() + '_' + nodeSize + '_'
+				+ setup.getGraphsInFile();
 
 		BufferedReader bufferedReader = null;
 
@@ -243,34 +177,9 @@ public class MultiDrain {
 		}
 
 		InputGraphStreamer inputGraphStreamer = new NewFormatGraphStreamer(
-				nodeSize, NUM_GRAPHS, graphFactory, bufferedReader);
+				nodeSize, setup.getGraphsInFile(), graphFactory, bufferedReader);
 
 		return inputGraphStreamer;
-	}
-
-	public static void main(String[] args) {
-
-		long randomSeed = 1L;
-		double fengDelta = 0.9;
-		double baseBandwidth = 10000.0;
-		double drainedBandwidth = 10.0;
-
-		int graphs = 100;
-
-		List<Integer> nodeSizes = new ArrayList<>();
-		nodeSizes.add(50);
-
-		List<Integer> criteriaCounts = new ArrayList<>();
-		criteriaCounts.add(2);
-		criteriaCounts.add(3);
-
-		List<Integer> groupSizes = new ArrayList<>();
-		groupSizes.add(8);
-
-		Setup setup = new Setup(randomSeed, fengDelta, baseBandwidth,
-				drainedBandwidth, graphs, nodeSizes, criteriaCounts, groupSizes);
-
-		new MultiDrain(setup).run(args);
 	}
 
 }
