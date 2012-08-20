@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers.resdrain;
+package edu.ppt.impossible.helpers.gphmut;
 
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.SubGraph;

@@ -4,6 +4,8 @@ import java.util.List;
 
 import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.pfnd.PathFinder;
+import edu.ppt.impossible.tfind.paggr.PathAggrTreeFinder;
+import edu.ppt.impossible.tfind.prim.PrimTreeFinder;
 
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 

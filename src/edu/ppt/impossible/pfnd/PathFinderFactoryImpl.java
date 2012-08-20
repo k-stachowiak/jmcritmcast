@@ -1,9 +1,10 @@
 package edu.ppt.impossible.pfnd;
 
-import edu.ppt.impossible.helpers.dkstrrel.DefaultDijkstraRelaxation;
-import edu.ppt.impossible.helpers.dkstrrel.DijkstraRelaxation;
 import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
 import edu.ppt.impossible.helpers.metrprov.MetricProvider;
+import edu.ppt.impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
+import edu.ppt.impossible.pfnd.dkstr.DijkstraPathFinder;
+import edu.ppt.impossible.pfnd.dkstr.DijkstraRelaxation;
 
 public class PathFinderFactoryImpl implements PathFinderFactory {
 

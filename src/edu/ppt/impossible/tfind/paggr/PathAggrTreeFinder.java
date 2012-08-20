@@ -1,4 +1,4 @@
-package edu.ppt.impossible.tfind;
+package edu.ppt.impossible.tfind.paggr;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +12,8 @@ import edu.ppt.impossible.model.SubGraph;
 import edu.ppt.impossible.model.SubGraphToGraphAdapter;
 import edu.ppt.impossible.model.Tree;
 import edu.ppt.impossible.pfnd.PathFinder;
+import edu.ppt.impossible.tfind.SpanningTreeFinder;
+import edu.ppt.impossible.tfind.SteinerTreeFinder;
 
 public class PathAggrTreeFinder implements SteinerTreeFinder {
 

@@ -1,13 +1,13 @@
-package edu.ppt.impossible.pfnd;
+package edu.ppt.impossible.pfnd.dkstr;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.ppt.impossible.helpers.dkstrrel.DijkstraRelaxation;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;
 import edu.ppt.impossible.model.Path;
+import edu.ppt.impossible.pfnd.PathFinder;
 
 public class DijkstraPathFinder implements PathFinder {
 

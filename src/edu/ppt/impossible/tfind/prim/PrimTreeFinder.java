@@ -1,4 +1,4 @@
-package edu.ppt.impossible.tfind;
+package edu.ppt.impossible.tfind.prim;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.Node;
 import edu.ppt.impossible.model.SubGraph;
 import edu.ppt.impossible.model.Tree;
+import edu.ppt.impossible.tfind.SpanningTreeFinder;
 
 public class PrimTreeFinder implements SpanningTreeFinder {
 

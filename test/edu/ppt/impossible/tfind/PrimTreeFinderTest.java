@@ -12,6 +12,7 @@ import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.GraphFactory;
 import edu.ppt.impossible.model.Tree;
+import edu.ppt.impossible.tfind.prim.PrimTreeFinder;
 
 public class PrimTreeFinderTest {
 

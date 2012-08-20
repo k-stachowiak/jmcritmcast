@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers.dkstrrel;
+package edu.ppt.impossible.pfnd.dkstr;
 
 import java.util.ArrayList;
 import java.util.Collections;

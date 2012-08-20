@@ -3,6 +3,7 @@ package edu.ppt.impossible.hlanalysis;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,12 +13,15 @@ import edu.ppt.impossible.helpers.TopologyAnalyser;
 import edu.ppt.impossible.helpers.TopologyAnalyserImpl;
 import edu.ppt.impossible.helpers.cstrch.FengGroupConstraintsChooser;
 import edu.ppt.impossible.helpers.cstrch.GroupConstraintsChooser;
+import edu.ppt.impossible.helpers.gphmut.MetricRedistribution;
+import edu.ppt.impossible.helpers.gphmut.MetricRedistributionImpl;
+import edu.ppt.impossible.helpers.gphmut.OspfResourceDrainer;
+import edu.ppt.impossible.helpers.gphmut.ResourceDrainer;
+import edu.ppt.impossible.helpers.gphmut.UniformDistributionParameters;
 import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
 import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.helpers.nodegrp.NodeGroupper;
 import edu.ppt.impossible.helpers.nodegrp.RandomNodeGroupper;
-import edu.ppt.impossible.helpers.resdrain.OspfResourceDrainer;
-import edu.ppt.impossible.helpers.resdrain.ResourceDrainer;
 import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.GraphFactory;
@@ -46,6 +50,7 @@ public class MultiDrain {
 	final NodeGroupper nodeGroupper;
 	final ResourceDrainer resourceDrainer;
 	final MetricProvider metricProvider;
+	final MetricRedistribution metricResistribution;
 
 	// Finders.
 	final SpanningTreeFinder helperSpanningTreeFinder;
@@ -73,6 +78,9 @@ public class MultiDrain {
 				setup.getDrainedBandwidth(), graphFactory);
 
 		metricProvider = new IndexMetricProvider(0);
+
+		metricResistribution = new MetricRedistributionImpl(graphFactory,
+				random);
 
 		helperSpanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
 		helperPathFinder = pathFinderFactory.CreateDijkstraIndex(0);
@@ -110,9 +118,15 @@ public class MultiDrain {
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		StringBuilder resultStringBuilder = new StringBuilder();
 
+		List<UniformDistributionParameters> parameters = new ArrayList<>();
+		for (int p = 0; p < criteriaCount; ++p)
+			parameters.add(new UniformDistributionParameters(setup
+					.getRedistributionMin(), setup.getRedistributionMax()));
+
 		for (int g = 0; g < graphs; ++g) {
 
-			final Graph graph = inputGraphStreamer.getNext();
+			Graph graph = inputGraphStreamer.getNext();
+			graph = metricResistribution.redistUniform(graph, parameters);
 
 			int successCount = experimentStep(graph, groupSize);
 
@@ -120,6 +134,9 @@ public class MultiDrain {
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(criteriaCount);
+			resultStringBuilder.append('\t');
+			
+			resultStringBuilder.append(groupSize);
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(successCount);
@@ -148,14 +165,6 @@ public class MultiDrain {
 
 			++successCount;
 			copy = resourceDrainer.drain(copy, tree);
-
-			// Debug graph cost.
-			List<Double> metrics = topologyAnalyser.sumGraphMetrics(copy);
-			for (Double metric : metrics) {
-				System.out.print(metric);
-				System.out.print('\t');
-			}
-			System.out.println();
 		}
 
 		return successCount;
