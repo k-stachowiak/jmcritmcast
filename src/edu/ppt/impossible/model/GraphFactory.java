@@ -34,6 +34,30 @@ public abstract class GraphFactory {
 
 		return createFromLists(nodes, edges);
 	}
+	
+	public Graph createDisconnected() {
+		
+		List<Node> nodes = new ArrayList<>();
+		nodes.add(new Node(0, 0, 0));
+		nodes.add(new Node(1, 2, 2));
+		nodes.add(new Node(2, 4, 0));
+		nodes.add(new Node(3, 1, 1));
+		nodes.add(new Node(4, 3, 1));
+
+		List<Double> metrics = new ArrayList<>();
+		metrics.add(100.0);
+		metrics.add(100.0);
+		metrics.add(100.0);
+
+		List<Edge> edges = new ArrayList<>();
+		edges.add(new Edge(0, 1, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(0, 2, new ArrayList<Double>(metrics)));
+		edges.add(new Edge(1, 2, new ArrayList<Double>(metrics)));		
+		edges.add(new Edge(3, 4, new ArrayList<Double>(metrics)));
+
+		return createFromLists(nodes, edges);
+		
+	}
 
 	public abstract Graph createFromLists(List<Node> nodes, List<Edge> edges);
 

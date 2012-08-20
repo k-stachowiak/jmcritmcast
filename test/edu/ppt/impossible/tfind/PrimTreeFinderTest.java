@@ -11,8 +11,40 @@ import edu.ppt.impossible.helpers.metrprov.MetricProvider;
 import edu.ppt.impossible.model.AdjacencyListFactory;
 import edu.ppt.impossible.model.Graph;
 import edu.ppt.impossible.model.GraphFactory;
+import edu.ppt.impossible.model.Tree;
 
 public class PrimTreeFinderTest {
+
+	@Test
+	public void testForDistonnectedGraphFind() {
+		// Constants.
+		final int INDEX_FOR_METRIC_PROVIDER = 0;
+
+		// Helpers.
+		final GraphFactory graphFactory = new AdjacencyListFactory();
+
+		final MetricProvider metricProvider = new IndexMetricProvider(
+				INDEX_FOR_METRIC_PROVIDER);
+
+		final SpanningTreeFinder spanningTreeFinder = new PrimTreeFinder(
+				metricProvider);
+
+		// Input.
+		Graph graph = graphFactory.createDisconnected();
+
+		// Case.
+		Tree tree = spanningTreeFinder.find(graph.getNode(0), graph);
+
+		int expectedNumNodes = 3;
+		int expectedNumEdges = 2;
+
+		int actualNumNodes = tree.getNumNodes();
+		int actualNumEdges = tree.getNumEdges();
+
+		// Assert.
+		assertEquals(expectedNumNodes, actualNumNodes);
+		assertEquals(expectedNumEdges, actualNumEdges);
+	}
 
 	@Test
 	public void testForCutsCheapestEdgesNPE() {
@@ -22,10 +54,10 @@ public class PrimTreeFinderTest {
 
 		// Helpers.
 		final GraphFactory graphFactory = new AdjacencyListFactory();
-		
+
 		final MetricProvider metricProvider = new IndexMetricProvider(
 				INDEX_FOR_METRIC_PROVIDER);
-		
+
 		final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl(
 				new PrimTreeFinder(metricProvider));
 

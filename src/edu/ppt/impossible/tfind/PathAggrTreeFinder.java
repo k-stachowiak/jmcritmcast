@@ -70,7 +70,7 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 				ripley7);
 
 		// Prune
-		return spanningTreeFinder.find(subGraphToGraphAdapter);
+		return spanningTreeFinder.find(source, subGraphToGraphAdapter);
 	}
 
 	private boolean fulfillsConstraints(Path path, List<Double> constraints2) {

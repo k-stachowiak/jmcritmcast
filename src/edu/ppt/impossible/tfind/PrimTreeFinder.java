@@ -42,7 +42,7 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 		 * System.out.println(stringBuilder.toString()); }
 		 */
 
-		public Cut(Graph graph, MetricProvider metricProvider) {
+		public Cut(Node root, Graph graph, MetricProvider metricProvider) {
 
 			this.graph = graph;
 			this.metricProvider = metricProvider;
@@ -51,9 +51,8 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 			nodesInside = new ArrayList<>();
 			edgesInside = new ArrayList<>();
 
-			Node initialNode = graph.getNodes().get(0);
-			nodesInside.add(initialNode);
-			addValidEdges(initialNode);
+			nodesInside.add(root);
+			addValidEdges(root);
 		}
 
 		public void expand() {
@@ -76,6 +75,10 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 
 			// Remove acquired edges
 			removeInvalidEdges();
+		}
+
+		public boolean canExpand() {			
+			return cutEdges.size() > 0;
 		}
 
 		public boolean graphContained() {
@@ -145,10 +148,10 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 	}
 
 	@Override
-	public Tree find(Graph graph) {
-		
-		Cut cut = new Cut(graph, metricProvider);
-		while (!cut.graphContained())
+	public Tree find(Node root, Graph graph) {
+
+		Cut cut = new Cut(root, graph, metricProvider);
+		while (!cut.graphContained() && cut.canExpand())
 			cut.expand();
 		return cut.buildTree();
 	}
