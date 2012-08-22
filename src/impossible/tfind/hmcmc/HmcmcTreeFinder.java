@@ -1,0 +1,90 @@
+package impossible.tfind.hmcmc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import impossible.helpers.ConstraintsComparer;
+import impossible.helpers.PathAggregator;
+import impossible.helpers.TopologyDebug;
+import impossible.model.Graph;
+import impossible.model.Node;
+import impossible.model.Path;
+import impossible.model.Tree;
+import impossible.pfnd.PathFinder;
+import impossible.pfnd.PathFinderFactory;
+import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.tfind.SteinerTreeFinder;
+
+public class HmcmcTreeFinder implements SteinerTreeFinder {
+
+	private final ConstraintsComparer constraintsComparer;
+	private final PathFinderFactory pathFinderFactory;
+	private final PathAggregator pathAggregator;
+	private final List<Double> constraints;
+
+	public HmcmcTreeFinder(ConstraintsComparer constraintsComparer,
+			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
+			List<Double> constraints) {
+		this.constraintsComparer = constraintsComparer;
+		this.pathFinderFactory = pathFinderFactory;
+		this.pathAggregator = pathAggregator;
+		this.constraints = constraints;
+	}
+
+	public Tree find(Graph graph, List<Node> spanned) {
+		
+		TopologyDebug td = new TopologyDebug();
+		
+		Node source = spanned.get(0);
+
+		// Partial search.
+		// ---------------
+		DijkstraRelaxation partialRelaxation = new PartialDijkstraRelaxation(
+				constraints);
+
+		PathFinder partialFinder = pathFinderFactory
+				.CreateDijkstra(partialRelaxation);
+
+		// Perform any find from source to setup the labels.
+		if (partialFinder.find(graph, source, spanned.get(1)) == null)
+			return null;
+
+		// Store partial paths.
+		List<Path> paths = new ArrayList<>();
+		List<Node> failedDestinations = new ArrayList<>();
+		for (int d = 1; d < spanned.size(); ++d) {
+			Path path = partialRelaxation.buildPath(graph, source,
+					spanned.get(d));
+			
+			System.out.println("Found path " + td.printSubGraph(path));
+
+			if (path == null
+					|| !constraintsComparer.fulfilsConstraints(path,
+							constraints))
+				failedDestinations.add(spanned.get(d));
+			else
+				paths.add(path);
+		}
+
+		// Immediate success.
+		// ------------------
+		if (failedDestinations.isEmpty())
+			return pathAggregator.aggregate(graph, source, paths);
+
+		// Try optimizing.
+		// ---------------
+		PathFinder hmcp = pathFinderFactory.CreateHmcp(constraints);
+		for (Node failed : failedDestinations) {
+			Path path = hmcp.find(graph, source, failed);
+
+			if (path == null
+					|| !constraintsComparer.fulfilsConstraints(path,
+							constraints))
+				return null;
+
+			paths.add(path);
+		}
+
+		return pathAggregator.aggregate(graph, source, paths);
+	}
+}

@@ -4,6 +4,8 @@ import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.PathAggregator;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.pfnd.PathFinder;
+import impossible.pfnd.PathFinderFactory;
+import impossible.tfind.hmcmc.HmcmcTreeFinder;
 import impossible.tfind.paggr.PathAggrTreeFinder;
 import impossible.tfind.prim.PrimTreeFinder;
 
@@ -18,6 +20,15 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 		return new PathAggrTreeFinder(constraints, pathFinder,
 				constraintsComparer, pathAggregator);
+	}
+
+	@Override
+	public SteinerTreeFinder createHmcmc(
+			ConstraintsComparer constraintsComparer,
+			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
+			List<Double> constraints) {
+		return new HmcmcTreeFinder(constraintsComparer, pathFinderFactory,
+				pathAggregator, constraints);
 	}
 
 	@Override
