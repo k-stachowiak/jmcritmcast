@@ -2,6 +2,10 @@ package impossible.hlanalysis;
 
 import impossible.dal.InputGraphStreamer;
 import impossible.dal.NewFormatGraphStreamer;
+import impossible.helpers.ConstraintsComparer;
+import impossible.helpers.ConstraintsComparerImpl;
+import impossible.helpers.PathAggregator;
+import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.TopologyAnalyser;
 import impossible.helpers.TopologyAnalyserImpl;
 import impossible.helpers.cstrch.FengGroupConstraintsChooser;
@@ -39,29 +43,31 @@ import java.util.Random;
 public class MultiDrain {
 
 	// General utilities.
-	final Random random;
+	private final Random random;
 
 	// Factories.
-	final GraphFactory graphFactory;
-	final PathFinderFactory pathFinderFactory;
-	final TreeFinderFactory treeFinderFactory;
+	private final GraphFactory graphFactory;
+	private final PathFinderFactory pathFinderFactory;
+	private final TreeFinderFactory treeFinderFactory;
 
 	// Strategies.
-	final GroupConstraintsChooser constraintsChooser;
-	final NodeGroupper nodeGroupper;
-	final ResourceDrainer resourceDrainer;
-	final MetricProvider metricProvider;
-	final MetricRedistribution metricResistribution;
+	private final GroupConstraintsChooser constraintsChooser;
+	private final NodeGroupper nodeGroupper;
+	private final ResourceDrainer resourceDrainer;
+	private final MetricProvider metricProvider;
+	private final MetricRedistribution metricResistribution;
+	private final ConstraintsComparer constraintsComparer;
+	private final PathAggregator pathAggregator;
 
 	// Finders.
-	final SpanningTreeFinder helperSpanningTreeFinder;
-	final PathFinder helperPathFinder;
+	private final SpanningTreeFinder helperSpanningTreeFinder;
+	private final PathFinder helperPathFinder;
 
 	// Special utilities.
-	final TopologyAnalyser topologyAnalyser;
+	private final TopologyAnalyser topologyAnalyser;
 
 	// Procedure setup.
-	MultiDrainSetup setup;
+	private MultiDrainSetup setup;
 
 	public MultiDrain(MultiDrainSetup setup) {
 
@@ -82,9 +88,13 @@ public class MultiDrain {
 
 		metricResistribution = new MetricRedistributionImpl(graphFactory,
 				random);
+		
+		constraintsComparer = new ConstraintsComparerImpl();		
 
 		helperSpanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
 		helperPathFinder = pathFinderFactory.CreateDijkstraIndex(0);
+		
+		pathAggregator = new PathAggregatorImpl(helperSpanningTreeFinder);
 
 		topologyAnalyser = new TopologyAnalyserImpl(helperSpanningTreeFinder);
 
@@ -158,7 +168,7 @@ public class MultiDrain {
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 			List<Double> constraints = constraintsChooser.choose(copy, group);
 			SteinerTreeFinder treeFinder = treeFinderFactory.createPathAggr(
-					constraints, helperPathFinder, helperSpanningTreeFinder);
+					constraints, helperPathFinder, constraintsComparer, pathAggregator);
 
 			Tree tree = treeFinder.find(copy, group);
 			if (tree == null)

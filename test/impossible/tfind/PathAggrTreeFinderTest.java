@@ -3,6 +3,10 @@ package impossible.tfind;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import impossible.helpers.ConstraintsComparer;
+import impossible.helpers.ConstraintsComparerImpl;
+import impossible.helpers.PathAggregator;
+import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.cstrch.FengGroupConstraintsChooser;
 import impossible.helpers.cstrch.GroupConstraintsChooser;
 import impossible.helpers.metrprov.IndexMetricProvider;
@@ -30,7 +34,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-
 public class PathAggrTreeFinderTest {
 
 	@Test
@@ -51,13 +54,17 @@ public class PathAggrTreeFinderTest {
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
 
+		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+		PathAggregator pathAggregator = new PathAggregatorImpl(
+				spanningTreeFinder);
+
 		Graph graph = graphFactory.createTest();
 
 		List<Node> group = nodeGroupper.group(graph, 3);
 		List<Double> constraints = constraintsChooser.choose(graph, group);
 
 		SteinerTreeFinder treeFinder = treeFinderFactory.createPathAggr(
-				constraints, pathFinder, spanningTreeFinder);
+				constraints, pathFinder, constraintsComparer, pathAggregator);
 
 		Tree tree = treeFinder.find(graph, group);
 
@@ -77,6 +84,7 @@ public class PathAggrTreeFinderTest {
 
 		// Strategies
 		MetricProvider metricProvider = new IndexMetricProvider(0);
+		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
 
 		// Factories.
 		GraphFactory graphFactory = new AdjacencyListFactory();
@@ -88,6 +96,10 @@ public class PathAggrTreeFinderTest {
 
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
+
+		// Other strategies.
+		PathAggregator pathAggregator = new PathAggregatorImpl(
+				spanningTreeFinder);
 
 		// Model.
 		// ------
@@ -149,7 +161,7 @@ public class PathAggrTreeFinderTest {
 		// Case.
 		// -----
 		SteinerTreeFinder steinerTreeFinder = treeFinderFactory.createPathAggr(
-				constraints, pathFinder, spanningTreeFinder);
+				constraints, pathFinder, constraintsComparer, pathAggregator);
 
 		Tree actualTree = steinerTreeFinder.find(graph, group);
 
