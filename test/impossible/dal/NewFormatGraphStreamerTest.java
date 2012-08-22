@@ -1,4 +1,4 @@
-package edu.ppt.impossible.dal;
+package impossible.dal;
 
 import static org.junit.Assert.*;
 

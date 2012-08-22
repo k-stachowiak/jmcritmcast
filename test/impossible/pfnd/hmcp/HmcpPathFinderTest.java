@@ -1,4 +1,4 @@
-package edu.ppt.impossible.pfnd.hmcp;
+package impossible.pfnd.hmcp;
 
 import static org.junit.Assert.*;
 

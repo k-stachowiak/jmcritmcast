@@ -1,4 +1,4 @@
-package edu.ppt.impossible.tfind;
+package impossible.tfind;
 
 import static org.junit.Assert.assertEquals;
 import impossible.helpers.TopologyAnalyser;

@@ -1,4 +1,4 @@
-package edu.ppt.impossible.pfnd;
+package impossible.pfnd;
 
 import static org.junit.Assert.assertEquals;
 

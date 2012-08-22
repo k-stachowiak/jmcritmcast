@@ -1,4 +1,4 @@
-package edu.ppt.impossible.helpers.nodegrp;
+package impossible.helpers.nodegrp;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
