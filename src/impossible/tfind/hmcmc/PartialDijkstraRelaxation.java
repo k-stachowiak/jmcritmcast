@@ -46,10 +46,6 @@ public class PartialDijkstraRelaxation extends DijkstraRelaxation {
 	@Override
 	public boolean relax(Graph graph, Node from, Node to) {
 
-		System.out.println("Relaxing " + from.getId() + " -> " + to.getId());
-		System.out.println("State : \n");
-		System.out.println(DEBUG_printState());
-
 		Edge edge = graph.getEdge(from.getId(), to.getId());
 
 		// Find the hypothetical metrics of the new subpath.
@@ -67,17 +63,9 @@ public class PartialDijkstraRelaxation extends DijkstraRelaxation {
 				maximum = term;
 		}
 
-		System.out.println("Candidate metric : " + maximum);
-
 		// Relax if condition satisfied.
 		// -----------------------------
 		if (maximum < labels.get(to)) {
-			System.out.println("Relaxing");
-			
-			labels.remove(to);
-			predecessors.remove(to);			
-			specifficLabels.remove(to);
-
 			labels.put(to, maximum);
 			predecessors.put(to, from);			
 			specifficLabels.put(to, aggregated);
@@ -85,42 +73,11 @@ public class PartialDijkstraRelaxation extends DijkstraRelaxation {
 			return true;
 		}
 
-		System.out.println("Not relaxing");
-
 		return false;
 	}
 
 	@Override
 	public boolean isCheaper(Node a, Node b) {
 		return labels.get(a) < labels.get(b);
-	}
-
-	@Override
-	public String DEBUG_printState() {
-
-		StringBuilder stringBuilder = new StringBuilder();
-
-		stringBuilder.append("Aggregated labels :\n");
-		for (Map.Entry<Node, Double> entry : labels.entrySet()) {
-			stringBuilder.append(entry.getKey().getId());
-			stringBuilder.append(" -> ");
-			stringBuilder.append(entry.getValue());
-			stringBuilder.append('\n');
-		}
-		stringBuilder.append('\n');
-
-		stringBuilder.append("Speciffic labels :\n");
-		for (Map.Entry<Node, List<Double>> entry : specifficLabels.entrySet()) {
-			stringBuilder.append(entry.getKey().getId());
-			stringBuilder.append(" -> ");
-			for (Double m : entry.getValue()) {
-				stringBuilder.append(m);
-				stringBuilder.append(' ');
-			}
-			stringBuilder.append('\n');
-		}
-		stringBuilder.append('\n');
-
-		return stringBuilder.toString();
 	}
 }

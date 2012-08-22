@@ -23,6 +23,11 @@ public class TopologyDebug {
 			result.append(edge.getFrom());
 			result.append(" -> ");
 			result.append(edge.getTo());
+			result.append(' ');
+			for(Double m : edge.getMetrics()) {
+				result.append(m);
+				result.append(' ');
+			}
 			result.append('\n');
 		}
 

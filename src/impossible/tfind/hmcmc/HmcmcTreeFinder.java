@@ -32,9 +32,9 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 	}
 
 	public Tree find(Graph graph, List<Node> spanned) {
-		
+
 		TopologyDebug td = new TopologyDebug();
-		
+
 		Node source = spanned.get(0);
 
 		// Partial search.
@@ -55,8 +55,6 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 		for (int d = 1; d < spanned.size(); ++d) {
 			Path path = partialRelaxation.buildPath(graph, source,
 					spanned.get(d));
-			
-			System.out.println("Found path " + td.printSubGraph(path));
 
 			if (path == null
 					|| !constraintsComparer.fulfilsConstraints(path,

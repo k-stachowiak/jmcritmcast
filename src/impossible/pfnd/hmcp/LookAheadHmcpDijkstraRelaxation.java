@@ -92,7 +92,7 @@ public class LookAheadHmcpDijkstraRelaxation extends DijkstraRelaxation {
 
 		if (preferTheBest(from, to, GTmp, RTmp, G.get(to), RTo, fTmp,
 				graph.getNumMetrics())) {
-
+			
 			f.put(to, fTmp);
 			predecessors.put(to, from);
 

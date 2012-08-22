@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
 public abstract class DijkstraRelaxation {
 
 	protected Map<Node, Node> predecessors;
@@ -36,7 +35,7 @@ public abstract class DijkstraRelaxation {
 		}
 
 		nodes.add(from.getId());
-		
+
 		Collections.reverse(nodes);
 
 		return new Path(graph, nodes);
