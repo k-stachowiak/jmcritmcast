@@ -1,18 +1,19 @@
 package edu.ppt.impossible.tfind;
 
 import static org.junit.Assert.assertEquals;
+import impossible.helpers.TopologyAnalyser;
+import impossible.helpers.TopologyAnalyserImpl;
+import impossible.helpers.metrprov.IndexMetricProvider;
+import impossible.helpers.metrprov.MetricProvider;
+import impossible.model.AdjacencyListFactory;
+import impossible.model.Graph;
+import impossible.model.GraphFactory;
+import impossible.model.Tree;
+import impossible.tfind.SpanningTreeFinder;
+import impossible.tfind.prim.PrimTreeFinder;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.helpers.TopologyAnalyser;
-import edu.ppt.impossible.helpers.TopologyAnalyserImpl;
-import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
-import edu.ppt.impossible.helpers.metrprov.MetricProvider;
-import edu.ppt.impossible.model.AdjacencyListFactory;
-import edu.ppt.impossible.model.Graph;
-import edu.ppt.impossible.model.GraphFactory;
-import edu.ppt.impossible.model.Tree;
-import edu.ppt.impossible.tfind.prim.PrimTreeFinder;
 
 public class PrimTreeFinderTest {
 

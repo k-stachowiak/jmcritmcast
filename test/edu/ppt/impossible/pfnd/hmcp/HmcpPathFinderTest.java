@@ -2,21 +2,22 @@ package edu.ppt.impossible.pfnd.hmcp;
 
 import static org.junit.Assert.*;
 
+import impossible.model.AdjacencyListFactory;
+import impossible.model.Edge;
+import impossible.model.Graph;
+import impossible.model.GraphFactory;
+import impossible.model.Node;
+import impossible.model.Path;
+import impossible.pfnd.PathFinder;
+import impossible.pfnd.PathFinderFactory;
+import impossible.pfnd.PathFinderFactoryImpl;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.model.AdjacencyListFactory;
-import edu.ppt.impossible.model.Edge;
-import edu.ppt.impossible.model.Graph;
-import edu.ppt.impossible.model.GraphFactory;
-import edu.ppt.impossible.model.Node;
-import edu.ppt.impossible.model.Path;
-import edu.ppt.impossible.pfnd.PathFinder;
-import edu.ppt.impossible.pfnd.PathFinderFactory;
-import edu.ppt.impossible.pfnd.PathFinderFactoryImpl;
 
 public class HmcpPathFinderTest {
 

@@ -3,28 +3,33 @@ package edu.ppt.impossible.tfind;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import impossible.helpers.cstrch.FengGroupConstraintsChooser;
+import impossible.helpers.cstrch.GroupConstraintsChooser;
+import impossible.helpers.metrprov.IndexMetricProvider;
+import impossible.helpers.metrprov.MetricProvider;
+import impossible.helpers.nodegrp.NodeGroupper;
+import impossible.helpers.nodegrp.RandomNodeGroupper;
+import impossible.model.AdjacencyListFactory;
+import impossible.model.Edge;
+import impossible.model.Graph;
+import impossible.model.GraphFactory;
+import impossible.model.Node;
+import impossible.model.SubGraph;
+import impossible.model.Tree;
+import impossible.pfnd.PathFinder;
+import impossible.pfnd.PathFinderFactory;
+import impossible.pfnd.PathFinderFactoryImpl;
+import impossible.tfind.SpanningTreeFinder;
+import impossible.tfind.SteinerTreeFinder;
+import impossible.tfind.TreeFinderFactory;
+import impossible.tfind.TreeFinderFactoryImpl;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.helpers.cstrch.FengGroupConstraintsChooser;
-import edu.ppt.impossible.helpers.cstrch.GroupConstraintsChooser;
-import edu.ppt.impossible.helpers.metrprov.IndexMetricProvider;
-import edu.ppt.impossible.helpers.metrprov.MetricProvider;
-import edu.ppt.impossible.helpers.nodegrp.NodeGroupper;
-import edu.ppt.impossible.helpers.nodegrp.RandomNodeGroupper;
-import edu.ppt.impossible.model.AdjacencyListFactory;
-import edu.ppt.impossible.model.Edge;
-import edu.ppt.impossible.model.Graph;
-import edu.ppt.impossible.model.GraphFactory;
-import edu.ppt.impossible.model.Node;
-import edu.ppt.impossible.model.SubGraph;
-import edu.ppt.impossible.model.Tree;
-import edu.ppt.impossible.pfnd.PathFinder;
-import edu.ppt.impossible.pfnd.PathFinderFactory;
-import edu.ppt.impossible.pfnd.PathFinderFactoryImpl;
 
 public class PathAggrTreeFinderTest {
 

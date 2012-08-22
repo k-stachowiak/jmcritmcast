@@ -5,17 +5,18 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import impossible.helpers.nodegrp.NodeGroupper;
+import impossible.helpers.nodegrp.RandomNodeGroupper;
+import impossible.model.AdjacencyListFactory;
+import impossible.model.Graph;
+import impossible.model.GraphFactory;
+import impossible.model.Node;
+
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
 
-import edu.ppt.impossible.helpers.nodegrp.NodeGroupper;
-import edu.ppt.impossible.helpers.nodegrp.RandomNodeGroupper;
-import edu.ppt.impossible.model.AdjacencyListFactory;
-import edu.ppt.impossible.model.Graph;
-import edu.ppt.impossible.model.GraphFactory;
-import edu.ppt.impossible.model.Node;
 
 public class RandomNodeGroupperTest {
 
