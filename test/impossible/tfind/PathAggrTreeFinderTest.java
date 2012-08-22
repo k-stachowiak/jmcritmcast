@@ -2,7 +2,6 @@ package impossible.tfind;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.ConstraintsComparerImpl;
 import impossible.helpers.PathAggregator;
@@ -15,18 +14,14 @@ import impossible.helpers.nodegrp.NodeGroupper;
 import impossible.helpers.nodegrp.RandomNodeGroupper;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Edge;
+import impossible.model.EdgeDefinition;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
-import impossible.model.SubGraph;
 import impossible.model.Tree;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
-import impossible.tfind.SpanningTreeFinder;
-import impossible.tfind.SteinerTreeFinder;
-import impossible.tfind.TreeFinderFactory;
-import impossible.tfind.TreeFinderFactoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,13 +143,13 @@ public class PathAggrTreeFinderTest {
 		group.add(graph.getNode(7));
 		group.add(graph.getNode(8));
 
-		List<SubGraph.EdgeDefinition> expectedEdges = new ArrayList<>();
-		expectedEdges.add(new SubGraph.EdgeDefinition(0, 1));
-		expectedEdges.add(new SubGraph.EdgeDefinition(1, 3));
-		expectedEdges.add(new SubGraph.EdgeDefinition(3, 7));
-		expectedEdges.add(new SubGraph.EdgeDefinition(0, 2));
-		expectedEdges.add(new SubGraph.EdgeDefinition(2, 6));
-		expectedEdges.add(new SubGraph.EdgeDefinition(6, 8));
+		List<EdgeDefinition> expectedEdges = new ArrayList<>();
+		expectedEdges.add(new EdgeDefinition(0, 1));
+		expectedEdges.add(new EdgeDefinition(1, 3));
+		expectedEdges.add(new EdgeDefinition(3, 7));
+		expectedEdges.add(new EdgeDefinition(0, 2));
+		expectedEdges.add(new EdgeDefinition(2, 6));
+		expectedEdges.add(new EdgeDefinition(6, 8));
 
 		Tree expectedTree = new Tree(graph, expectedEdges);
 

@@ -1,11 +1,7 @@
 package impossible.tfind.hmcmc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.PathAggregator;
-import impossible.helpers.TopologyDebug;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
@@ -14,6 +10,9 @@ import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.dkstr.DijkstraRelaxation;
 import impossible.tfind.SteinerTreeFinder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HmcmcTreeFinder implements SteinerTreeFinder {
 
@@ -32,8 +31,6 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 	}
 
 	public Tree find(Graph graph, List<Node> spanned) {
-
-		TopologyDebug td = new TopologyDebug();
 
 		Node source = spanned.get(0);
 

@@ -74,7 +74,7 @@ public abstract class GraphFactory {
 		return createFromLists(nodes, edges);
 	}
 
-	public Graph createDoubleTriangle(List<SubGraph.EdgeDefinition> cheapEdges) {
+	public Graph createDoubleTriangle(List<EdgeDefinition> cheapEdges) {
 
 		final double expensive = 100;
 		final double cheap = 5;
@@ -87,16 +87,16 @@ public abstract class GraphFactory {
 		nodes.add(new Node(4, 3.0, 1.0));
 		nodes.add(new Node(5, 2.0, 0.0));
 
-		List<SubGraph.EdgeDefinition> edgeDefinitions = new ArrayList<>();
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(0, 3));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(3, 1));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(1, 4));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(4, 2));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(2, 5));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(5, 0));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(3, 4));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(4, 5));
-		edgeDefinitions.add(new SubGraph.EdgeDefinition(5, 3));
+		List<EdgeDefinition> edgeDefinitions = new ArrayList<>();
+		edgeDefinitions.add(new EdgeDefinition(0, 3));
+		edgeDefinitions.add(new EdgeDefinition(3, 1));
+		edgeDefinitions.add(new EdgeDefinition(1, 4));
+		edgeDefinitions.add(new EdgeDefinition(4, 2));
+		edgeDefinitions.add(new EdgeDefinition(2, 5));
+		edgeDefinitions.add(new EdgeDefinition(5, 0));
+		edgeDefinitions.add(new EdgeDefinition(3, 4));
+		edgeDefinitions.add(new EdgeDefinition(4, 5));
+		edgeDefinitions.add(new EdgeDefinition(5, 3));
 
 		List<Double> expensiveMetrics = new ArrayList<>();
 		expensiveMetrics.add(expensive);
@@ -109,14 +109,13 @@ public abstract class GraphFactory {
 		cheapMetrics.add(cheap);
 
 		List<Edge> edges = new ArrayList<>();
-		for (SubGraph.EdgeDefinition edgeDefinition : edgeDefinitions) {
+		for (EdgeDefinition edgeDefinition : edgeDefinitions) {
 
 			boolean isCheapStrainght = cheapEdges.contains(edgeDefinition);
-			
-			boolean isCheapReverse = cheapEdges
-					.contains(new SubGraph.EdgeDefinition(edgeDefinition
-							.getTo(), edgeDefinition.getFrom()));
-			
+
+			boolean isCheapReverse = cheapEdges.contains(new EdgeDefinition(
+					edgeDefinition.getTo(), edgeDefinition.getFrom()));
+
 			boolean isCheap = isCheapStrainght | isCheapReverse;
 
 			List<Double> metrics = isCheap ? cheapMetrics : expensiveMetrics;

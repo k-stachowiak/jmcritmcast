@@ -2,9 +2,9 @@ package impossible.tfind.prim;
 
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.Edge;
+import impossible.model.EdgeDefinition;
 import impossible.model.Graph;
 import impossible.model.Node;
-import impossible.model.SubGraph;
 import impossible.model.Tree;
 import impossible.tfind.SpanningTreeFinder;
 
@@ -21,28 +21,6 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 		private final List<Edge> cutEdges;
 		private final List<Node> nodesInside;
 		private final List<Edge> edgesInside;
-
-		/*
-		 * private void DEBUG_STATE() {
-		 * 
-		 * StringBuilder stringBuilder = new StringBuilder();
-		 * 
-		 * stringBuilder.append("cutEdges : \n"); for (Edge edge : cutEdges) {
-		 * stringBuilder.append(edge.getFrom()); stringBuilder.append(" - > ");
-		 * stringBuilder.append(edge.getTo()); stringBuilder.append('\n'); }
-		 * stringBuilder.append('\n');
-		 * 
-		 * stringBuilder.append("edgesInside : \n"); for (Edge edge :
-		 * edgesInside) { stringBuilder.append(edge.getFrom());
-		 * stringBuilder.append(" - > "); stringBuilder.append(edge.getTo());
-		 * stringBuilder.append('\n'); } stringBuilder.append('\n');
-		 * 
-		 * stringBuilder.append("nodesInside : \n"); for (Node node :
-		 * nodesInside) { stringBuilder.append(node.getId());
-		 * stringBuilder.append(' '); } stringBuilder.append('\n');
-		 * 
-		 * System.out.println(stringBuilder.toString()); }
-		 */
 
 		public Cut(Node root, Graph graph, MetricProvider metricProvider) {
 
@@ -88,9 +66,9 @@ public class PrimTreeFinder implements SpanningTreeFinder {
 		}
 
 		public Tree buildTree() {
-			List<SubGraph.EdgeDefinition> edgeDefinitions = new ArrayList<>();
+			List<EdgeDefinition> edgeDefinitions = new ArrayList<>();
 			for (Edge edge : edgesInside) {
-				edgeDefinitions.add(new SubGraph.EdgeDefinition(edge.getFrom(),
+				edgeDefinitions.add(new EdgeDefinition(edge.getFrom(),
 						edge.getTo()));
 			}
 			return new Tree(graph, edgeDefinitions);

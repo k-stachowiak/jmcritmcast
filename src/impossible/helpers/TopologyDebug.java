@@ -1,6 +1,7 @@
 package impossible.helpers;
 
 import impossible.model.Edge;
+import impossible.model.EdgeDefinition;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.SubGraph;
@@ -24,7 +25,7 @@ public class TopologyDebug {
 			result.append(" -> ");
 			result.append(edge.getTo());
 			result.append(' ');
-			for(Double m : edge.getMetrics()) {
+			for (Double m : edge.getMetrics()) {
 				result.append(m);
 				result.append(' ');
 			}
@@ -37,8 +38,7 @@ public class TopologyDebug {
 	public String printSubGraph(SubGraph subGraph) {
 
 		StringBuilder result = new StringBuilder();
-		for (SubGraph.EdgeDefinition edgeDefinition : subGraph
-				.getEdgeDefinitions()) {
+		for (EdgeDefinition edgeDefinition : subGraph.getEdgeDefinitions()) {
 
 			result.append(edgeDefinition.getFrom());
 			result.append(" - > ");

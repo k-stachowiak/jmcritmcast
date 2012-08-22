@@ -1,5 +1,6 @@
 package impossible.helpers;
 
+import impossible.model.EdgeDefinition;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
@@ -22,16 +23,15 @@ public class PathAggregatorImpl implements PathAggregator {
 	}
 
 	@Override
-	public Tree aggregate(Graph graph, Node root, List<Path> paths) {		
-				
+	public Tree aggregate(Graph graph, Node root, List<Path> paths) {
+
 		// Allocate defining objects.
 		Set<Integer> nodesSet = new HashSet<>();
-		Set<SubGraph.EdgeDefinition> edgeDefinitionsSet = new HashSet<>();
-		
-		// Process edges.		
+		Set<EdgeDefinition> edgeDefinitionsSet = new HashSet<>();
+
+		// Process edges.
 		for (Path path : paths)
-			for (SubGraph.EdgeDefinition edgeDefinition : path
-					.getEdgeDefinitions()) {
+			for (EdgeDefinition edgeDefinition : path.getEdgeDefinitions()) {
 
 				nodesSet.add(edgeDefinition.getFrom());
 				nodesSet.add(edgeDefinition.getTo());
@@ -40,9 +40,9 @@ public class PathAggregatorImpl implements PathAggregator {
 
 		// Build lists from sets.
 		List<Integer> nodes = new ArrayList<>(nodesSet);
-		List<SubGraph.EdgeDefinition> edgeDefinitions = new ArrayList<>(
+		List<EdgeDefinition> edgeDefinitions = new ArrayList<>(
 				edgeDefinitionsSet);
-		
+
 		// Validate acquired data.
 		if (nodes.isEmpty())
 			return null;
@@ -54,6 +54,6 @@ public class PathAggregatorImpl implements PathAggregator {
 
 		// Remove cycles and return.
 		return spanningTreeFinder.find(root, subGraphToGraphAdapter);
-	
+
 	}
 }

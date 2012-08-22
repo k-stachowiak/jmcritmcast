@@ -8,10 +8,10 @@ import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.AdjacencyListFactory;
+import impossible.model.EdgeDefinition;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
-import impossible.model.SubGraph;
 import impossible.model.Tree;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
@@ -37,12 +37,12 @@ public class HmcmcTreeFinderTest {
 				spanningTreeFinder);
 
 		// Model.
-		List<SubGraph.EdgeDefinition> cheapEdgeDefinitions = new ArrayList<>();
-		cheapEdgeDefinitions.add(new SubGraph.EdgeDefinition(0, 3));
-		cheapEdgeDefinitions.add(new SubGraph.EdgeDefinition(3, 4));
-		cheapEdgeDefinitions.add(new SubGraph.EdgeDefinition(1, 4));
-		cheapEdgeDefinitions.add(new SubGraph.EdgeDefinition(3, 5));
-		cheapEdgeDefinitions.add(new SubGraph.EdgeDefinition(5, 2));
+		List<EdgeDefinition> cheapEdgeDefinitions = new ArrayList<>();
+		cheapEdgeDefinitions.add(new EdgeDefinition(0, 3));
+		cheapEdgeDefinitions.add(new EdgeDefinition(3, 4));
+		cheapEdgeDefinitions.add(new EdgeDefinition(1, 4));
+		cheapEdgeDefinitions.add(new EdgeDefinition(3, 5));
+		cheapEdgeDefinitions.add(new EdgeDefinition(5, 2));
 
 		GraphFactory graphFactory = new AdjacencyListFactory();
 		Graph graph = graphFactory.createDoubleTriangle(cheapEdgeDefinitions);

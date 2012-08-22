@@ -1,7 +1,6 @@
 package impossible.model;
 
 import impossible.exceptions.IllegalOperationException;
-import impossible.model.SubGraph.EdgeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ public class SubGraphToGraphAdapter implements Graph {
 	private final Graph parent;
 
 	public SubGraphToGraphAdapter(SubGraph subGraph) {
-		super();
 		this.subGraph = subGraph;
 		this.parent = subGraph.getParent();
 	}
