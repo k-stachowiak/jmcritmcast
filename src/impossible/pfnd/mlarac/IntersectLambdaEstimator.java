@@ -11,6 +11,7 @@ import org.apache.commons.math.linear.DecompositionSolver;
 import org.apache.commons.math.linear.LUDecompositionImpl;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math.linear.RealVector;
+import org.apache.commons.math.linear.SingularMatrixException;
 
 public class IntersectLambdaEstimator implements LambdaEstimator {
 
@@ -27,12 +28,18 @@ public class IntersectLambdaEstimator implements LambdaEstimator {
 		DecompositionSolver solver = new LUDecompositionImpl(coefficients)
 				.getSolver();
 
-		RealVector solution = solver.solve(constants);
+		RealVector solution = null;
+		try {
+			solution = solver.solve(constants);
+
+		} catch (SingularMatrixException ex) {
+			return null;
+
+		}
 
 		List<Double> result = new ArrayList<>();
-		for (double c : solution.getData()) {
+		for (double c : solution.getData())
 			result.add(c);
-		}
 
 		return result;
 	}

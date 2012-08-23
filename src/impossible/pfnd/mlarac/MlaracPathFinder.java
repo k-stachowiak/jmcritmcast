@@ -73,6 +73,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 
 		// Approximation iterations.
 		boolean done = false;
+		int numIterations = 0;
 		Path previous = null;
 		List<Path> approximations = new ArrayList<>();
 		while (!done) {
@@ -80,6 +81,8 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 			// Estiamte lambdas
 			List<Double> lambdas = lambdaEstimator.estimate(constraints,
 					exceedingPath, nonExceedingPaths);
+			if (lambdas == null)
+				break;
 
 			PathFinder linearCombinationDijkstra = pathFinderFactory
 					.createLinearCombinationDijkstra(1, constraints, lambdas);
@@ -111,9 +114,11 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 			}
 
 			// End condition.
-			if (peakReached(nonExceedingPaths, exceedingPath, lambdas)) {
+			if (peakReached(nonExceedingPaths, exceedingPath, lambdas))
 				done = true;
-			}
+
+			if (++numIterations > 5)
+				break;
 		}
 
 		// Determine if feasible result was found.

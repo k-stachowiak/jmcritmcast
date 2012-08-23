@@ -41,18 +41,20 @@ public class MultiDrainApp {
 		final double redistributionMin = 1;
 		final double redistributionMax = 1000;
 
-		final int graphs = 5;
+		final int graphs = 200;
 
 		final List<Integer> nodeSizes = new ArrayList<>();
 		nodeSizes.add(50);
+		nodeSizes.add(100);
 
 		final List<Integer> criteriaCounts = new ArrayList<>();
 		criteriaCounts.add(2);
 		criteriaCounts.add(3);
 
 		final List<Integer> groupSizes = new ArrayList<>();
-		groupSizes.add(5);
-		groupSizes.add(10);
+		groupSizes.add(12);
+		groupSizes.add(25);
+		groupSizes.add(50);
 
 		Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeTreeFinders();
 
@@ -99,13 +101,13 @@ public class MultiDrainApp {
 		// -----------------
 		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
-		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
+		treeFinders.put("HMCMC      ", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator, null));
 
 		treeFinders.put("AGGR_MLARAC", treeFinderFactory
 				.createConstrainedPathAggr(mlarac, pathAggregator));
 
-		treeFinders.put("AGGR_LBPSA", treeFinderFactory
+		treeFinders.put("AGGR_LBPSA ", treeFinderFactory
 				.createConstrainedPathAggr(lbpsa, pathAggregator));
 
 		return treeFinders;
