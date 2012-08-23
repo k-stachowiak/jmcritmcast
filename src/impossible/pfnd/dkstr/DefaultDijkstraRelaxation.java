@@ -75,4 +75,8 @@ public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
 		return aggregatedLabels.get(a) < aggregatedLabels.get(b);
 	}
 
+	public Map<Node, List<Double>> getLabels() {
+		return labels;
+	}
+
 }
