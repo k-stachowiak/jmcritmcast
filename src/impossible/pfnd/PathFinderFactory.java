@@ -22,4 +22,6 @@ public interface PathFinderFactory {
 			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			ConstraintsComparer constraintsComparer);
 
+	ConstrainedPathFinder createLbpsa(PathFinderFactory pathFinderFactory,
+			ConstraintsComparer constraintsComparer, List<Double> constraints);
 }

@@ -9,12 +9,11 @@ import impossible.pfnd.PathFinderFactory;
 import java.util.List;
 
 public interface TreeFinderFactory {
-	ConstrainedSteinerTreeFinder createConstrainedPathAggr(List<Double> constraints,
-			ConstrainedPathFinder pathFinder,
-			ConstraintsComparer constraintsComparer,
-			PathAggregator pathAggregator);
+	ConstrainedSteinerTreeFinder createConstrainedPathAggr(
+			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator);
 
-	ConstrainedSteinerTreeFinder createHmcmc(ConstraintsComparer constraintsComparer,
+	ConstrainedSteinerTreeFinder createHmcmc(
+			ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
 			List<Double> constraints);
 

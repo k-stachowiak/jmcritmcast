@@ -1,6 +1,5 @@
 package impossible.tfind.paggr;
 
-import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.PathAggregator;
 import impossible.model.Graph;
 import impossible.model.Node;
@@ -15,17 +14,11 @@ import java.util.List;
 public class ConstrainedPathAggrTreeFinder implements
 		ConstrainedSteinerTreeFinder {
 
-	private List<Double> constraints;
 	private final ConstrainedPathFinder pathFinder;
-	private final ConstraintsComparer constraintsComparer;
 	private final PathAggregator pathAggregator;
 
-	public ConstrainedPathAggrTreeFinder(List<Double> constraints,
-			ConstrainedPathFinder pathFinder, ConstraintsComparer constraintsComparer,
-			PathAggregator pathAggregator) {
-		this.constraints = constraints;
+	public ConstrainedPathAggrTreeFinder(ConstrainedPathFinder pathFinder, PathAggregator pathAggregator) {
 		this.pathFinder = pathFinder;
-		this.constraintsComparer = constraintsComparer;
 		this.pathAggregator = pathAggregator;
 	}
 
@@ -42,8 +35,7 @@ public class ConstrainedPathAggrTreeFinder implements
 		List<Path> paths = new ArrayList<>();
 		for (Node destination : destinations) {
 			Path path = pathFinder.find(graph, source, destination);
-			if (path == null
-					|| !constraintsComparer.fulfilsAll(path, constraints))
+			if (path == null)
 				return null;
 			paths.add(path);
 		}

@@ -7,6 +7,7 @@ import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
 import impossible.pfnd.dkstr.DijkstraRelaxation;
 import impossible.pfnd.hmcp.HmcpPathFinder;
+import impossible.pfnd.lbpsa.LbpsaPathFinder;
 import impossible.pfnd.mlarac.LambdaEstimator;
 import impossible.pfnd.mlarac.LinearCombinationMetricProvider;
 import impossible.pfnd.mlarac.MlaracPathFinder;
@@ -54,5 +55,12 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 			ConstraintsComparer constraintsComparer) {
 		return new MlaracPathFinder(constraints, pathSubstitutor,
 				lambdaEstimator, this, constraintsComparer);
+	}
+
+	@Override
+	public ConstrainedPathFinder createLbpsa(PathFinderFactory pathFinderFactory,
+			ConstraintsComparer constraintsComparer, List<Double> constraints) {
+		return new LbpsaPathFinder(pathFinderFactory, constraintsComparer,
+				constraints);
 	}
 }

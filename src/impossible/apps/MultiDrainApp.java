@@ -41,7 +41,7 @@ public class MultiDrainApp {
 		final double redistributionMin = 1;
 		final double redistributionMax = 1000;
 
-		final int graphs = 100;
+		final int graphs = 5;
 
 		final List<Integer> nodeSizes = new ArrayList<>();
 		nodeSizes.add(50);
@@ -92,6 +92,9 @@ public class MultiDrainApp {
 		ConstrainedPathFinder mlarac = pathFinderFactory.createMlarac(null,
 				pathSubstitutor, lambdaEstimator, constraintsComparer);
 
+		ConstrainedPathFinder lbpsa = pathFinderFactory.createLbpsa(
+				pathFinderFactory, constraintsComparer, null);
+
 		// Build the result.
 		// -----------------
 		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
@@ -100,8 +103,10 @@ public class MultiDrainApp {
 				constraintsComparer, pathFinderFactory, pathAggregator, null));
 
 		treeFinders.put("AGGR_MLARAC", treeFinderFactory
-				.createConstrainedPathAggr(null, mlarac, constraintsComparer,
-						pathAggregator));
+				.createConstrainedPathAggr(mlarac, pathAggregator));
+
+		treeFinders.put("AGGR_LBPSA", treeFinderFactory
+				.createConstrainedPathAggr(lbpsa, pathAggregator));
 
 		return treeFinders;
 	}

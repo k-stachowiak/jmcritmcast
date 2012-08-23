@@ -37,6 +37,8 @@ public class LbpsaBnbFinder implements PathFinder {
 		specifficCosts = new ArrayList<>();
 		for (int m = 0; m < graph.getNumMetrics(); ++m)
 			specifficCosts.add(0.0);
+		
+		feasiblePaths = new ArrayList<>();
 
 		findRecursively(graph, from, to);
 
@@ -50,8 +52,10 @@ public class LbpsaBnbFinder implements PathFinder {
 
 		int currentNodeId = currentPath.get(currentPath.size() - 1);
 		Node currentNode = graph.getNode(currentNodeId);
-		if (currentNode.equals(from))
+		if (currentNode.equals(from)) {
+			feasiblePaths.add(new ArrayList<>(currentPath));
 			return;
+		}
 
 		for (Node neighbor : graph.getNeighbors(currentNode)) {
 
@@ -97,7 +101,7 @@ public class LbpsaBnbFinder implements PathFinder {
 
 		double weightedConstraints = 0.0;
 		for (int m = 1; m < numMetrics; ++m) {
-			weightedConstraints += feasibleFinder.getLambdas().get(m)
+			weightedConstraints += feasibleFinder.getLambdas().get(m - 1)
 					* feasibleFinder.getConstraints().get(m - 1);
 		}
 

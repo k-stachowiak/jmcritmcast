@@ -15,12 +15,9 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 	@Override
 	public ConstrainedSteinerTreeFinder createConstrainedPathAggr(
-			List<Double> constraints, ConstrainedPathFinder pathFinder,
-			ConstraintsComparer constraintsComparer,
-			PathAggregator pathAggregator) {
+			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator) {
 
-		return new ConstrainedPathAggrTreeFinder(constraints, pathFinder,
-				constraintsComparer, pathAggregator);
+		return new ConstrainedPathAggrTreeFinder(pathFinder, pathAggregator);
 	}
 
 	@Override

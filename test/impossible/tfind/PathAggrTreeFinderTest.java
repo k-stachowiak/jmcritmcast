@@ -1,8 +1,6 @@
 package impossible.tfind;
 
 import static org.junit.Assert.assertEquals;
-import impossible.helpers.ConstraintsComparer;
-import impossible.helpers.ConstraintsComparerImpl;
 import impossible.helpers.PathAggregator;
 import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.metrprov.IndexMetricProvider;
@@ -41,7 +39,6 @@ public class PathAggrTreeFinderTest {
 
 		// Strategies
 		MetricProvider metricProvider = new IndexMetricProvider(0);
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
 
 		// Factories.
 		GraphFactory graphFactory = new AdjacencyListFactory();
@@ -49,7 +46,8 @@ public class PathAggrTreeFinderTest {
 		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
 
 		// Finders.
-		ConstrainedPathFinder pathFinder = pathFinderFactory.createHmcp(constraints);
+		ConstrainedPathFinder pathFinder = pathFinderFactory
+				.createHmcp(constraints);
 
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
@@ -115,8 +113,7 @@ public class PathAggrTreeFinderTest {
 		// Case.
 		// -----
 		SteinerTreeFinder steinerTreeFinder = treeFinderFactory
-				.createConstrainedPathAggr(constraints, pathFinder,
-						constraintsComparer, pathAggregator);
+				.createConstrainedPathAggr(pathFinder, pathAggregator);
 
 		Tree actualTree = steinerTreeFinder.find(graph, group);
 
