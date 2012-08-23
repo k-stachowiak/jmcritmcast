@@ -2,7 +2,7 @@ package impossible.helpers.metrprov;
 
 import impossible.model.Edge;
 
-public class IndexMetricProvider implements MetricProvider {
+public class IndexMetricProvider extends MetricProvider {
 
 	private final int index;
 

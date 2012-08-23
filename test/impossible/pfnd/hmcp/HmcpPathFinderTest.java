@@ -64,7 +64,7 @@ public class HmcpPathFinderTest {
 		Path expectedPath = new Path(graph, expectedNodes);
 
 		// Instantiate SUT.
-		PathFinder sut = pathFinderFactory.CreateHmcp(constraints);
+		PathFinder sut = pathFinderFactory.createHmcp(constraints);
 
 		// Exercise SUT.
 		Path actualPath = sut.find(graph, graph.getNode(0), graph.getNode(5));

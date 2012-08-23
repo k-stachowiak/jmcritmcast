@@ -29,7 +29,7 @@ public class HmcpPathFinder implements PathFinder {
 				constraints);
 
 		PathFinder reversePathFinder = pathFinderFactory
-				.CreateDijkstra(reverseDijkstraRelaxation);
+				.createDijkstra(reverseDijkstraRelaxation);
 
 		if (reversePathFinder.find(graph, to, from) == null)
 			return null;
@@ -44,7 +44,7 @@ public class HmcpPathFinder implements PathFinder {
 				constraints, reverseDijkstraRelaxation);
 
 		PathFinder lookAheadPathFinder = pathFinderFactory
-				.CreateDijkstra(lookAheadDijkstraRelaxation);
+				.createDijkstra(lookAheadDijkstraRelaxation);
 
 		Path path = lookAheadPathFinder.find(graph, from, to);
 		if (path == null)

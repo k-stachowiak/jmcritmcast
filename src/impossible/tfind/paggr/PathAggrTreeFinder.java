@@ -42,7 +42,7 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 		for (Node destination : destinations) {
 			Path path = pathFinder.find(graph, source, destination);
 			if (path == null
-					|| !constraintsComparer.fulfilsConstraints(path,
+					|| !constraintsComparer.fulfilsAll(path,
 							constraints))
 				return null;
 			paths.add(path);

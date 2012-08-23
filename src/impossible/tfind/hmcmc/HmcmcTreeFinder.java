@@ -40,7 +40,7 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 				constraints);
 
 		PathFinder partialFinder = pathFinderFactory
-				.CreateDijkstra(partialRelaxation);
+				.createDijkstra(partialRelaxation);
 
 		// Perform any find from source to setup the labels.
 		if (partialFinder.find(graph, source, spanned.get(1)) == null)
@@ -54,7 +54,7 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 					spanned.get(d));
 
 			if (path == null
-					|| !constraintsComparer.fulfilsConstraints(path,
+					|| !constraintsComparer.fulfilsAll(path,
 							constraints))
 				failedDestinations.add(spanned.get(d));
 			else
@@ -68,12 +68,12 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 
 		// Try optimizing.
 		// ---------------
-		PathFinder hmcp = pathFinderFactory.CreateHmcp(constraints);
+		PathFinder hmcp = pathFinderFactory.createHmcp(constraints);
 		for (Node failed : failedDestinations) {
 			Path path = hmcp.find(graph, source, failed);
 
 			if (path == null
-					|| !constraintsComparer.fulfilsConstraints(path,
+					|| !constraintsComparer.fulfilsAll(path,
 							constraints))
 				return null;
 

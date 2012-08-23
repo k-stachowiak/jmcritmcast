@@ -92,7 +92,7 @@ public class MultiDrain {
 		constraintsComparer = new ConstraintsComparerImpl();		
 
 		helperSpanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
-		helperPathFinder = pathFinderFactory.CreateDijkstraIndex(0);
+		helperPathFinder = pathFinderFactory.createDijkstraIndex(0);
 		
 		pathAggregator = new PathAggregatorImpl(helperSpanningTreeFinder);
 

@@ -26,7 +26,7 @@ public class DijkstraPathFinderTest {
 
 		// Prepare utilities.
 		PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-		PathFinder pathFinder = pathFinderFactory.CreateDijkstraIndex(0);
+		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
 		GraphFactory graphFactory = new AdjacencyListFactory();
 
 		// Prepare model.

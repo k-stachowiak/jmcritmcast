@@ -63,6 +63,14 @@ public class SubGraph {
 		return edgeDefinitions;
 	}
 
+	public List<Edge> getEdges() {
+		List<Edge> result = new ArrayList<>();
+		for (EdgeDefinition edgeDefinition : edgeDefinitions)
+			result.add(parent.getEdge(edgeDefinition.getFrom(),
+					edgeDefinition.getTo()));
+		return result;
+	}
+
 	public int getNumEdges() {
 		return edgeDefinitions.size();
 	}

@@ -45,7 +45,7 @@ public class PathAggrTreeFinderTest {
 		GroupConstraintsChooser constraintsChooser = new FengGroupConstraintsChooser(
 				0.9, pathFinderFactory);
 
-		PathFinder pathFinder = pathFinderFactory.CreateDijkstraIndex(0);
+		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
 
@@ -87,7 +87,7 @@ public class PathAggrTreeFinderTest {
 		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
 
 		// Finders.
-		PathFinder pathFinder = pathFinderFactory.CreateDijkstraIndex(0);
+		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
 
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);

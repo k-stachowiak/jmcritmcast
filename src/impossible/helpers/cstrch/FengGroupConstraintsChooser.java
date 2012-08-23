@@ -53,7 +53,7 @@ public class FengGroupConstraintsChooser implements GroupConstraintsChooser {
 		for (int m = 0; m < M; ++m) {
 
 			Node root = group.get(0);
-			PathFinder pathFinder = pathFinderFactory.CreateDijkstraIndex(m);
+			PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(m);
 
 			for (int n = 1; n < group.size(); ++n) {
 				Path path = pathFinder.find(graph, root, group.get(n));
