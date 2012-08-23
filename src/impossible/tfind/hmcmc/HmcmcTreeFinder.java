@@ -9,17 +9,17 @@ import impossible.model.Tree;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.dkstr.DijkstraRelaxation;
-import impossible.tfind.SteinerTreeFinder;
+import impossible.tfind.ConstrainedSteinerTreeFinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HmcmcTreeFinder implements SteinerTreeFinder {
+public class HmcmcTreeFinder implements ConstrainedSteinerTreeFinder {
 
 	private final ConstraintsComparer constraintsComparer;
 	private final PathFinderFactory pathFinderFactory;
 	private final PathAggregator pathAggregator;
-	private final List<Double> constraints;
+	private List<Double> constraints;
 
 	public HmcmcTreeFinder(ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
@@ -54,8 +54,7 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 					spanned.get(d));
 
 			if (path == null
-					|| !constraintsComparer.fulfilsAll(path,
-							constraints))
+					|| !constraintsComparer.fulfilsAll(path, constraints))
 				failedDestinations.add(spanned.get(d));
 			else
 				paths.add(path);
@@ -73,13 +72,17 @@ public class HmcmcTreeFinder implements SteinerTreeFinder {
 			Path path = hmcp.find(graph, source, failed);
 
 			if (path == null
-					|| !constraintsComparer.fulfilsAll(path,
-							constraints))
+					|| !constraintsComparer.fulfilsAll(path, constraints))
 				return null;
 
 			paths.add(path);
 		}
 
 		return pathAggregator.aggregate(graph, source, paths);
+	}
+
+	@Override
+	public void setConstraints(List<Double> constraints) {
+		this.constraints = new ArrayList<>(constraints);
 	}
 }

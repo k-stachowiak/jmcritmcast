@@ -1,12 +1,12 @@
 package impossible.pfnd.mlarac;
 
 import impossible.helpers.ConstraintsComparer;
-import impossible.helpers.TopologyDebug;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
@@ -16,9 +16,9 @@ import impossible.pfnd.dkstr.DijkstraRelaxation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MlaracPathFinder implements PathFinder {
+public class MlaracPathFinder implements ConstrainedPathFinder {
 
-	private final List<Double> constraints;
+	private List<Double> constraints;
 	private final PathSubstiutor pathSubstitutor;
 	private final LambdaEstimator lambdaEstimator;
 	private final PathFinderFactory pathFinderFactory;
@@ -121,6 +121,11 @@ public class MlaracPathFinder implements PathFinder {
 			return null;
 
 		return approximations.get(approximations.size() - 1);
+	}
+
+	@Override
+	public void setConstraints(List<Double> constraints) {
+		this.constraints = new ArrayList<>(constraints);
 	}
 
 	private boolean peakReached(List<Path> nonExceedingPaths,

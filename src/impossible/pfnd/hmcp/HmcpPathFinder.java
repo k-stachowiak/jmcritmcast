@@ -3,16 +3,17 @@ package impossible.pfnd.hmcp;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
-public class HmcpPathFinder implements PathFinder {
+public class HmcpPathFinder implements ConstrainedPathFinder {
 
 	PathFinderFactory pathFinderFactory;
-	private final List<Double> constraints;
+	private List<Double> constraints;
 
 	public HmcpPathFinder(PathFinderFactory pathFinderFactory,
 			List<Double> constraints) {
@@ -55,5 +56,10 @@ public class HmcpPathFinder implements PathFinder {
 			return null;
 
 		return path;
+	}
+
+	@Override
+	public void setConstraints(List<Double> constraints) {
+		this.constraints = new ArrayList<>(constraints);
 	}
 }

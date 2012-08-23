@@ -1,6 +1,5 @@
 package impossible.helpers;
 
-import impossible.model.Path;
 import impossible.model.SubGraph;
 
 import java.util.List;

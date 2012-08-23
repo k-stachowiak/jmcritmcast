@@ -1,17 +1,12 @@
 package impossible.tfind;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.ConstraintsComparerImpl;
 import impossible.helpers.PathAggregator;
 import impossible.helpers.PathAggregatorImpl;
-import impossible.helpers.cstrch.FengGroupConstraintsChooser;
-import impossible.helpers.cstrch.GroupConstraintsChooser;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.helpers.nodegrp.NodeGroupper;
-import impossible.helpers.nodegrp.RandomNodeGroupper;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Edge;
 import impossible.model.EdgeDefinition;
@@ -19,52 +14,16 @@ import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
 import impossible.model.Tree;
-import impossible.pfnd.PathFinder;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.Test;
 
 public class PathAggrTreeFinderTest {
-
-	@Test
-	public void testFindTestGraph() {
-
-		Random random = new Random(0);
-
-		GraphFactory graphFactory = new AdjacencyListFactory();
-		PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
-
-		MetricProvider metricProvider = new IndexMetricProvider(0);
-		final NodeGroupper nodeGroupper = new RandomNodeGroupper(random);
-		GroupConstraintsChooser constraintsChooser = new FengGroupConstraintsChooser(
-				0.9, pathFinderFactory);
-
-		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
-		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
-				.createPrim(metricProvider);
-
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
-		PathAggregator pathAggregator = new PathAggregatorImpl(
-				spanningTreeFinder);
-
-		Graph graph = graphFactory.createTest();
-
-		List<Node> group = nodeGroupper.group(graph, 3);
-		List<Double> constraints = constraintsChooser.choose(graph, group);
-
-		SteinerTreeFinder treeFinder = treeFinderFactory.createPathAggr(
-				constraints, pathFinder, constraintsComparer, pathAggregator);
-
-		Tree tree = treeFinder.find(graph, group);
-
-		assertNotNull(tree);
-	}
 
 	@Test
 	public void testFind() {
@@ -73,6 +32,9 @@ public class PathAggrTreeFinderTest {
 		// ----------
 		double CHEAP_METRIC = 10.0;
 		double EXPENSIVE_METRIC = 1000.0;
+
+		List<Double> constraints = new ArrayList<>();
+		constraints.add(4 * CHEAP_METRIC);
 
 		// Helpers.
 		// --------
@@ -87,7 +49,7 @@ public class PathAggrTreeFinderTest {
 		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
 
 		// Finders.
-		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
+		ConstrainedPathFinder pathFinder = pathFinderFactory.createHmcp(constraints);
 
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
@@ -133,9 +95,6 @@ public class PathAggrTreeFinderTest {
 		edges.add(new Edge(4, 8, expensiveMetrics));
 		edges.add(new Edge(5, 7, expensiveMetrics));
 
-		List<Double> constraints = new ArrayList<>();
-		constraints.add(4 * CHEAP_METRIC);
-
 		Graph graph = graphFactory.createFromLists(nodes, edges);
 
 		List<Node> group = new ArrayList<>();
@@ -155,8 +114,9 @@ public class PathAggrTreeFinderTest {
 
 		// Case.
 		// -----
-		SteinerTreeFinder steinerTreeFinder = treeFinderFactory.createPathAggr(
-				constraints, pathFinder, constraintsComparer, pathAggregator);
+		SteinerTreeFinder steinerTreeFinder = treeFinderFactory
+				.createConstrainedPathAggr(constraints, pathFinder,
+						constraintsComparer, pathAggregator);
 
 		Tree actualTree = steinerTreeFinder.find(graph, group);
 

@@ -3,18 +3,18 @@ package impossible.tfind;
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.PathAggregator;
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.pfnd.PathFinder;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 
 import java.util.List;
 
 public interface TreeFinderFactory {
-	SteinerTreeFinder createPathAggr(List<Double> constraints,
-			PathFinder pathFinder, ConstraintsComparer constraintsComparer,
-			PathAggregator pathAggregator);
-	
-	SteinerTreeFinder createHmcmc(
+	ConstrainedSteinerTreeFinder createConstrainedPathAggr(List<Double> constraints,
+			ConstrainedPathFinder pathFinder,
 			ConstraintsComparer constraintsComparer,
+			PathAggregator pathAggregator);
+
+	ConstrainedSteinerTreeFinder createHmcmc(ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
 			List<Double> constraints);
 

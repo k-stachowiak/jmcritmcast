@@ -16,9 +16,9 @@ public interface PathFinderFactory {
 	PathFinder createLinearCombinationDijkstra(int offset,
 			List<Double> constraints, List<Double> lambdas);
 
-	PathFinder createHmcp(List<Double> constraints);
+	ConstrainedPathFinder createHmcp(List<Double> constraints);
 
-	PathFinder createMlarac(List<Double> constraints,
+	ConstrainedPathFinder createMlarac(List<Double> constraints,
 			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			ConstraintsComparer constraintsComparer);
 

@@ -44,12 +44,12 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 	}
 
 	@Override
-	public PathFinder createHmcp(List<Double> constraints) {
+	public ConstrainedPathFinder createHmcp(List<Double> constraints) {
 		return new HmcpPathFinder(this, constraints);
 	}
 
 	@Override
-	public PathFinder createMlarac(List<Double> constraints,
+	public ConstrainedPathFinder createMlarac(List<Double> constraints,
 			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			ConstraintsComparer constraintsComparer) {
 		return new MlaracPathFinder(constraints, pathSubstitutor,

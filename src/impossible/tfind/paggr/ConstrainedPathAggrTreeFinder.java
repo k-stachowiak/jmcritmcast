@@ -6,21 +6,22 @@ import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
 import impossible.model.Tree;
-import impossible.pfnd.PathFinder;
-import impossible.tfind.SteinerTreeFinder;
+import impossible.pfnd.ConstrainedPathFinder;
+import impossible.tfind.ConstrainedSteinerTreeFinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathAggrTreeFinder implements SteinerTreeFinder {
+public class ConstrainedPathAggrTreeFinder implements
+		ConstrainedSteinerTreeFinder {
 
-	private final List<Double> constraints;
-	private final PathFinder pathFinder;
+	private List<Double> constraints;
+	private final ConstrainedPathFinder pathFinder;
 	private final ConstraintsComparer constraintsComparer;
 	private final PathAggregator pathAggregator;
 
-	public PathAggrTreeFinder(List<Double> constraints, PathFinder pathFinder,
-			ConstraintsComparer constraintsComparer,
+	public ConstrainedPathAggrTreeFinder(List<Double> constraints,
+			ConstrainedPathFinder pathFinder, ConstraintsComparer constraintsComparer,
 			PathAggregator pathAggregator) {
 		this.constraints = constraints;
 		this.pathFinder = pathFinder;
@@ -42,8 +43,7 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 		for (Node destination : destinations) {
 			Path path = pathFinder.find(graph, source, destination);
 			if (path == null
-					|| !constraintsComparer.fulfilsAll(path,
-							constraints))
+					|| !constraintsComparer.fulfilsAll(path, constraints))
 				return null;
 			paths.add(path);
 		}
@@ -52,5 +52,10 @@ public class PathAggrTreeFinder implements SteinerTreeFinder {
 		Tree result = pathAggregator.aggregate(graph, source, paths);
 
 		return result;
+	}
+
+	@Override
+	public void setConstraints(List<Double> constraints) {
+		pathFinder.setConstraints(constraints);
 	}
 }
