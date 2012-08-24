@@ -20,50 +20,112 @@ import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.TreeFinderFactory;
 import impossible.tfind.TreeFinderFactoryImpl;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class MultiDrainApp {
 
-	public static void main(String[] args) {
+	static long randomSeed;
+	static double fengDelta;
+	static double baseBandwidth;
+	static double drainedBandwidth;
+	static String topologiesDirecotry;
+	static String topology;
+	static int graphsInFile;
+	static double redistributionMin;
+	static double redistributionMax;
+	static int graphs;
+	static List<Integer> nodeSizes;
+	static List<Integer> criteriaCounts;
+	static List<Integer> groupSizes;
 
-		final long randomSeed = 1L;
-		final double fengDelta = 0.9;
-		final double baseBandwidth = 10000.0;
-		final double drainedBandwidth = 100.0;
+	private static boolean readConfig() {
 
-		final String topologiesDirecotry = "data/new";
-		final String topology = "ASBarabasi";
-		final int graphsInFile = 1000;
+		Properties properties = new Properties();
+		FileInputStream fis;
 
-		final double redistributionMin = 1;
-		final double redistributionMax = 1000;
+		// Read and parse config file.
+		// ---------------------------
+		try {
+			fis = new FileInputStream("config");
+			properties.load(fis);
 
-		final int graphs = 200;
+		} catch (FileNotFoundException e) {
+			System.err.println("Exception: Configuration file not found.");
+			return false;
 
-		final List<Integer> nodeSizes = new ArrayList<>();
-		nodeSizes.add(50);
-		nodeSizes.add(100);
+		} catch (IOException e) {
+			System.err.println("Exception: Error loading configuration file.");
+			return false;
 
-		final List<Integer> criteriaCounts = new ArrayList<>();
-		criteriaCounts.add(2);
-		criteriaCounts.add(3);
+		}
 
-		final List<Integer> groupSizes = new ArrayList<>();
-		groupSizes.add(12);
-		groupSizes.add(25);
-		groupSizes.add(50);
+		// Peal out numeric values and collections.
+		// ----------------------------------------
+		try {
+			randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
+			fengDelta = Double.parseDouble(properties.getProperty("fengDelta"));
+			baseBandwidth = Double.parseDouble(properties
+					.getProperty("baseBandwidth"));
+			drainedBandwidth = Double.parseDouble(properties
+					.getProperty("drainedBandwidth"));
+			graphsInFile = Integer.parseInt(properties
+					.getProperty("graphsInFile"));
+			redistributionMin = Double.parseDouble(properties
+					.getProperty("redistributionMin"));
+			redistributionMax = Double.parseDouble(properties
+					.getProperty("redistributionMax"));
+			graphs = Integer.parseInt(properties.getProperty("graphs"));
 
-		Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeTreeFinders();
+			String nssStr = properties.getProperty("nodeSizes");
+			String[] nss = nssStr.split(",");
+			nodeSizes = new ArrayList<>();
+			for (String ns : nss)
+				nodeSizes.add(Integer.parseInt(ns));
 
-		final MultiDrainSetup setup = new MultiDrainSetup(randomSeed,
-				fengDelta, baseBandwidth, drainedBandwidth, graphs, nodeSizes,
-				criteriaCounts, groupSizes, topologiesDirecotry, topology,
-				graphsInFile, redistributionMin, redistributionMax, treeFinders);
+			String ccsStr = properties.getProperty("criteriaCounts");
+			String[] ccs = ccsStr.split(",");
+			criteriaCounts = new ArrayList<>();
+			for (String cc : ccs)
+				criteriaCounts.add(Integer.parseInt(cc));
 
-		new MultiDrain(setup).run(args);
+			String gssStr = properties.getProperty("groupSizes");
+			String[] gss = gssStr.split(",");
+			groupSizes = new ArrayList<>();
+			for (String gs : gss)
+				groupSizes.add(Integer.parseInt(gs));
+
+		} catch (NumberFormatException ex) {
+			System.err.println("Exception: Parameter parsing error \""
+					+ ex.getMessage() + "\"");
+			return false;
+
+		}
+
+		// Read the string properties.
+		// ---------------------------
+		topologiesDirecotry = properties.getProperty("topologiesDirectory");
+		topology = properties.getProperty("topology");
+
+		if (topologiesDirecotry == null) {
+			System.err
+					.println("Exception: Error while parsing topologies directory property.");
+			return false;
+		}
+
+		if (topology == null) {
+			System.err
+					.println("Exception: Error while parsing topology property.");
+			return false;
+		}
+
+		return true;
 	}
 
 	private static Map<String, ConstrainedSteinerTreeFinder> initializeTreeFinders() {
@@ -111,6 +173,23 @@ public class MultiDrainApp {
 				.createConstrainedPathAggr(lbpsa, pathAggregator));
 
 		return treeFinders;
+	}
+
+	public static void main(String[] args) {
+
+		if (!readConfig()) {
+			System.err.println("Error in configuration file.");
+			return;
+		}
+
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeTreeFinders();
+
+		final MultiDrainSetup setup = new MultiDrainSetup(randomSeed,
+				fengDelta, baseBandwidth, drainedBandwidth, graphs, nodeSizes,
+				criteriaCounts, groupSizes, topologiesDirecotry, topology,
+				graphsInFile, redistributionMin, redistributionMax, treeFinders);
+
+		new MultiDrain(setup).run(args, System.out);
 	}
 
 }

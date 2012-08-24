@@ -30,6 +30,8 @@ import impossible.tfind.TreeFinderFactoryImpl;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +92,7 @@ public class MultiDrain {
 		this.setup = setup;
 	}
 
-	public void run(String[] args) {
+	public void run(String[] args, OutputStream out) {
 
 		StringBuilder result = new StringBuilder();
 
@@ -113,7 +115,9 @@ public class MultiDrain {
 					}
 				}
 
-		System.out.print(result.toString());
+		PrintWriter printWriter = new PrintWriter(out, true);
+		printWriter.print(result.toString());
+		printWriter.close();
 	}
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
