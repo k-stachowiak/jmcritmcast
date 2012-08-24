@@ -96,12 +96,18 @@ public class MultiDrain {
 
 		StringBuilder result = new StringBuilder();
 
-		for (Integer nodeSize : setup.getNodeSizes())
-			for (Integer criteriaCount : setup.getCriteriaCounts())
+		// Cartesian product of case variables.
+		for (Integer nodeSize : setup.getNodeSizes()) {
+			System.err.println("Node count: " + nodeSize);
+			for (Integer criteriaCount : setup.getCriteriaCounts()) {
+				System.err.println("Criteria count: " + criteriaCount);
 				for (Integer groupSize : setup.getGroupSizes()) {
+					System.err.println("Group size: " + groupSize);
 					for (Map.Entry<String, ConstrainedSteinerTreeFinder> entry : treeFinders
 							.entrySet()) {
 
+						System.err.println("Alg: " + entry.getKey());
+						
 						String partialResult = experiment(nodeSize,
 								criteriaCount, groupSize, setup.getGraphs(),
 								entry.getKey(), entry.getValue());
@@ -110,14 +116,18 @@ public class MultiDrain {
 							System.err.println("Experiment failed.");
 							return;
 						}
-
+						
 						result.append(partialResult);
 					}
-				}
+				}				
+			}
+		}
 
 		PrintWriter printWriter = new PrintWriter(out, true);
 		printWriter.print(result.toString());
 		printWriter.close();
+		
+		System.err.println("Terminated normally");
 	}
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
