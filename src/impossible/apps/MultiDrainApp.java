@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class MultiDrainApp {
 	static List<Integer> nodeSizes;
 	static List<Integer> criteriaCounts;
 	static List<Integer> groupSizes;
+	static List<String> algNames;
 
 	private static boolean readConfig() {
 
@@ -112,6 +114,7 @@ public class MultiDrainApp {
 		// ---------------------------
 		topologiesDirecotry = properties.getProperty("topologiesDirectory");
 		topology = properties.getProperty("topology");
+		String ansStr = properties.getProperty("algNames");
 
 		if (topologiesDirecotry == null) {
 			System.err
@@ -125,10 +128,18 @@ public class MultiDrainApp {
 			return false;
 		}
 
+		if (ansStr == null) {
+			System.err
+					.println("Exception: Error while parsing algorithm names property.");
+			return false;
+		}
+
+		algNames = new ArrayList<>(Arrays.asList(ansStr.split(",")));
+
 		return true;
 	}
 
-	private static Map<String, ConstrainedSteinerTreeFinder> initializeTreeFinders() {
+	private static Map<String, ConstrainedSteinerTreeFinder> initializeAllTreeFinders() {
 
 		// Factories.
 		// ----------
@@ -163,13 +174,13 @@ public class MultiDrainApp {
 		// -----------------
 		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
-		treeFinders.put("HMCMC      ", treeFinderFactory.createHmcmc(
+		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator, null));
 
 		treeFinders.put("AGGR_MLARAC", treeFinderFactory
 				.createConstrainedPathAggr(mlarac, pathAggregator));
 
-		treeFinders.put("AGGR_LBPSA ", treeFinderFactory
+		treeFinders.put("AGGR_LBPSA", treeFinderFactory
 				.createConstrainedPathAggr(lbpsa, pathAggregator));
 
 		return treeFinders;
@@ -177,17 +188,30 @@ public class MultiDrainApp {
 
 	public static void main(String[] args) {
 
+		// Parse the config file.
+		// ----------------------
 		if (!readConfig()) {
 			System.err.println("Error in configuration file.");
 			return;
 		}
 
-		Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeTreeFinders();
+		// Generate and filter the finders list.
+		// -------------------------------------
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeAllTreeFinders();
+		Map<String, ConstrainedSteinerTreeFinder> filteredTreeFinders = new HashMap<>();
+		for (Map.Entry<String, ConstrainedSteinerTreeFinder> entry : treeFinders
+				.entrySet()) {
+			if (algNames.contains(entry.getKey()))
+				filteredTreeFinders.put(entry.getKey(), entry.getValue());
+		}
 
+		// Build a setup definition for the application and run it.
+		// --------------------------------------------------------
 		final MultiDrainSetup setup = new MultiDrainSetup(randomSeed,
 				fengDelta, baseBandwidth, drainedBandwidth, graphs, nodeSizes,
 				criteriaCounts, groupSizes, topologiesDirecotry, topology,
-				graphsInFile, redistributionMin, redistributionMax, treeFinders);
+				graphsInFile, redistributionMin, redistributionMax,
+				filteredTreeFinders);
 
 		new MultiDrain(setup).run(args, System.out);
 	}
