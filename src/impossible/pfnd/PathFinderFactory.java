@@ -13,8 +13,7 @@ public interface PathFinderFactory {
 
 	PathFinder createDijkstraIndex(int m);
 
-	PathFinder createLinearCombinationDijkstra(int offset,
-			List<Double> constraints, List<Double> lambdas);
+	PathFinder createLinearCombinationDijkstra(int offset, List<Double> lambdas);
 
 	ConstrainedPathFinder createHmcp(List<Double> constraints);
 
@@ -22,6 +21,5 @@ public interface PathFinderFactory {
 			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			ConstraintsComparer constraintsComparer);
 
-	ConstrainedPathFinder createLbpsa(PathFinderFactory pathFinderFactory,
-			ConstraintsComparer constraintsComparer, List<Double> constraints);
+	ConstrainedPathFinder createLbpsa(ConstraintsComparer constraintsComparer, List<Double> constraints);
 }

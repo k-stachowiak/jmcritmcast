@@ -168,7 +168,7 @@ public class MultiDrainApp {
 				pathSubstitutor, lambdaEstimator, constraintsComparer);
 
 		ConstrainedPathFinder lbpsa = pathFinderFactory.createLbpsa(
-				pathFinderFactory, constraintsComparer, null);
+				constraintsComparer, null);
 
 		// Build the result.
 		// -----------------

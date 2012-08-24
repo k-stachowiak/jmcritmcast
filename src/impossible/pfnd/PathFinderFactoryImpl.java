@@ -34,11 +34,10 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 	}
 
 	@Override
-	public PathFinder createLinearCombinationDijkstra(int offset,
-			List<Double> constraints, List<Double> lambdas) {
+	public PathFinder createLinearCombinationDijkstra(int offset, List<Double> lambdas) {
 
 		MetricProvider metricProvider = new LinearCombinationMetricProvider(
-				offset, constraints, lambdas);
+				offset, lambdas);
 		DijkstraRelaxation dijkstraRelaxation = new DefaultDijkstraRelaxation(
 				metricProvider);
 		return new DijkstraPathFinder(dijkstraRelaxation);
@@ -58,9 +57,8 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 	}
 
 	@Override
-	public ConstrainedPathFinder createLbpsa(PathFinderFactory pathFinderFactory,
+	public ConstrainedPathFinder createLbpsa(
 			ConstraintsComparer constraintsComparer, List<Double> constraints) {
-		return new LbpsaPathFinder(pathFinderFactory, constraintsComparer,
-				constraints);
+		return new LbpsaPathFinder(this, constraintsComparer, constraints);
 	}
 }

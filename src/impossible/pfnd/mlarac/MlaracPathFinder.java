@@ -85,7 +85,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 				break;
 
 			PathFinder linearCombinationDijkstra = pathFinderFactory
-					.createLinearCombinationDijkstra(1, constraints, lambdas);
+					.createLinearCombinationDijkstra(1, lambdas);
 
 			// Find candidate.
 			Path candidate = linearCombinationDijkstra.find(graph, from, to);
@@ -137,7 +137,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 			Path exceedingPath, List<Double> lambdas) {
 
 		MetricProvider linearCombinationMetricProvider = new LinearCombinationMetricProvider(
-				1, lambdas, constraints);
+				1, lambdas);
 
 		double previousCost = linearCombinationMetricProvider
 				.getAdditive(exceedingPath);

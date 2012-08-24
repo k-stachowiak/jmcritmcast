@@ -21,11 +21,8 @@ public class LbpsaBnbFinder implements PathFinder {
 	private List<List<Integer>> feasiblePaths;
 
 	public LbpsaBnbFinder(LbpsaFeasibleFinder feasibleFinder) {
-
 		this.feasibleFinder = feasibleFinder;
-
-		feasibleMetricProvider = new LinearCombinationMetricProvider(1,
-				feasibleFinder.getConstraints(), feasibleFinder.getLambdas());
+		feasibleMetricProvider = new LinearCombinationMetricProvider(1, feasibleFinder.getLambdas());
 	}
 
 	@Override
@@ -49,18 +46,29 @@ public class LbpsaBnbFinder implements PathFinder {
 	}
 
 	private void findRecursively(Graph graph, Node from, Node to) {
+		
+		System.out.println("Recursion step.");		
 
 		int currentNodeId = currentPath.get(currentPath.size() - 1);
+		
+		System.out.println("Current node " + currentNodeId);
+		
 		Node currentNode = graph.getNode(currentNodeId);
 		if (currentNode.equals(from)) {
+			System.out.println("Reached destination");
 			feasiblePaths.add(new ArrayList<>(currentPath));
 			return;
 		}
 
 		for (Node neighbor : graph.getNeighbors(currentNode)) {
+			
+			System.out.println("Considering neighbor : " + neighbor.getId());
 
-			if (currentPath.contains(neighbor.getId()))
+			if (currentPath.contains(neighbor.getId())) {
+				System.out.println("Already in tree");
 				continue;
+			}
+				
 
 			Edge edge = graph.getEdge(currentNode.getId(), neighbor.getId());
 
@@ -69,9 +77,12 @@ public class LbpsaBnbFinder implements PathFinder {
 						+ edge.getMetrics().get(m));
 
 			if (checkConditions(neighbor, edge, graph.getNumMetrics())) {
+				System.out.println("Conditions fulfiled.");
 				currentPath.add(neighbor.getId());
 				findRecursively(graph, from, to);
 				currentPath.remove(currentPath.size() - 1);
+			} else {
+				System.out.println("Conditions not fulfiled.");
 			}
 
 			for (int m = 0; m < graph.getNumMetrics(); ++m)
@@ -110,12 +121,18 @@ public class LbpsaBnbFinder implements PathFinder {
 		// Condition 3:
 		boolean cnd3 = aggrSoFar + aggrReverse < upperBound
 				+ weightedConstraints;
+		
+		System.out.println("Condition 3 : " + cnd3);
+		
 		if (!cnd3)
 			return false;
 
 		// Condition 1:
 		boolean cnd1 = fwdEdge.getMetrics().get(0)
 				+ revEdge.getMetrics().get(0) <= upperBound;
+		
+		System.out.println("Condition 1 : " + cnd3);
+		
 		if (!cnd1)
 			return false;
 
@@ -131,6 +148,8 @@ public class LbpsaBnbFinder implements PathFinder {
 				break;
 			}
 		}
+		
+		System.out.println("Condition 2 : " + cnd2);
 
 		return cnd2;
 	}

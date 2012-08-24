@@ -52,19 +52,30 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 
 		upperBound = initUb(graph);
 
-		currentLambdas = iterationLoop(graph, from, to, currentLambdas, upperBound);
+		currentLambdas = iterationLoop(graph, from, to, currentLambdas);
 
-		PathFinder pathFinder = initFinder(1, constraints, currentLambdas);
+		PathFinder pathFinder = initFinder(1, currentLambdas);
 
 		Path path = pathFinder.find(graph, from, to);
 		if (constraintsComparer.fulfilsAll(path, constraints)) {
-			upperBound = path.getMetrics().get(0);
+			
+			MetricProvider metricProvider = new LinearCombinationMetricProvider(
+					1, currentLambdas);
+			
+			upperBound = metricProvider.getAdditive(path);
+			
 			specifficMetrics = new HashMap<>(currentRelaxation.getLabels());
 			lambdas = currentLambdas;
 
+			{
+				
+				System.out.println("Lower bound = "
+						+ metricProvider.getAdditive(path) + ", Upper bound = "
+						+ upperBound);
+			}
+
 			return path;
 		}
-
 		return null;
 	}
 
@@ -97,20 +108,16 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 		return sum;
 	}
 
-	private PathFinder initFinder(int i, List<Double> constraints2,
-			List<Double> currentLambdas) {
+	private PathFinder initFinder(int i, List<Double> currentLambdas) {
 
 		MetricProvider metricProvider = new LinearCombinationMetricProvider(1,
-				constraints, currentLambdas);
-
-		currentRelaxation = new DefaultDijkstraRelaxation(
-				metricProvider);
-
+				currentLambdas);
+		currentRelaxation = new DefaultDijkstraRelaxation(metricProvider);
 		return pathFinderFactory.createDijkstra(currentRelaxation);
 	}
 
 	private List<Double> iterationLoop(Graph graph, Node from, Node to,
-			List<Double> currentLambdas, Double currentUpperBound) {
+			List<Double> currentLambdas) {
 
 		double lk = 2.0;
 		double prevL = Double.NaN;
@@ -118,22 +125,30 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 		int iterationsSinceLChange = 0;
 		int passes = 0;
 
-		MetricProvider metricProvider = new LinearCombinationMetricProvider(1,
-				currentLambdas, constraints);
-
 		List<Double> result = new ArrayList<>(currentLambdas);
 
 		while (true) {
-			PathFinder pathFinder = initFinder(1, constraints, currentLambdas);
+			PathFinder pathFinder = initFinder(1, result);
 			Path path = pathFinder.find(graph, from, to);
 
-			if (path != null
-					&& constraintsComparer.fulfilsAll(path, constraints))
+			/*
+			if (constraintsComparer.fulfilsAll(path, constraints)
+					&& path.getMetrics().get(0) < upperBound)
+				upperBound = path.getMetrics().get(0);
+				*/
+			
+			
+			if(path != null && constraintsComparer.fulfilsAll(path, constraints))
 				break;
+				
+
+			MetricProvider metricProvider = new LinearCombinationMetricProvider(
+					1, result);
 
 			double L = metricProvider.getAdditive(path);
 			int metric = getMaxIndex(path);
-			double step = computeStep(path, metric, lk, currentUpperBound, L);
+
+			double step = computeStep(path, metric, lk, upperBound, L);
 
 			result.set(metric - 1, result.get(metric - 1) + step);
 			if (result.get(metric - 1) < 0.0)
