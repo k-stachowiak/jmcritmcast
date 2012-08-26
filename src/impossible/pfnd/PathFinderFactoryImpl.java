@@ -2,6 +2,7 @@ package impossible.pfnd;
 
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.metrprov.IndexMetricProvider;
+import impossible.helpers.metrprov.LinearCombinationMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
@@ -9,7 +10,6 @@ import impossible.pfnd.dkstr.DijkstraRelaxation;
 import impossible.pfnd.hmcp.HmcpPathFinder;
 import impossible.pfnd.lbpsa.LbpsaPathFinder;
 import impossible.pfnd.mlarac.LambdaEstimator;
-import impossible.pfnd.mlarac.LinearCombinationMetricProvider;
 import impossible.pfnd.mlarac.MlaracPathFinder;
 import impossible.pfnd.mlarac.PathSubstiutor;
 

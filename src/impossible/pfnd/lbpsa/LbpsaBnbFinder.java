@@ -1,15 +1,15 @@
 package impossible.pfnd.lbpsa;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import impossible.helpers.metrprov.LagrangeMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.Edge;
 import impossible.model.Graph;
 import impossible.model.Node;
 import impossible.model.Path;
 import impossible.pfnd.PathFinder;
-import impossible.pfnd.mlarac.LinearCombinationMetricProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LbpsaBnbFinder implements PathFinder {
 
@@ -22,7 +22,8 @@ public class LbpsaBnbFinder implements PathFinder {
 
 	public LbpsaBnbFinder(LbpsaFeasibleFinder feasibleFinder) {
 		this.feasibleFinder = feasibleFinder;
-		feasibleMetricProvider = new LinearCombinationMetricProvider(1, feasibleFinder.getLambdas());
+		feasibleMetricProvider = new LagrangeMetricProvider(1,
+				feasibleFinder.getConstraints(), feasibleFinder.getLambdas());
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class LbpsaBnbFinder implements PathFinder {
 		specifficCosts = new ArrayList<>();
 		for (int m = 0; m < graph.getNumMetrics(); ++m)
 			specifficCosts.add(0.0);
-		
+
 		feasiblePaths = new ArrayList<>();
 
 		findRecursively(graph, from, to);
@@ -46,29 +47,18 @@ public class LbpsaBnbFinder implements PathFinder {
 	}
 
 	private void findRecursively(Graph graph, Node from, Node to) {
-		
-		System.out.println("Recursion step.");		
 
 		int currentNodeId = currentPath.get(currentPath.size() - 1);
-		
-		System.out.println("Current node " + currentNodeId);
-		
 		Node currentNode = graph.getNode(currentNodeId);
 		if (currentNode.equals(from)) {
-			System.out.println("Reached destination");
 			feasiblePaths.add(new ArrayList<>(currentPath));
 			return;
 		}
 
 		for (Node neighbor : graph.getNeighbors(currentNode)) {
-			
-			System.out.println("Considering neighbor : " + neighbor.getId());
 
-			if (currentPath.contains(neighbor.getId())) {
-				System.out.println("Already in tree");
+			if (currentPath.contains(neighbor.getId()))
 				continue;
-			}
-				
 
 			Edge edge = graph.getEdge(currentNode.getId(), neighbor.getId());
 
@@ -77,12 +67,9 @@ public class LbpsaBnbFinder implements PathFinder {
 						+ edge.getMetrics().get(m));
 
 			if (checkConditions(neighbor, edge, graph.getNumMetrics())) {
-				System.out.println("Conditions fulfiled.");
 				currentPath.add(neighbor.getId());
 				findRecursively(graph, from, to);
 				currentPath.remove(currentPath.size() - 1);
-			} else {
-				System.out.println("Conditions not fulfiled.");
 			}
 
 			for (int m = 0; m < graph.getNumMetrics(); ++m)
@@ -121,18 +108,14 @@ public class LbpsaBnbFinder implements PathFinder {
 		// Condition 3:
 		boolean cnd3 = aggrSoFar + aggrReverse < upperBound
 				+ weightedConstraints;
-		
-		System.out.println("Condition 3 : " + cnd3);
-		
+
 		if (!cnd3)
 			return false;
 
 		// Condition 1:
 		boolean cnd1 = fwdEdge.getMetrics().get(0)
 				+ revEdge.getMetrics().get(0) <= upperBound;
-		
-		System.out.println("Condition 1 : " + cnd3);
-		
+
 		if (!cnd1)
 			return false;
 
@@ -148,8 +131,6 @@ public class LbpsaBnbFinder implements PathFinder {
 				break;
 			}
 		}
-		
-		System.out.println("Condition 2 : " + cnd2);
 
 		return cnd2;
 	}

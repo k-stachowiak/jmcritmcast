@@ -1,6 +1,5 @@
-package impossible.pfnd.mlarac;
+package impossible.helpers.metrprov;
 
-import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.Edge;
 
 import java.util.List;

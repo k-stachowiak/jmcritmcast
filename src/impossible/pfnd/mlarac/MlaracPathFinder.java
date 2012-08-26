@@ -2,6 +2,7 @@ package impossible.pfnd.mlarac;
 
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.metrprov.IndexMetricProvider;
+import impossible.helpers.metrprov.LagrangeMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.Graph;
 import impossible.model.Node;
@@ -136,16 +137,14 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 	private boolean peakReached(List<Path> nonExceedingPaths,
 			Path exceedingPath, List<Double> lambdas) {
 
-		MetricProvider linearCombinationMetricProvider = new LinearCombinationMetricProvider(
-				1, lambdas);
+		MetricProvider metricProvider = new LagrangeMetricProvider(1,
+				constraints, lambdas);
 
-		double previousCost = linearCombinationMetricProvider
-				.getAdditive(exceedingPath);
+		double previousCost = metricProvider.getAdditive(exceedingPath);
 
 		for (Path nonExceedingPath : nonExceedingPaths) {
 
-			double currentCost = linearCombinationMetricProvider
-					.getAdditive(nonExceedingPath);
+			double currentCost = metricProvider.getAdditive(nonExceedingPath);
 
 			if (Math.abs(currentCost - previousCost) > 0.1)
 				return false;

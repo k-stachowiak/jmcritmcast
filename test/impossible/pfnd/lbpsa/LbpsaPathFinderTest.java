@@ -3,7 +3,6 @@ package impossible.pfnd.lbpsa;
 import static org.junit.Assert.assertEquals;
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.ConstraintsComparerImpl;
-import impossible.helpers.TopologyDebug;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
@@ -48,13 +47,11 @@ public class LbpsaPathFinderTest {
 		Path expectedPath = new Path(graph, expectedNodes);
 
 		// Instantiate SUT.
-		PathFinder pathFinder = pathFinderFactory.createLbpsa(constraintsComparer, constraints);
+		PathFinder pathFinder = pathFinderFactory.createLbpsa(
+				constraintsComparer, constraints);
 
 		// Exercise SUT.
 		Path actualPath = pathFinder.find(graph, from, to);
-		
-		TopologyDebug td = new TopologyDebug();
-		System.out.println(td.printSubGraph(actualPath));
 
 		// Assertions.
 		assertEquals(expectedPath, actualPath);
