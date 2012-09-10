@@ -3,11 +3,9 @@ package impossible.stat;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.TDistribution;
-import org.apache.commons.math.distribution.TDistributionImpl;
-import org.apache.commons.math.stat.descriptive.StatisticalSummary;
-import org.apache.commons.math.stat.descriptive.SummaryStatistics;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class StatUtilImpl implements StatUtil {
 
@@ -26,17 +24,12 @@ public class StatUtilImpl implements StatUtil {
 	private Interval confidenceInterval(StatisticalSummary sampleSummary,
 			double significance) {
 
-		TDistribution tDist = new TDistributionImpl(sampleSummary.getN() - 1);
+		TDistribution tDist = new TDistribution(sampleSummary.getN() - 1);
 
 		double a;
-		try {
 			a = tDist.inverseCumulativeProbability(1.0 - significance / 2);
 
-		} catch (MathException e) {
-			System.err
-					.println("Exception: Math error while determining confidence interval.");
-			return null;
-		}
+		
 
 		double width = a * sampleSummary.getStandardDeviation()
 				/ Math.sqrt(sampleSummary.getN());
@@ -46,9 +39,13 @@ public class StatUtilImpl implements StatUtil {
 	}
 	
 	private StatisticalSummary collToStatSum(Collection<Double> collection) {
+            
 		SummaryStatistics sampleSummary = new SummaryStatistics();
-		for (Double value : collection)
+                
+		for (Double value : collection) {
 			sampleSummary.addValue(value);
+                }
+                
 		return sampleSummary;
 	}
 

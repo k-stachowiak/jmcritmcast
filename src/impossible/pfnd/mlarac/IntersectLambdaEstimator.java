@@ -1,17 +1,15 @@
 package impossible.pfnd.mlarac;
 
 import impossible.model.Path;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.math.linear.Array2DRowRealMatrix;
-import org.apache.commons.math.linear.ArrayRealVector;
-import org.apache.commons.math.linear.DecompositionSolver;
-import org.apache.commons.math.linear.LUDecompositionImpl;
-import org.apache.commons.math.linear.RealMatrix;
-import org.apache.commons.math.linear.RealVector;
-import org.apache.commons.math.linear.SingularMatrixException;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.DecompositionSolver;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.SingularMatrixException;
 
 public class IntersectLambdaEstimator implements LambdaEstimator {
 
@@ -25,10 +23,10 @@ public class IntersectLambdaEstimator implements LambdaEstimator {
 		RealVector constants = computeConstants(constraints.size(),
 				exceedingPath, nonExceedingPaths);
 
-		DecompositionSolver solver = new LUDecompositionImpl(coefficients)
+		DecompositionSolver solver = new LUDecomposition(coefficients)
 				.getSolver();
 
-		RealVector solution = null;
+		RealVector solution;
 		try {
 			solution = solver.solve(constants);
 
@@ -38,8 +36,9 @@ public class IntersectLambdaEstimator implements LambdaEstimator {
 		}
 
 		List<Double> result = new ArrayList<>();
-		for (double c : solution.getData())
+		for (double c : solution.toArray()) {
 			result.add(c);
+                }
 
 		return result;
 	}

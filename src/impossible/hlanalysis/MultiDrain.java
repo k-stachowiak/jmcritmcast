@@ -135,6 +135,10 @@ public class MultiDrain {
 			ConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
+                if(inputGraphStreamer == null) {
+                    throw new RuntimeException("Failed opening graph streamer.\n");
+                }
+                
 		StringBuilder resultStringBuilder = new StringBuilder();
 
 		List<UniformDistributionParameters> parameters = new ArrayList<>();
@@ -196,7 +200,7 @@ public class MultiDrain {
 
 		String topologyFilename = setup.getTopologiesDirectory() + '/'
 				+ setup.getTopology() + '_' + nodeSize + '_'
-				+ setup.getGraphsInFile();
+				+ setup.getGraphsInFile() + "_win";
 
 		BufferedReader bufferedReader = null;
 

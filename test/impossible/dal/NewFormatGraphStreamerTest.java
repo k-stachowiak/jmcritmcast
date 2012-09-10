@@ -1,14 +1,10 @@
 package impossible.dal;
 
-import static org.junit.Assert.*;
-
-import impossible.dal.NewFormatGraphStreamer;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Edge;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,7 +12,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Locale;
+import java.util.Locale;
+import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -49,6 +48,11 @@ public class NewFormatGraphStreamerTest {
 
 		return graph;
 	}
+        
+        @BeforeClass
+        public static void beforeClass() {
+            Locale.setDefault(Locale.ENGLISH);
+        }
 
 	@Test
 	public void testHasNext() {
