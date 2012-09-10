@@ -7,10 +7,11 @@ public abstract class MetricProvider {
 
 	public abstract Double get(Edge edge);
 
-	public double getAdditive(SubGraph subGraph) {
+	public double getPreAdditive(SubGraph subGraph) {
 		double result = 0;
-		for (Edge edge : subGraph.getEdges())
+		for (Edge edge : subGraph.getEdges()) {
 			result += get(edge);
+                }
 		return result;
 	}
 

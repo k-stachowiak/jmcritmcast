@@ -140,11 +140,11 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 		MetricProvider metricProvider = new LagrangeMetricProvider(1,
 				constraints, lambdas);
 
-		double previousCost = metricProvider.getAdditive(exceedingPath);
+		double previousCost = metricProvider.getPreAdditive(exceedingPath);
 
 		for (Path nonExceedingPath : nonExceedingPaths) {
 
-			double currentCost = metricProvider.getAdditive(nonExceedingPath);
+			double currentCost = metricProvider.getPreAdditive(nonExceedingPath);
 
 			if (Math.abs(currentCost - previousCost) > 0.1)
 				return false;
