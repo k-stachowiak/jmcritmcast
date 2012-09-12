@@ -23,7 +23,7 @@ public class ConstrainedPathAggrTreeFinder implements
 	}
 
 	@Override
-	public Tree find(Graph graph, List<Node> group) {
+	public Tree find(Graph graph, List<Node> group, List<Double> constraints) {
 
 		// Process input
 		Node source = group.get(0);
@@ -34,7 +34,7 @@ public class ConstrainedPathAggrTreeFinder implements
 		// Find paths
 		List<Path> paths = new ArrayList<>();
 		for (Node destination : destinations) {
-			Path path = pathFinder.find(graph, source, destination);
+			Path path = pathFinder.find(graph, source, destination, constraints);
 			if (path == null)
 				return null;
 			paths.add(path);
@@ -44,10 +44,5 @@ public class ConstrainedPathAggrTreeFinder implements
 		Tree result = pathAggregator.aggregate(graph, source, paths);
 
 		return result;
-	}
-
-	@Override
-	public void setConstraints(List<Double> constraints) {
-		pathFinder.setConstraints(constraints);
 	}
 }

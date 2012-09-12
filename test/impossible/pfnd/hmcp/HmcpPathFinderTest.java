@@ -1,14 +1,13 @@
 package impossible.pfnd.hmcp;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Edge;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
 import impossible.model.Path;
-import impossible.pfnd.PathFinder;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
 
@@ -64,10 +63,10 @@ public class HmcpPathFinderTest {
 		Path expectedPath = new Path(graph, expectedNodes);
 
 		// Instantiate SUT.
-		PathFinder sut = pathFinderFactory.createHmcp(constraints);
+		ConstrainedPathFinder sut = pathFinderFactory.createHmcp();
 
 		// Exercise SUT.
-		Path actualPath = sut.find(graph, graph.getNode(0), graph.getNode(5));
+		Path actualPath = sut.find(graph, graph.getNode(0), graph.getNode(5), constraints);
 
 		// Assertions.
 		assertEquals(expectedPath, actualPath);

@@ -20,22 +20,18 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
     // Strategies
     private final PathFinderFactory pathFinderFactory;
     private final ConstraintsComparer constraintsComparer;
-    private List<Double> constraints;
     private LbpsaFeasibleFinderState feasibleState;
 
     public LbpsaFeasibleFinder(PathFinderFactory pathFinderFactory,
-            ConstraintsComparer constraintsComparer, List<Double> constraints) {
+            ConstraintsComparer constraintsComparer) {
 
         // Strategies.
         this.pathFinderFactory = pathFinderFactory;
         this.constraintsComparer = constraintsComparer;
-
-        // ,,Constants''.
-        this.constraints = constraints;
     }
 
     @Override
-    public Path find(Graph graph, Node from, Node to) {
+    public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
 
         feasibleState = null;
         List<Double> lambdas = new ArrayList<>();
@@ -45,22 +41,13 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 
         double upperBound = initUb(graph);
 
-        iterationLoop(graph, from, to, upperBound, lambdas);
+        iterationLoop(graph, from, to, upperBound, lambdas, constraints);
 
         if (feasibleState == null) {
             return null;
         }
 
         return feasibleState.getFeasiblePath();
-    }
-
-    @Override
-    public void setConstraints(List<Double> constraints) {
-        this.constraints = new ArrayList<>(constraints);
-    }
-
-    public List<Double> getConstraints() {
-        return constraints;
     }
 
     public List<Double> getLambdas() {
@@ -91,7 +78,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
     }
 
     private void iterationLoop(Graph graph, Node from, Node to,
-            double currentUpperBound, List<Double> currentLambdas) {
+            double currentUpperBound, List<Double> currentLambdas, List<Double> constraints) {
 
         double lk = 2.0;
         double prevL = Double.NaN;
@@ -129,8 +116,8 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
             // Iteration step.
             // ---------------
             double L = metricProvider.getPreAdditive(path);
-            int metric = getMaxIndex(path);            
-            double step = computeStep(path, metric, lk, currentUpperBound, L);
+            int metric = getMaxIndex(path, constraints);            
+            double step = computeStep(path, metric, lk, currentUpperBound, L, constraints);
             
             result.set(metric - 1, result.get(metric - 1) + step);
             if (result.get(metric - 1) < 0.0) {
@@ -170,7 +157,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
         return sum;
     }
 
-    private int getMaxIndex(Path path) {
+    private int getMaxIndex(Path path, List<Double> constraints) {
 
         int result = -1;
         double max = Double.NEGATIVE_INFINITY;
@@ -187,7 +174,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
     }
 
     private double computeStep(Path path, int metric, double lk,
-            Double currentUpperBound, double L) {
+            Double currentUpperBound, double L, List<Double> constraints) {
 
         double m = path.getMetrics().get(metric);
         double c = constraints.get(metric - 1);

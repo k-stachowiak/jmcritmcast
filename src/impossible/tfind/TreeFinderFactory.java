@@ -6,16 +6,13 @@ import impossible.helpers.metrprov.MetricProvider;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 
-import java.util.List;
-
 public interface TreeFinderFactory {
 	ConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator);
 
 	ConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
-			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
-			List<Double> constraints);
+			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator);
 
 	SpanningTreeFinder createPrim(MetricProvider metricProvider);
 }

@@ -47,7 +47,7 @@ public class PathAggrTreeFinderTest {
 
 		// Finders.
 		ConstrainedPathFinder pathFinder = pathFinderFactory
-				.createHmcp(constraints);
+				.createHmcp();
 
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
@@ -112,10 +112,10 @@ public class PathAggrTreeFinderTest {
 
 		// Case.
 		// -----
-		SteinerTreeFinder steinerTreeFinder = treeFinderFactory
+		ConstrainedSteinerTreeFinder steinerTreeFinder = treeFinderFactory
 				.createConstrainedPathAggr(pathFinder, pathAggregator);
 
-		Tree actualTree = steinerTreeFinder.find(graph, group);
+		Tree actualTree = steinerTreeFinder.find(graph, group, constraints);
 
 		// Assert.
 		// -------

@@ -15,11 +15,10 @@ public interface PathFinderFactory {
 
 	PathFinder createLinearCombinationDijkstra(int offset, List<Double> lambdas);
 
-	ConstrainedPathFinder createHmcp(List<Double> constraints);
+	ConstrainedPathFinder createHmcp();
 
-	ConstrainedPathFinder createMlarac(List<Double> constraints,
-			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
+	ConstrainedPathFinder createMlarac(PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			ConstraintsComparer constraintsComparer);
 
-	ConstrainedPathFinder createLbpsa(ConstraintsComparer constraintsComparer, List<Double> constraints);
+	ConstrainedPathFinder createLbpsa(ConstraintsComparer constraintsComparer);
 }

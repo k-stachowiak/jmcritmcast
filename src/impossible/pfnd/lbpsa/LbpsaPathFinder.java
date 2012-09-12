@@ -1,8 +1,5 @@
 package impossible.pfnd.lbpsa;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import impossible.helpers.ConstraintsComparer;
 import impossible.model.Graph;
 import impossible.model.Node;
@@ -10,36 +7,30 @@ import impossible.model.Path;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 
+import java.util.List;
+
 public class LbpsaPathFinder implements ConstrainedPathFinder {
 
 	private final PathFinderFactory pathFinderFactory;
 	private final ConstraintsComparer constraintsComparer;
 
-	private List<Double> constraints;
-
 	public LbpsaPathFinder(PathFinderFactory pathFinderFactory,
-			ConstraintsComparer constraintsComparer, List<Double> constraints) {
+			ConstraintsComparer constraintsComparer) {
 		this.pathFinderFactory = pathFinderFactory;
 		this.constraintsComparer = constraintsComparer;
-		this.constraints = constraints;
 	}
 
 	@Override
-	public Path find(Graph graph, Node from, Node to) {
+	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
 
 		LbpsaFeasibleFinder feasibleFinder = new LbpsaFeasibleFinder(
-				pathFinderFactory, constraintsComparer, constraints);
+				pathFinderFactory, constraintsComparer);
 
-		if (feasibleFinder.find(graph, from, to) == null)
+		if (feasibleFinder.find(graph, from, to, constraints) == null)
 			return null;
 
-		LbpsaBnbFinder bnbFinder = new LbpsaBnbFinder(feasibleFinder);
+		LbpsaBnbFinder bnbFinder = new LbpsaBnbFinder(feasibleFinder, constraints);
 		return bnbFinder.find(graph, from, to);
-	}
-
-	@Override
-	public void setConstraints(List<Double> constraints) {
-		this.constraints = new ArrayList<>(constraints);
 	}
 
 }

@@ -57,11 +57,10 @@ public class HmcmcTreeFinderTest {
 		constraints.add(20.0);
 
 		// Exercise SUT.
-		SteinerTreeFinder treeFinder = treeFinderFacotry.createHmcmc(
-				constraintsComparer, pathFinderFactory, pathAggregator,
-				constraints);
+		ConstrainedSteinerTreeFinder treeFinder = treeFinderFacotry.createHmcmc(
+				constraintsComparer, pathFinderFactory, pathAggregator);
 
-		Tree result = treeFinder.find(graph, spanned);
+		Tree result = treeFinder.find(graph, spanned, constraints);
 
 		// Assertions.
 		assertNotNull(result);

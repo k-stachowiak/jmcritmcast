@@ -15,15 +15,17 @@ public class LbpsaBnbFinder implements PathFinder {
 
 	private final LbpsaFeasibleFinder feasibleFinder;
 	private final MetricProvider feasibleMetricProvider;
+	private final List<Double> constraints;
 
 	private List<Integer> currentPath;
 	private List<Double> specifficCosts;
 	private List<List<Integer>> feasiblePaths;
 
-	public LbpsaBnbFinder(LbpsaFeasibleFinder feasibleFinder) {
+	public LbpsaBnbFinder(LbpsaFeasibleFinder feasibleFinder, List<Double> constraints) {
 		this.feasibleFinder = feasibleFinder;
+		this.constraints = new ArrayList<>(constraints);
 		feasibleMetricProvider = new LagrangeMetricProvider(1,
-				feasibleFinder.getConstraints(), feasibleFinder.getLambdas());
+				constraints, feasibleFinder.getLambdas());
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class LbpsaBnbFinder implements PathFinder {
 		double weightedConstraints = 0.0;
 		for (int m = 1; m < numMetrics; ++m) {
 			weightedConstraints += feasibleFinder.getLambdas().get(m - 1)
-					* feasibleFinder.getConstraints().get(m - 1);
+					* constraints.get(m - 1);
 		}
 
 		// Conditions.
@@ -124,7 +126,7 @@ public class LbpsaBnbFinder implements PathFinder {
 		for (int i = 1; i < numMetrics; ++i) {
 			double value = fwdEdge.getMetrics().get(i)
 					+ revEdge.getMetrics().get(i)
-					- feasibleFinder.getConstraints().get(i - 1);
+					- constraints.get(i - 1);
 
 			if (value > 0.0) {
 				cnd2 = false;

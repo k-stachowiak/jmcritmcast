@@ -2,6 +2,10 @@ package impossible.hlanalysis;
 
 import impossible.dal.InputGraphStreamer;
 import impossible.dal.NewFormatGraphStreamer;
+import impossible.helpers.ConstraintsComparer;
+import impossible.helpers.ConstraintsComparerImpl;
+import impossible.helpers.PathAggregator;
+import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.TopologyAnalyser;
 import impossible.helpers.TopologyAnalyserImpl;
 import impossible.helpers.cstrch.FengGroupConstraintsChooser;
@@ -20,8 +24,13 @@ import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
 import impossible.model.Tree;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
+import impossible.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
+import impossible.pfnd.mlarac.IntersectLambdaEstimator;
+import impossible.pfnd.mlarac.LambdaEstimator;
+import impossible.pfnd.mlarac.PathSubstiutor;
 import impossible.tfind.ConstrainedSteinerTreeFinder;
 import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.TreeFinderFactory;
@@ -33,6 +42,7 @@ import java.io.FileReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -85,7 +95,7 @@ public class MultiDrain {
 				random);
 
 		spanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
-		treeFinders = setup.getTreeFinders();
+		treeFinders = allocateFinders(setup.getTreeFinderNames());
 
 		topologyAnalyser = new TopologyAnalyserImpl(spanningTreeFinder);
 
@@ -116,17 +126,17 @@ public class MultiDrain {
 							System.err.println("Experiment failed.");
 							return;
 						}
-						
+
 						result.append(partialResult);
 					}
-				}				
+				}
 			}
 		}
 
 		PrintWriter printWriter = new PrintWriter(out, true);
 		printWriter.print(result.toString());
 		printWriter.close();
-		
+
 		System.err.println("Terminated normally");
 	}
 
@@ -135,10 +145,10 @@ public class MultiDrain {
 			ConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
-                if(inputGraphStreamer == null) {
-                    throw new RuntimeException("Failed opening graph streamer.\n");
-                }
-                
+		if (inputGraphStreamer == null) {
+			throw new RuntimeException("Failed opening graph streamer.\n");
+		}
+
 		StringBuilder resultStringBuilder = new StringBuilder();
 
 		List<UniformDistributionParameters> parameters = new ArrayList<>();
@@ -183,9 +193,8 @@ public class MultiDrain {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 			List<Double> constraints = constraintsChooser.choose(copy, group);
-			treeFinder.setConstraints(constraints);
 
-			Tree tree = treeFinder.find(copy, group);
+			Tree tree = treeFinder.find(copy, group, constraints);
 			if (tree == null)
 				break;
 
@@ -200,7 +209,7 @@ public class MultiDrain {
 
 		String topologyFilename = setup.getTopologiesDirectory() + '/'
 				+ setup.getTopology() + '_' + nodeSize + '_'
-				+ setup.getGraphsInFile() + "_win";
+				+ setup.getGraphsInFile();
 
 		BufferedReader bufferedReader = null;
 
@@ -215,6 +224,53 @@ public class MultiDrain {
 				nodeSize, setup.getGraphsInFile(), graphFactory, bufferedReader);
 
 		return inputGraphStreamer;
+	}
+
+	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders(
+			List<String> treeFinderNames) {
+
+		// Factories.
+		// ----------
+		PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
+		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
+
+		// Strategies.
+		// -----------
+		MetricProvider metricProvider = new IndexMetricProvider(0);
+
+		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
+				.createPrim(metricProvider);
+
+		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+
+		PathAggregator pathAggregator = new PathAggregatorImpl(
+				spanningTreeFinder);
+
+		// Helper MLARAC path finder.
+		// --------------------------
+		PathSubstiutor pathSubstitutor = new ExpensiveNonBreakingPathSubstitutor();
+		LambdaEstimator lambdaEstimator = new IntersectLambdaEstimator();
+
+		ConstrainedPathFinder mlarac = pathFinderFactory.createMlarac(
+				pathSubstitutor, lambdaEstimator, constraintsComparer);
+		
+		ConstrainedPathFinder lbpsa = pathFinderFactory
+				.createLbpsa(constraintsComparer);
+
+		// Build the result.
+		// -----------------
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
+
+		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
+				constraintsComparer, pathFinderFactory, pathAggregator));
+
+		treeFinders.put("AGGR_MLARAC", treeFinderFactory
+				.createConstrainedPathAggr(mlarac, pathAggregator));
+
+		treeFinders.put("AGGR_LBPSA", treeFinderFactory
+				.createConstrainedPathAggr(lbpsa, pathAggregator));
+
+		return treeFinders;
 	}
 
 }

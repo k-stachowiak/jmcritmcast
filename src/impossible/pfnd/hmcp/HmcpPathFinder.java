@@ -7,22 +7,18 @@ import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HmcpPathFinder implements ConstrainedPathFinder {
 
 	PathFinderFactory pathFinderFactory;
-	private List<Double> constraints;
 
-	public HmcpPathFinder(PathFinderFactory pathFinderFactory,
-			List<Double> constraints) {
+	public HmcpPathFinder(PathFinderFactory pathFinderFactory) {
 		this.pathFinderFactory = pathFinderFactory;
-		this.constraints = constraints;
 	}
 
 	@Override
-	public Path find(Graph graph, Node from, Node to) {
+	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
 
 		// Search reverse.
 		// ---------------
@@ -56,10 +52,5 @@ public class HmcpPathFinder implements ConstrainedPathFinder {
 			return null;
 
 		return path;
-	}
-
-	@Override
-	public void setConstraints(List<Double> constraints) {
-		this.constraints = new ArrayList<>(constraints);
 	}
 }

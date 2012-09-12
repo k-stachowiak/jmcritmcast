@@ -9,8 +9,6 @@ import impossible.tfind.hmcmc.HmcmcTreeFinder;
 import impossible.tfind.paggr.ConstrainedPathAggrTreeFinder;
 import impossible.tfind.prim.PrimTreeFinder;
 
-import java.util.List;
-
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 	@Override
@@ -23,10 +21,9 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 	@Override
 	public ConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
-			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator,
-			List<Double> constraints) {
+			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator) {
 		return new HmcmcTreeFinder(constraintsComparer, pathFinderFactory,
-				pathAggregator, constraints);
+				pathAggregator);
 	}
 
 	@Override

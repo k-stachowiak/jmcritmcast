@@ -1,7 +1,13 @@
 package impossible.tfind;
 
+import impossible.model.Graph;
+import impossible.model.Node;
+import impossible.model.Tree;
+
 import java.util.List;
 
-public interface ConstrainedSteinerTreeFinder extends SteinerTreeFinder {
-	void setConstraints(List<Double> constraints);
+public interface ConstrainedSteinerTreeFinder {
+	
+	Tree find(Graph graph, List<Node> group, List<Double> constraints);
+	
 }

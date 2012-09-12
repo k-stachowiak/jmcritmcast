@@ -1,10 +1,14 @@
 package impossible.dal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import impossible.model.AdjacencyListFactory;
 import impossible.model.Edge;
 import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -13,8 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Locale;
-import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 

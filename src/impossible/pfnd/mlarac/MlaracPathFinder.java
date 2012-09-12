@@ -19,17 +19,15 @@ import java.util.List;
 
 public class MlaracPathFinder implements ConstrainedPathFinder {
 
-	private List<Double> constraints;
 	private final PathSubstiutor pathSubstitutor;
 	private final LambdaEstimator lambdaEstimator;
 	private final PathFinderFactory pathFinderFactory;
 	private final ConstraintsComparer constraintsComparer;
 
-	public MlaracPathFinder(List<Double> constraints,
+	public MlaracPathFinder(
 			PathSubstiutor pathSubstitutor, LambdaEstimator lambdaEstimator,
 			PathFinderFactory pathFinderFactory,
 			ConstraintsComparer constraintsComparer) {
-		this.constraints = constraints;
 		this.pathSubstitutor = pathSubstitutor;
 		this.lambdaEstimator = lambdaEstimator;
 		this.pathFinderFactory = pathFinderFactory;
@@ -37,7 +35,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 	}
 
 	@Override
-	public Path find(Graph graph, Node from, Node to) {
+	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
 
 		// Initialize helpers.
 		List<PathFinder> indexDijksrtas = new ArrayList<>();
@@ -115,7 +113,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 			}
 
 			// End condition.
-			if (peakReached(nonExceedingPaths, exceedingPath, lambdas))
+			if (peakReached(nonExceedingPaths, exceedingPath, lambdas, constraints))
 				done = true;
 
 			if (++numIterations > 5)
@@ -129,13 +127,8 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 		return approximations.get(approximations.size() - 1);
 	}
 
-	@Override
-	public void setConstraints(List<Double> constraints) {
-		this.constraints = new ArrayList<>(constraints);
-	}
-
 	private boolean peakReached(List<Path> nonExceedingPaths,
-			Path exceedingPath, List<Double> lambdas) {
+			Path exceedingPath, List<Double> lambdas, List<Double> constraints) {
 
 		MetricProvider metricProvider = new LagrangeMetricProvider(1,
 				constraints, lambdas);

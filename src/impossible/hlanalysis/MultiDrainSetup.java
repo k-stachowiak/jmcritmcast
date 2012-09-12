@@ -1,9 +1,6 @@
 package impossible.hlanalysis;
 
-import impossible.tfind.ConstrainedSteinerTreeFinder;
-
 import java.util.List;
-import java.util.Map;
 
 public class MultiDrainSetup {
 	private final long randomSeed;
@@ -26,7 +23,7 @@ public class MultiDrainSetup {
 	private final double redistributionMin;
 	private final double redistributionMax;
 
-	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
+	private final List<String> treeFinderNames;
 
 	public MultiDrainSetup(long randomSeed, double fengDelta,
 			double baseBandwidth, double drainedBandwidth, int graphs,
@@ -34,7 +31,7 @@ public class MultiDrainSetup {
 			List<Integer> groupSizes, String topologiesDirectory,
 			String topology, int graphsInFile, double redistributionMin,
 			double redistributionMax,
-			Map<String, ConstrainedSteinerTreeFinder> treeFinders) {
+			List<String> treeFinderNames) {
 
 		this.randomSeed = randomSeed;
 		this.fengDelta = fengDelta;
@@ -49,7 +46,7 @@ public class MultiDrainSetup {
 		this.graphsInFile = graphsInFile;
 		this.redistributionMin = redistributionMin;
 		this.redistributionMax = redistributionMax;
-		this.treeFinders = treeFinders;
+		this.treeFinderNames = treeFinderNames;
 	}
 
 	public long getRandomSeed() {
@@ -104,7 +101,7 @@ public class MultiDrainSetup {
 		return redistributionMax;
 	}
 
-	public Map<String, ConstrainedSteinerTreeFinder> getTreeFinders() {
-		return treeFinders;
+	public List<String> getTreeFinderNames() {
+		return treeFinderNames;
 	}
 }

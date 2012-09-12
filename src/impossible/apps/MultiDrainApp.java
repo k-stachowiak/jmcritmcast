@@ -1,34 +1,15 @@
 package impossible.apps;
 
-import impossible.helpers.ConstraintsComparer;
-import impossible.helpers.ConstraintsComparerImpl;
-import impossible.helpers.PathAggregator;
-import impossible.helpers.PathAggregatorImpl;
-import impossible.helpers.metrprov.IndexMetricProvider;
-import impossible.helpers.metrprov.MetricProvider;
 import impossible.hlanalysis.MultiDrain;
 import impossible.hlanalysis.MultiDrainSetup;
-import impossible.pfnd.ConstrainedPathFinder;
-import impossible.pfnd.PathFinderFactory;
-import impossible.pfnd.PathFinderFactoryImpl;
-import impossible.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
-import impossible.pfnd.mlarac.IntersectLambdaEstimator;
-import impossible.pfnd.mlarac.LambdaEstimator;
-import impossible.pfnd.mlarac.PathSubstiutor;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
-import impossible.tfind.SpanningTreeFinder;
-import impossible.tfind.TreeFinderFactory;
-import impossible.tfind.TreeFinderFactoryImpl;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 public class MultiDrainApp {
@@ -143,73 +124,15 @@ public class MultiDrainApp {
         return true;
     }
 
-    private static Map<String, ConstrainedSteinerTreeFinder> initializeAllTreeFinders() {
-
-        // Factories.
-        // ----------
-        PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-        TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
-
-        // Strategies.
-        // -----------
-        MetricProvider metricProvider = new IndexMetricProvider(0);
-
-        SpanningTreeFinder spanningTreeFinder = treeFinderFactory
-                .createPrim(metricProvider);
-
-        ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
-
-        PathAggregator pathAggregator = new PathAggregatorImpl(
-                spanningTreeFinder);
-
-        // Helper MLARAC path finder.
-        // --------------------------
-        PathSubstiutor pathSubstitutor = new ExpensiveNonBreakingPathSubstitutor();
-
-        LambdaEstimator lambdaEstimator = new IntersectLambdaEstimator();
-
-        ConstrainedPathFinder mlarac = pathFinderFactory.createMlarac(null,
-                pathSubstitutor, lambdaEstimator, constraintsComparer);
-
-        ConstrainedPathFinder lbpsa = pathFinderFactory.createLbpsa(
-                constraintsComparer, null);
-
-        // Build the result.
-        // -----------------
-        Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
-
-        treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
-                constraintsComparer, pathFinderFactory, pathAggregator, null));
-
-        treeFinders.put("AGGR_MLARAC", treeFinderFactory
-                .createConstrainedPathAggr(mlarac, pathAggregator));
-
-        treeFinders.put("AGGR_LBPSA", treeFinderFactory
-                .createConstrainedPathAggr(lbpsa, pathAggregator));
-
-        return treeFinders;
-    }
-
     public static void main(String[] args) {
 
         Locale.setDefault(Locale.ENGLISH);
 
-        // Parse the config file.
-        // ----------------------
+        // Parse the configuration file.
+        // -----------------------------
         if (!readConfig()) {
             System.err.println("Error in configuration file.");
             return;
-        }
-
-        // Generate and filter the finders list.
-        // -------------------------------------
-        Map<String, ConstrainedSteinerTreeFinder> treeFinders = initializeAllTreeFinders();
-        Map<String, ConstrainedSteinerTreeFinder> filteredTreeFinders = new HashMap<>();
-        for (Map.Entry<String, ConstrainedSteinerTreeFinder> entry : treeFinders
-                .entrySet()) {
-            if (algNames.contains(entry.getKey())) {
-                filteredTreeFinders.put(entry.getKey(), entry.getValue());
-            }
         }
 
         // Build a setup definition for the application and run it.
@@ -218,7 +141,7 @@ public class MultiDrainApp {
                 fengDelta, baseBandwidth, drainedBandwidth, graphs, nodeSizes,
                 criteriaCounts, groupSizes, topologiesDirecotry, topology,
                 graphsInFile, redistributionMin, redistributionMax,
-                filteredTreeFinders);
+                algNames);
 
         new MultiDrain(setup).run(args, System.out);
     }

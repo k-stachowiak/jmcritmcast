@@ -1,10 +1,6 @@
 package impossible.pfnd.mlarac;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.ConstraintsComparerImpl;
 import impossible.model.AdjacencyListFactory;
@@ -12,9 +8,12 @@ import impossible.model.Graph;
 import impossible.model.GraphFactory;
 import impossible.model.Node;
 import impossible.model.Path;
-import impossible.pfnd.PathFinder;
+import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -51,11 +50,10 @@ public class MlaracPathFinderTest {
 		Path expectedPath = new Path(graph, expectedNodes);
 
 		// Instantiate SUT.
-		PathFinder pathFinder = pathFinderFactory.createMlarac(constraints,
-				pathSubstitutor, lambdaEstimator, constraintsComparer);
+		ConstrainedPathFinder pathFinder = pathFinderFactory.createMlarac(pathSubstitutor, lambdaEstimator, constraintsComparer);
 
 		// Exercise SUT.
-		Path actualPath = pathFinder.find(graph, from, to);
+		Path actualPath = pathFinder.find(graph, from, to, constraints);
 
 		// Assertions.
 		assertEquals(expectedPath, actualPath);
