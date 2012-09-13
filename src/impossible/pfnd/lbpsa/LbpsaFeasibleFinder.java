@@ -17,173 +17,152 @@ import java.util.Map;
 
 public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 
-    // Strategies
-    private final PathFinderFactory pathFinderFactory;
-    private final ConstraintsComparer constraintsComparer;
-    private LbpsaFeasibleFinderState feasibleState;
+	// Strategies
+	private final PathFinderFactory pathFinderFactory;
+	private final ConstraintsComparer constraintsComparer;
 
-    public LbpsaFeasibleFinder(PathFinderFactory pathFinderFactory,
-            ConstraintsComparer constraintsComparer) {
+	// State
+	private DefaultDijkstraRelaxation relaxation;
+	private List<Double> lambdas;
+	private double upperBound;
 
-        // Strategies.
-        this.pathFinderFactory = pathFinderFactory;
-        this.constraintsComparer = constraintsComparer;
-    }
+	public LbpsaFeasibleFinder(PathFinderFactory pathFinderFactory,
+			ConstraintsComparer constraintsComparer) {
 
-    @Override
-    public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
+		// Strategies.
+		this.pathFinderFactory = pathFinderFactory;
+		this.constraintsComparer = constraintsComparer;
+	}
 
-        feasibleState = null;
-        List<Double> lambdas = new ArrayList<>();
-        for (int m = 0; m < graph.getNumMetrics() - 1; ++m) {
-            lambdas.add(0.0);
-        }
+	@Override
+	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
 
-        double upperBound = initUb(graph);
+		lambdas = new ArrayList<>();
+		for (int m = 0; m < graph.getNumMetrics() - 1; ++m) {
+			lambdas.add(0.0);
+		}
 
-        iterationLoop(graph, from, to, upperBound, lambdas, constraints);
+		upperBound = initUb(graph);
 
-        if (feasibleState == null) {
-            return null;
-        }
+		Path feasiblePath = iterationLoop(graph, from, to, constraints);
 
-        return feasibleState.getFeasiblePath();
-    }
+		return feasiblePath;
+	}
 
-    public List<Double> getLambdas() {
+	public List<Double> getLambdas() {
+		return lambdas;
+	}
 
-        if (feasibleState == null) {
-            return null;
-        }
+	public Double getUpperBound() {
+		return upperBound;
+	}
 
-        return feasibleState.getLambdas();
-    }
+	public Map<Node, List<Double>> getSpecifficMetrics() {
+		return relaxation.getLabels();
+	}
 
-    public Double getUpperBound() {
+	private Path iterationLoop(Graph graph, Node from, Node to,
+			List<Double> constraints) {
 
-        if (feasibleState == null) {
-            return null;
-        }
+		double lk = 2.0;
+		double prevL = Double.NaN;
+		int iterationsSinceLChange = 0;
+		int passes = 0;
 
-        return feasibleState.getUpperBound();
-    }
+		while (true) {
 
-    public Map<Node, List<Double>> getSpecifficMetrics() {
+			// Initialize finder.
+			// ------------------
+			MetricProvider metricProvider = new LagrangeMetricProvider(1,
+					constraints, lambdas);
 
-        if (feasibleState == null) {
-            return null;
-        }
+			relaxation = new DefaultDijkstraRelaxation(metricProvider);
+			PathFinder pathFinder = pathFinderFactory
+					.createDijkstra(relaxation);
 
-        return feasibleState.getRelaxation().getLabels();
-    }
+			// Find and evaluate path.
+			// -----------------------
+			Path path = pathFinder.find(graph, from, to);
 
-    private void iterationLoop(Graph graph, Node from, Node to,
-            double currentUpperBound, List<Double> currentLambdas, List<Double> constraints) {
+			if (path != null
+					&& constraintsComparer.fulfilsAll(path, constraints)) {
+				upperBound = path.getMetrics().get(0);
+				return path;
+			}
 
-        double lk = 2.0;
-        double prevL = Double.NaN;
-        int iterationsSinceLChange = 0;
-        int passes = 0;
+			// Iteration step.
+			// ---------------
+			double L = metricProvider.getPreAdditive(path);
+			int metric = getMaxIndex(path, constraints);
+			double step = computeStep(path, metric, lk, L, constraints);
 
-        List<Double> result = new ArrayList<>(currentLambdas);
+			lambdas.set(metric - 1, lambdas.get(metric - 1) + step);
+			if (lambdas.get(metric - 1) < 0.0) {
+				lambdas.set(metric - 1, 0.0);
+			}
 
-        while (true) {
+			// Purple magic.
+			// -------------
+			if (L == prevL) {
+				++iterationsSinceLChange;
+			} else {
+				iterationsSinceLChange = 0;
+				prevL = L;
+			}
 
-            // Initialize finder.
-            // ------------------
-            MetricProvider metricProvider = new LagrangeMetricProvider(
-                    1, constraints, result);
+			if (iterationsSinceLChange >= 5) {
+				iterationsSinceLChange = 0;
+				lk *= 0.5;
+			}
 
-            DefaultDijkstraRelaxation relaxation = new DefaultDijkstraRelaxation(
-                    metricProvider);
+			if (++passes > 10) {
+				passes = 0;
+				lk *= 0.5;
+			}
 
-            PathFinder pathFinder = pathFinderFactory
-                    .createDijkstra(relaxation);
+			if (lk < 0.125) {
+				break;
+			}
+		}
 
-            // Find and evaluate path.
-            // -----------------------
-            Path path = pathFinder.find(graph, from, to);
+		return null;
+	}
 
-            if (path != null
-                    && constraintsComparer.fulfilsAll(path, constraints)) {
+	private Double initUb(Graph graph) {
+		double sum = 0.0;
+		for (Edge edge : graph.getEdges()) {
+			sum += edge.getMetrics().get(0);
+		}
+		return sum;
+	}
 
-                currentUpperBound = path.getMetrics().get(0);
-                feasibleState = new LbpsaFeasibleFinderState(relaxation,
-                        result, currentUpperBound, path);
-                break;
-            }
+	private int getMaxIndex(Path path, List<Double> constraints) {
 
-            // Iteration step.
-            // ---------------
-            double L = metricProvider.getPreAdditive(path);
-            int metric = getMaxIndex(path, constraints);            
-            double step = computeStep(path, metric, lk, currentUpperBound, L, constraints);
-            
-            result.set(metric - 1, result.get(metric - 1) + step);
-            if (result.get(metric - 1) < 0.0) {
-                result.set(metric - 1, 0.0);
-            }
+		int result = -1;
+		double max = Double.NEGATIVE_INFINITY;
 
-            // Purple magic.
-            // -------------
-            if (L == prevL) {
-                ++iterationsSinceLChange;
-            } else {
-                iterationsSinceLChange = 0;
-                prevL = L;
-            }
+		for (int m = 1; m < path.getMetrics().size(); ++m) {
+			double value = path.getMetrics().get(m) - constraints.get(m - 1);
+			if (value > max) {
+				max = value;
+				result = m;
+			}
+		}
 
-            if (iterationsSinceLChange >= 10) {
-                iterationsSinceLChange = 0;
-                lk *= 0.5;
-            }
+		return result;
+	}
 
-            if (++passes > 100) {
-                passes = 0;
-                lk *= 0.5;
-            }
+	private double computeStep(Path path, int metric, double lk, double L,
+			List<Double> constraints) {
 
-            if (lk < 0.125) {
-                break;
-            }
-        }
-    }
+		double m = path.getMetrics().get(metric);
+		double c = constraints.get(metric - 1);
+		double denom = (m - c);
 
-    private Double initUb(Graph graph) {
-        double sum = 0.0;
-        for (Edge edge : graph.getEdges()) {
-            sum += edge.getMetrics().get(0);
-        }
-        return sum;
-    }
+		if (denom == 0.0) {
+			return upperBound * 0.01; // WAT
+		}
 
-    private int getMaxIndex(Path path, List<Double> constraints) {
-
-        int result = -1;
-        double max = Double.NEGATIVE_INFINITY;
-
-        for (int m = 1; m < path.getMetrics().size(); ++m) {
-            double value = path.getMetrics().get(m) - constraints.get(m - 1);
-            if (value > max) {
-                max = value;
-                result = m;
-            }
-        }
-
-        return result;
-    }
-
-    private double computeStep(Path path, int metric, double lk,
-            Double currentUpperBound, double L, List<Double> constraints) {
-
-        double m = path.getMetrics().get(metric);
-        double c = constraints.get(metric - 1);
-        double denom = (m - c);
-        
-        if(denom == 0.0) {            
-            return currentUpperBound * 0.01; // WAT
-        }
-        
-        return (lk * (currentUpperBound - L)) / (denom * denom);
-    }
+		return (lk * (upperBound - L)) / (denom * denom);
+	}
 }
