@@ -11,26 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class FengGroupConstraintsChooser implements GroupConstraintsChooser {
-
-	private class MetricPair {
-		private final double min;
-		private final double max;
-
-		public MetricPair(double min, double max) {
-			this.min = min;
-			this.max = max;
-		}
-
-		public double getMin() {
-			return min;
-		}
-
-		public double getMax() {
-			return max;
-		}
-	}
 
 	private final double delta;
 	private final PathFinderFactory pathFinderFactory;
@@ -44,67 +25,91 @@ public class FengGroupConstraintsChooser implements GroupConstraintsChooser {
 
 	@Override
 	public List<Double> choose(Graph graph, List<Node> group) {
+		Map<Integer, Double> mins = computeMins(graph, group);
+		Map<Integer, Double> maxes = computeMaxes(graph, group);		
+		return interpolateMinMaxes(mins, maxes, graph.getNumMetrics());
+	}
 
-		double M = graph.getNumMetrics();
-
-		// Determine the extreme paths for the given metrics.
-		// --------------------------------------------------
-		Map<Integer, List<Path>> extremePathsMap = new HashMap<>();
-		for (int m = 0; m < M; ++m) {
-
-			Node root = group.get(0);
-			PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(m);
-
-			for (int n = 1; n < group.size(); ++n) {
-				Path path = pathFinder.find(graph, root, group.get(n));
-				if (path == null)
-					return null;
-
-				if (!extremePathsMap.containsKey(m)) {
-					extremePathsMap.put(m, new ArrayList<Path>());
-				}
-
-				extremePathsMap.get(m).add(path);
-			}
-		}
-
-		// Determine the extreme metrics.
-		// ------------------------------
-		Map<Integer, MetricPair> extremeMetrics = new HashMap<>();
-		for (int m = 1; m < M; ++m) {
-			double min = Double.POSITIVE_INFINITY;
-			double max = Double.NEGATIVE_INFINITY;
-
-			// Find the minimum value. It will be the maximal metric from the
-			// paths optimized against the given metric.
-			for (Path path : extremePathsMap.get(m)) {
-				double metric = path.getMetrics().get(m);
-				if (metric < min)
-					min = metric;
-			}
-
-			// Find the maximum value. It will be the maximal metric from the
-			// cost optimized paths.
-			for (Path path : extremePathsMap.get(0)) {
-				double metric = path.getMetrics().get(m);
-				if (metric > max)
-					max = metric;
-			}
-			
-			// Store extrema.
-			extremeMetrics.put(m, new MetricPair(min, max));
+	private List<Double> interpolateMinMaxes(Map<Integer, Double> mins,
+			Map<Integer, Double> maxes, int numMetrics) {
+		
+		List<Double> result = new ArrayList<>();
+		for (int m = 1; m < numMetrics; ++m) {
+			double min = mins.get(m);
+			double max = maxes.get(m);
+			result.add(min + delta * (max - min));
 		}
 		
-		// Interpolate the extrema and return.
-        // -----------------------------------
-        List<Double> result = new ArrayList<>();
-        for (Map.Entry<Integer, MetricPair> entry : extremeMetrics.entrySet())
-        {
-                double min = entry.getValue().getMin();
-                double max = entry.getValue().getMax();
-                result.add(min + delta * (max - min));
-        }
+		return result;
+	}
 
-        return result;
+	private Map<Integer, Double> computeMins(Graph graph, List<Node> group) {
+		
+		int numMetrics = graph.getNumMetrics();
+		Node from = group.get(0);
+
+		// Initialize result with positive infinities
+		Map<Integer, Double> mins = new HashMap<>();
+		for (int m = 1; m < numMetrics; ++m) {
+			mins.put(m, Double.POSITIVE_INFINITY);
+		}
+
+		// Analyze paths to each destination
+		for (int destinationIndex = 1; destinationIndex < group.size(); ++destinationIndex) {
+
+			Node to = group.get(destinationIndex);
+					
+			// Check if any of the metrics is greater than current max
+			for (int m = 1; m < numMetrics; ++m) {
+				
+				PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(m);
+				Path path = pathFinder.find(graph, from, to);			
+				List<Double> metrics = path.getMetrics();
+				
+				double metric = metrics.get(m);
+				double min = mins.get(m);
+				
+				if(metric < min) {
+					mins.put(m, metric);
+				}
+			}
+		}
+		
+		return mins;
+	}
+
+	private Map<Integer, Double> computeMaxes(Graph graph, List<Node> group) {
+
+		int numMetrics = graph.getNumMetrics();
+		PathFinder pathFinder = pathFinderFactory.createDijkstraIndex(0);
+		Node from = group.get(0);
+
+		// Initialize result with negative infinities
+		Map<Integer, Double> maxes = new HashMap<>();
+		for (int m = 1; m < numMetrics; ++m) {
+			maxes.put(m, Double.NEGATIVE_INFINITY);
+		}
+
+		// Analyze paths to each destination
+		for (int destinationIndex = 1; destinationIndex < group.size(); ++destinationIndex) {
+
+			Node to = group.get(destinationIndex);
+			Path path = pathFinder.find(graph, from, to);
+			
+			List<Double> metrics = path.getMetrics();
+					
+			// Check if any of the metrics is greater than current max
+			for (int m = 1; m < numMetrics; ++m) {
+				
+				double metric = metrics.get(m);
+				double max = maxes.get(m);
+				
+				if(metric > max) {
+					maxes.put(m, metric);
+				}
+			}
+		}
+		
+		return maxes;
 	}
 }

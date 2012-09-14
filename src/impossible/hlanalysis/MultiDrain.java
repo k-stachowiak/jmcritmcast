@@ -95,7 +95,7 @@ public class MultiDrain {
 				random);
 
 		spanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
-		treeFinders = allocateFinders(setup.getTreeFinderNames());
+		treeFinders = allocateFinders();
 
 		topologyAnalyser = new TopologyAnalyserImpl(spanningTreeFinder);
 
@@ -113,14 +113,13 @@ public class MultiDrain {
 				System.err.println("Criteria count: " + criteriaCount);
 				for (Integer groupSize : setup.getGroupSizes()) {
 					System.err.println("Group size: " + groupSize);
-					for (Map.Entry<String, ConstrainedSteinerTreeFinder> entry : treeFinders
-							.entrySet()) {
+					for (String finderName : setup.getTreeFinderNames()) {
 
-						System.err.println("Alg: " + entry.getKey());
+						System.err.println("Alg: " + finderName);
 
 						String partialResult = experiment(nodeSize,
 								criteriaCount, groupSize, setup.getGraphs(),
-								entry.getKey(), entry.getValue());
+								finderName, treeFinders.get(finderName));
 
 						if (partialResult == null) {
 							System.err.println("Experiment failed.");
@@ -226,8 +225,7 @@ public class MultiDrain {
 		return inputGraphStreamer;
 	}
 
-	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders(
-			List<String> treeFinderNames) {
+	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
 
 		// Factories.
 		// ----------
