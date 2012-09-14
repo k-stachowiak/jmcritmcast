@@ -21,4 +21,6 @@ public interface PathFinderFactory {
 			ConstraintsComparer constraintsComparer);
 
 	ConstrainedPathFinder createLbpsa(ConstraintsComparer constraintsComparer);
+	
+	ConstrainedPathFinder createHmcop(double lambda);
 }

@@ -7,6 +7,7 @@ import impossible.helpers.metrprov.MetricProvider;
 import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
 import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.pfnd.hmcop.HmcopPathFinder;
 import impossible.pfnd.hmcp.HmcpPathFinder;
 import impossible.pfnd.lbpsa.LbpsaPathFinder;
 import impossible.pfnd.mlarac.LambdaEstimator;
@@ -59,5 +60,10 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 	public ConstrainedPathFinder createLbpsa(
 			ConstraintsComparer constraintsComparer) {
 		return new LbpsaPathFinder(this, constraintsComparer);
+	}
+	
+	@Override
+	public ConstrainedPathFinder createHmcop(double lambda) {
+		return new HmcopPathFinder(lambda);
 	}
 }

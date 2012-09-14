@@ -117,7 +117,7 @@ public class MultiDrain {
 							.entrySet()) {
 
 						System.err.println("Alg: " + entry.getKey());
-						
+
 						String partialResult = experiment(nodeSize,
 								criteriaCount, groupSize, setup.getGraphs(),
 								entry.getKey(), entry.getValue());
@@ -246,16 +246,23 @@ public class MultiDrain {
 		PathAggregator pathAggregator = new PathAggregatorImpl(
 				spanningTreeFinder);
 
-		// Helper MLARAC path finder.
-		// --------------------------
+		// MLARAC path finder.
+		// -------------------
 		PathSubstiutor pathSubstitutor = new ExpensiveNonBreakingPathSubstitutor();
 		LambdaEstimator lambdaEstimator = new IntersectLambdaEstimator();
 
 		ConstrainedPathFinder mlarac = pathFinderFactory.createMlarac(
 				pathSubstitutor, lambdaEstimator, constraintsComparer);
-		
+
+		// LBPSA path finder.
+		// ------------------
 		ConstrainedPathFinder lbpsa = pathFinderFactory
 				.createLbpsa(constraintsComparer);
+
+		// HMCOP path finder.
+		// ------------------
+		double lambda = Double.POSITIVE_INFINITY;
+		ConstrainedPathFinder hmcop = pathFinderFactory.createHmcop(lambda);
 
 		// Build the result.
 		// -----------------
@@ -269,6 +276,9 @@ public class MultiDrain {
 
 		treeFinders.put("AGGR_LBPSA", treeFinderFactory
 				.createConstrainedPathAggr(lbpsa, pathAggregator));
+
+		treeFinders.put("AGGR_HMCOP", treeFinderFactory
+				.createConstrainedPathAggr(hmcop, pathAggregator));
 
 		return treeFinders;
 	}
