@@ -1,7 +1,7 @@
 package impossible.dal;
-import impossible.model.Graph;
+import impossible.dto.GraphDTO;
 
 public interface InputGraphStreamer {
 	boolean hasNext();
-	Graph getNext();
+	GraphDTO getNext();
 }

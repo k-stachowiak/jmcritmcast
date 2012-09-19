@@ -1,4 +1,4 @@
-package impossible.hlanalysis;
+package impossible.apps;
 
 import java.util.List;
 

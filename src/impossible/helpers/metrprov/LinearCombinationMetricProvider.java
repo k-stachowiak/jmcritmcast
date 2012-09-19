@@ -1,6 +1,6 @@
 package impossible.helpers.metrprov;
 
-import impossible.model.Edge;
+import impossible.model.topology.Edge;
 
 import java.util.List;
 

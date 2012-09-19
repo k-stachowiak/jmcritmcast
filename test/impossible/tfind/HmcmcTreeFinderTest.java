@@ -7,12 +7,12 @@ import impossible.helpers.PathAggregator;
 import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.model.AdjacencyListFactory;
-import impossible.model.EdgeDefinition;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
-import impossible.model.Tree;
+import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.EdgeDefinition;
+import impossible.model.topology.Graph;
+import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Node;
+import impossible.model.topology.Tree;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;
 

@@ -1,9 +1,9 @@
 package impossible.pfnd.dkstr;
 
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.Node;
+import impossible.model.topology.Edge;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;

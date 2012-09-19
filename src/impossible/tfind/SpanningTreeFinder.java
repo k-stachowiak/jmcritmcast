@@ -1,8 +1,8 @@
 package impossible.tfind;
 
-import impossible.model.Graph;
-import impossible.model.Node;
-import impossible.model.Tree;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Node;
+import impossible.model.topology.Tree;
 
 public interface SpanningTreeFinder {
 

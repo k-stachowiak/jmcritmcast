@@ -2,7 +2,7 @@ package impossible.helpers.metrprov;
 
 import java.util.List;
 
-import impossible.model.Edge;
+import impossible.model.topology.Edge;
 
 public class LagrangeMetricProvider extends MetricProvider {
 

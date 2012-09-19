@@ -1,12 +1,12 @@
 package impossible.pfnd.hmcp;
 
 import static org.junit.Assert.assertEquals;
-import impossible.model.AdjacencyListFactory;
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
-import impossible.model.Path;
+import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.Edge;
+import impossible.model.topology.Graph;
+import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Node;
+import impossible.model.topology.Path;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 import impossible.pfnd.PathFinderFactoryImpl;

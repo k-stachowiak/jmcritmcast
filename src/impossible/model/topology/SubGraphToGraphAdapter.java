@@ -1,4 +1,4 @@
-package impossible.model;
+package impossible.model.topology;
 
 import impossible.exceptions.IllegalOperationException;
 

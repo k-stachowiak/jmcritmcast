@@ -1,9 +1,9 @@
 package impossible.pfnd.lbpsa;
 
 import impossible.helpers.ConstraintsComparer;
-import impossible.model.Graph;
-import impossible.model.Node;
-import impossible.model.Path;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Node;
+import impossible.model.topology.Path;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinderFactory;
 

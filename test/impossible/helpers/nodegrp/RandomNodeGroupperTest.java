@@ -7,10 +7,10 @@ import static org.mockito.Mockito.when;
 
 import impossible.helpers.nodegrp.NodeGroupper;
 import impossible.helpers.nodegrp.RandomNodeGroupper;
-import impossible.model.AdjacencyListFactory;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
+import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.Graph;
+import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Node;
 
 import java.util.List;
 import java.util.Random;

@@ -1,6 +1,6 @@
 package impossible.helpers.gphmut;
 
-import impossible.model.Graph;
+import impossible.model.topology.Graph;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package impossible.helpers;
 
-import impossible.model.Graph;
+import impossible.model.topology.Graph;
 
 import java.util.List;
 

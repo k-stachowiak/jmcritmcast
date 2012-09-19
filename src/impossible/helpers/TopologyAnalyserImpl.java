@@ -1,8 +1,8 @@
 package impossible.helpers;
 
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.Tree;
+import impossible.model.topology.Edge;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Tree;
 import impossible.tfind.SpanningTreeFinder;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
 package impossible.helpers;
 
-import impossible.model.Edge;
-import impossible.model.EdgeDefinition;
-import impossible.model.Graph;
-import impossible.model.Node;
-import impossible.model.SubGraph;
+import impossible.model.topology.Edge;
+import impossible.model.topology.EdgeDefinition;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Node;
+import impossible.model.topology.SubGraph;
 
 public class TopologyDebug {
 

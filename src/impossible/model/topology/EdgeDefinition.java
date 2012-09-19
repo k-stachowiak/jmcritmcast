@@ -1,18 +1,12 @@
-package impossible.model;
+package impossible.model.topology;
 
-import java.util.List;
-
-public class Edge {
-
+public class EdgeDefinition {
 	private final int from;
 	private final int to;
-	private final List<Double> metrics;
 
-	public Edge(int from, int to, List<Double> metrics) {
-		super();
+	public EdgeDefinition(int from, int to) {
 		this.from = from;
 		this.to = to;
-		this.metrics = metrics;
 	}
 
 	public int getFrom() {
@@ -23,16 +17,11 @@ public class Edge {
 		return to;
 	}
 
-	public List<Double> getMetrics() {
-		return metrics;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + from;
-		result = prime * result + ((metrics == null) ? 0 : metrics.hashCode());
 		result = prime * result + to;
 		return result;
 	}
@@ -45,13 +34,8 @@ public class Edge {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Edge other = (Edge) obj;
+		EdgeDefinition other = (EdgeDefinition) obj;
 		if (from != other.from)
-			return false;
-		if (metrics == null) {
-			if (other.metrics != null)
-				return false;
-		} else if (!metrics.equals(other.metrics))
 			return false;
 		if (to != other.to)
 			return false;

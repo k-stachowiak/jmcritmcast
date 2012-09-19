@@ -1,7 +1,7 @@
 package impossible.helpers.metrprov;
 
-import impossible.model.Edge;
-import impossible.model.SubGraph;
+import impossible.model.topology.Edge;
+import impossible.model.topology.SubGraph;
 
 public abstract class MetricProvider {
 

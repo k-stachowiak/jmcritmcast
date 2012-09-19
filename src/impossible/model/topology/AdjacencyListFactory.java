@@ -1,4 +1,4 @@
-package impossible.model;
+package impossible.model.topology;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,12 +1,22 @@
-package impossible.model;
+package impossible.dto;
 
-public class Node {
+import javax.xml.bind.annotation.XmlElement;
 
-	private final int id;
-	private final double x;
-	private final double y;
+public class NodeDTO {
+
+	@XmlElement(name = "id")
+	private int id;
 	
-	public Node(int id, double x, double y) {
+	@XmlElement(name = "x")
+	private double x;
+	
+	@XmlElement(name = "y")
+	private double y;
+
+	NodeDTO() {
+	}
+
+	public NodeDTO(int id, double x, double y) {
 		this.id = id;
 		this.x = x;
 		this.y = y;
@@ -22,6 +32,18 @@ public class Node {
 
 	public double getY() {
 		return y;
+	}
+
+	void setId(int id) {
+		this.id = id;
+	}
+
+	void setX(double x) {
+		this.x = x;
+	}
+
+	void setY(double y) {
+		this.y = y;
 	}
 
 	@Override
@@ -45,7 +67,7 @@ public class Node {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Node other = (Node) obj;
+		NodeDTO other = (NodeDTO) obj;
 		if (id != other.id)
 			return false;
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
@@ -53,5 +75,6 @@ public class Node {
 		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
 			return false;
 		return true;
-	}	
+	}
+
 }

@@ -3,11 +3,9 @@ package impossible.dal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import impossible.model.AdjacencyListFactory;
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
+import impossible.dto.EdgeDTO;
+import impossible.dto.GraphDTO;
+import impossible.dto.NodeDTO;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -20,7 +18,6 @@ import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 
 public class NewFormatGraphStreamerTest {
 
@@ -39,35 +36,30 @@ public class NewFormatGraphStreamerTest {
 		return bufferedReader;
 	}
 
-	private Graph getBillyGraph(GraphFactory graphFactory) {
-		List<Node> nodes = new ArrayList<>();
-		nodes.add(new Node(0, 0.0, 1.0));
-		nodes.add(new Node(1, 2.0, 3.0));
+	private GraphDTO getBillyGraph() {
+		List<NodeDTO> nodes = new ArrayList<>();
+		nodes.add(new NodeDTO(0, 0.0, 1.0));
+		nodes.add(new NodeDTO(1, 2.0, 3.0));
 
-		List<Edge> edges = new ArrayList<>();
-		edges.add(new Edge(0, 1, Arrays.asList(new Double[] { 100.0, 200.0 })));
+		List<EdgeDTO> edges = new ArrayList<>();
+		edges.add(new EdgeDTO(0, 1, Arrays.asList(new Double[] { 100.0, 200.0 })));
 
-		Graph graph = graphFactory.createFromLists(nodes, edges);
-
-		return graph;
+		return new GraphDTO(nodes, edges);
 	}
-        
-        @BeforeClass
-        public static void beforeClass() {
-            Locale.setDefault(Locale.ENGLISH);
-        }
+
+	@BeforeClass
+	public static void beforeClass() {
+		Locale.setDefault(Locale.ENGLISH);
+	}
 
 	@Test
 	public void testHasNext() {
 		// Input.
 		BufferedReader bufferedReader = getBillyGraphBufferedReader();
 
-		// Helpers.
-		GraphFactory graphFactory = new AdjacencyListFactory();
-
 		// Initialize SUT.
 		NewFormatGraphStreamer sut = new NewFormatGraphStreamer(NUM_NODES,
-				NUM_GRAPHS, graphFactory, bufferedReader);
+				NUM_GRAPHS, bufferedReader);
 
 		// Exercise SUT.
 		assertTrue(sut.hasNext());
@@ -81,18 +73,15 @@ public class NewFormatGraphStreamerTest {
 		// Input.
 		BufferedReader bufferedReader = getBillyGraphBufferedReader();
 
-		// Helpers.
-		GraphFactory graphFactory = new AdjacencyListFactory();
-
 		// Initialize SUT.
 		NewFormatGraphStreamer sut = new NewFormatGraphStreamer(NUM_NODES,
-				NUM_GRAPHS, graphFactory, bufferedReader);
+				NUM_GRAPHS, bufferedReader);
 
 		// Exercise SUT.
-		Graph actualGraph = sut.getNext();
+		GraphDTO actualGraph = sut.getNext();
 
 		// Expected.
-		Graph expectedGraph = getBillyGraph(graphFactory);
+		GraphDTO expectedGraph = getBillyGraph();
 
 		// Assertions.
 		assertEquals(expectedGraph, actualGraph);

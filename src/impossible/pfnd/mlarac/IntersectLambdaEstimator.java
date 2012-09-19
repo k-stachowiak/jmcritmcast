@@ -1,6 +1,7 @@
 package impossible.pfnd.mlarac;
 
-import impossible.model.Path;
+import impossible.model.topology.Path;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;

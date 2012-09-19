@@ -1,9 +1,8 @@
 package impossible.dal;
 
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
+import impossible.dto.EdgeDTO;
+import impossible.dto.GraphDTO;
+import impossible.dto.NodeDTO;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -13,84 +12,86 @@ import java.util.Scanner;
 
 public class NewFormatGraphStreamer implements InputGraphStreamer {
 
-    private final int numNodes;
-    private final int numGraphs;
-    private final GraphFactory graphFactory;
-    private final Scanner scanner;
-    private int graphsRead;
+	private final int numNodes;
+	private final int numGraphs;
+	private final Scanner scanner;
+	private int graphsRead;
 
-    public NewFormatGraphStreamer(int numNodes, int numGraphs,
-            GraphFactory graphFactory, BufferedReader bufferedReader) {
+	public NewFormatGraphStreamer(int numNodes, int numGraphs,
+			BufferedReader bufferedReader) {
 
-        this.numNodes = numNodes;
-        this.numGraphs = numGraphs;
-        this.graphFactory = graphFactory;
-        scanner = new Scanner(bufferedReader);
+		this.numNodes = numNodes;
+		this.numGraphs = numGraphs;
+		scanner = new Scanner(bufferedReader);
 
-        graphsRead = 0;
-    }
+		graphsRead = 0;
+	}
 
-    @Override
-    public boolean hasNext() {
-        return graphsRead < numGraphs;
-    }
+	@Override
+	public boolean hasNext() {
+		return graphsRead < numGraphs;
+	}
 
-    @Override
-    public Graph getNext() {
-        int currentNumNodes = scanner.nextInt();
-        int currentNumMetrics = scanner.nextInt();
+	@Override
+	public GraphDTO getNext() {
+		int currentNumNodes = scanner.nextInt();
+		int currentNumMetrics = scanner.nextInt();
 
-        if (currentNumNodes != numNodes) {
-            throw new IllegalArgumentException();
-        }
+		if (currentNumNodes != numNodes) {
+			throw new IllegalArgumentException();
+		}
 
-        int currentId = 0;
-        List<Node> nodes = new ArrayList<>();
-        for (int n = 0; n < currentNumNodes; ++n) {
-            double x, y;
+		int currentId = 0;
+		List<NodeDTO> nodes = new ArrayList<>();
+		for (int n = 0; n < currentNumNodes; ++n) {
+			double x, y;
 
-            try {
-                x = scanner.nextDouble();
-                y = scanner.nextDouble();
-            } catch (InputMismatchException ex) {
-                String badToken = scanner.next();
-                System.err.printf("Token \"%1$s\" encountered while double expected.", badToken);
-                return null;
-            }
+			try {
+				x = scanner.nextDouble();
+				y = scanner.nextDouble();
+			} catch (InputMismatchException ex) {
+				String badToken = scanner.next();
+				System.err.printf(
+						"Token \"%1$s\" encountered while double expected.",
+						badToken);
+				return null;
+			}
 
-            nodes.add(new Node(currentId, x, y));
-            ++currentId;
-        }
+			nodes.add(new NodeDTO(currentId, x, y));
+			++currentId;
+		}
 
-        int currentNumEdges = scanner.nextInt();
-        List<Edge> edges = new ArrayList<>();
-        for (int e = 0; e < currentNumEdges; ++e) {
+		int currentNumEdges = scanner.nextInt();
+		List<EdgeDTO> edges = new ArrayList<>();
+		for (int e = 0; e < currentNumEdges; ++e) {
 
-            int nodeFrom = scanner.nextInt();
-            int nodeTo = scanner.nextInt();
+			int nodeFrom = scanner.nextInt();
+			int nodeTo = scanner.nextInt();
 
-            List<Double> metrics = new ArrayList<>();
-            for (int m = 0; m < currentNumMetrics; ++m) {
+			List<Double> metrics = new ArrayList<>();
+			for (int m = 0; m < currentNumMetrics; ++m) {
 
-                double metric;
+				double metric;
 
-                try {
-                    metric = scanner.nextDouble();
-                } catch (InputMismatchException ex) {
-                String badToken = scanner.next();
-                    System.err.printf("Token \"%1$s\" encountered while double expected.", badToken);
-                    return null;
-                }
+				try {
+					metric = scanner.nextDouble();
+				} catch (InputMismatchException ex) {
+					String badToken = scanner.next();
+					System.err
+							.printf("Token \"%1$s\" encountered while double expected.",
+									badToken);
+					return null;
+				}
 
-                metrics.add(metric);
-            }
+				metrics.add(metric);
+			}
 
-            edges.add(new Edge(nodeFrom, nodeTo, metrics));
-        }
+			edges.add(new EdgeDTO(nodeFrom, nodeTo, metrics));
+		}
 
-        Graph result = graphFactory.createFromLists(nodes, edges);
+		GraphDTO result = new GraphDTO(nodes, edges);
 
-        ++graphsRead;
-        return result;
-    }
+		++graphsRead;
+		return result;
+	}
 }

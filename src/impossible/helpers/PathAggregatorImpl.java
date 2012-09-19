@@ -1,12 +1,12 @@
 package impossible.helpers;
 
-import impossible.model.EdgeDefinition;
-import impossible.model.Graph;
-import impossible.model.Node;
-import impossible.model.Path;
-import impossible.model.SubGraph;
-import impossible.model.SubGraphToGraphAdapter;
-import impossible.model.Tree;
+import impossible.model.topology.EdgeDefinition;
+import impossible.model.topology.Graph;
+import impossible.model.topology.Node;
+import impossible.model.topology.Path;
+import impossible.model.topology.SubGraph;
+import impossible.model.topology.SubGraphToGraphAdapter;
+import impossible.model.topology.Tree;
 import impossible.tfind.SpanningTreeFinder;
 
 import java.util.ArrayList;

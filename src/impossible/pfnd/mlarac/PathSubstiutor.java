@@ -1,6 +1,6 @@
 package impossible.pfnd.mlarac;
 
-import impossible.model.Path;
+import impossible.model.topology.Path;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package impossible.helpers.gphmut;
 
-import impossible.model.Edge;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Node;
+import impossible.model.topology.Edge;
+import impossible.model.topology.Graph;
+import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Node;
 
 import java.util.ArrayList;
 import java.util.List;

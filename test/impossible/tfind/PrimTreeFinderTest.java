@@ -5,10 +5,10 @@ import impossible.helpers.TopologyAnalyser;
 import impossible.helpers.TopologyAnalyserImpl;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.model.AdjacencyListFactory;
-import impossible.model.Graph;
-import impossible.model.GraphFactory;
-import impossible.model.Tree;
+import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.Graph;
+import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Tree;
 import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.prim.PrimTreeFinder;
 

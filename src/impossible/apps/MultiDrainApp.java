@@ -1,8 +1,5 @@
 package impossible.apps;
 
-import impossible.hlanalysis.MultiDrain;
-import impossible.hlanalysis.MultiDrainSetup;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,16 +52,11 @@ public class MultiDrainApp {
         try {
             randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
             fengDelta = Double.parseDouble(properties.getProperty("fengDelta"));
-            baseBandwidth = Double.parseDouble(properties
-                    .getProperty("baseBandwidth"));
-            drainedBandwidth = Double.parseDouble(properties
-                    .getProperty("drainedBandwidth"));
-            graphsInFile = Integer.parseInt(properties
-                    .getProperty("graphsInFile"));
-            redistributionMin = Double.parseDouble(properties
-                    .getProperty("redistributionMin"));
-            redistributionMax = Double.parseDouble(properties
-                    .getProperty("redistributionMax"));
+            baseBandwidth = Double.parseDouble(properties.getProperty("baseBandwidth"));
+            drainedBandwidth = Double.parseDouble(properties.getProperty("drainedBandwidth"));
+            graphsInFile = Integer.parseInt(properties.getProperty("graphsInFile"));
+            redistributionMin = Double.parseDouble(properties.getProperty("redistributionMin"));
+            redistributionMax = Double.parseDouble(properties.getProperty("redistributionMax"));
             graphs = Integer.parseInt(properties.getProperty("graphs"));
 
             String nssStr = properties.getProperty("nodeSizes");
@@ -102,20 +94,17 @@ public class MultiDrainApp {
         String ansStr = properties.getProperty("algNames");
 
         if (topologiesDirecotry == null) {
-            System.err
-                    .println("Exception: Error while parsing topologies directory property.");
+            System.err.println("Exception: Error while parsing topologies directory property.");
             return false;
         }
 
         if (topology == null) {
-            System.err
-                    .println("Exception: Error while parsing topology property.");
+            System.err.println("Exception: Error while parsing topology property.");
             return false;
         }
 
         if (ansStr == null) {
-            System.err
-                    .println("Exception: Error while parsing algorithm names property.");
+            System.err.println("Exception: Error while parsing algorithm names property.");
             return false;
         }
 
@@ -143,6 +132,6 @@ public class MultiDrainApp {
                 graphsInFile, redistributionMin, redistributionMax,
                 algNames);
 
-        new MultiDrain(setup).run(args, System.out);
+        new MultiDrainLogic(setup).run(args, System.out, System.err);
     }
 }
