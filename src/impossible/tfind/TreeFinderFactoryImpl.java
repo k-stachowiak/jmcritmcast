@@ -8,6 +8,7 @@ import impossible.pfnd.PathFinderFactory;
 import impossible.tfind.hmcmc.HmcmcTreeFinder;
 import impossible.tfind.paggr.ConstrainedPathAggrTreeFinder;
 import impossible.tfind.prim.PrimTreeFinder;
+import impossible.tfind.rdp.RdpTreeFinder;
 
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
@@ -16,6 +17,11 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator) {
 
 		return new ConstrainedPathAggrTreeFinder(pathFinder, pathAggregator);
+	}
+	
+	@Override
+	public ConstrainedSteinerTreeFinder createRdp() {
+		return new RdpTreeFinder();
 	}
 
 	@Override
