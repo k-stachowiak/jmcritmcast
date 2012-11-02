@@ -8,6 +8,7 @@ public interface Graph {
 	Graph copy();
 
 	int getNumNodes();
+	int getNumEdges();
 	int getNumMetrics();
 	
 	List<Node> getNodes();

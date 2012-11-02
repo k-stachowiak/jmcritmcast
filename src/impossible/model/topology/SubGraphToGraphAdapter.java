@@ -27,6 +27,11 @@ public class SubGraphToGraphAdapter implements Graph {
 	}
 
 	@Override
+	public int getNumEdges() {
+		return subGraph.getEdges().size();
+	}
+
+	@Override
 	public int getNumMetrics() {
 		return parent.getNumMetrics();
 	}

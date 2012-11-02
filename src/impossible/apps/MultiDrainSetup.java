@@ -9,6 +9,8 @@ public class MultiDrainSetup {
 
 	private final double baseBandwidth;
 	private final double drainedBandwidth;
+	private final double minBandwidth;
+	private final int drainedIndex;
 
 	private final int graphs;
 
@@ -26,17 +28,18 @@ public class MultiDrainSetup {
 	private final List<String> treeFinderNames;
 
 	public MultiDrainSetup(long randomSeed, double fengDelta,
-			double baseBandwidth, double drainedBandwidth, int graphs,
+			double baseBandwidth, double drainedBandwidth, double minBandwidth, int drainedIndex, int graphs,
 			List<Integer> nodeSizes, List<Integer> criteriaCounts,
 			List<Integer> groupSizes, String topologiesDirectory,
 			String topology, int graphsInFile, double redistributionMin,
-			double redistributionMax,
-			List<String> treeFinderNames) {
+			double redistributionMax, List<String> treeFinderNames) {
 
 		this.randomSeed = randomSeed;
 		this.fengDelta = fengDelta;
 		this.baseBandwidth = baseBandwidth;
 		this.drainedBandwidth = drainedBandwidth;
+		this.minBandwidth = minBandwidth;
+		this.drainedIndex = drainedIndex;
 		this.graphs = graphs;
 		this.nodeSizes = nodeSizes;
 		this.criteriaCounts = criteriaCounts;
@@ -63,6 +66,14 @@ public class MultiDrainSetup {
 
 	public double getDrainedBandwidth() {
 		return drainedBandwidth;
+	}
+	
+	public double getMinBandwidth() {
+		return minBandwidth;
+	}
+
+	public int getDrainedIndex() {
+		return drainedIndex;
 	}
 
 	public int getGraphs() {

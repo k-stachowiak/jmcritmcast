@@ -34,25 +34,25 @@ import java.util.List;
 
 public class FailureAnalysisApp {
 
-	private static final String DRAINAGE_DIR = "drainagefail";
+	private static final String DRAINAGE_DIR = "selected_drainagefail";
 
 	public static void main(String[] args) {
 
 		File problemsDir = new File(DRAINAGE_DIR);
 		DTOMarshaller<ConstrainedTreeFindProblemDTO> marshaller = new DTOMarshaller<>();
 		for (File problemFile : problemsDir.listFiles()) {
-			
+
 			// Skip non-XML files.
 			int pos = problemFile.getName().lastIndexOf('.');
-			String ext = problemFile.getName().substring(pos+1);
-			if(ext.compareTo("xml") != 0) {
-					continue;
+			String ext = problemFile.getName().substring(pos + 1);
+			if (ext.compareTo("xml") != 0) {
+				continue;
 			}
-			
+
 			// Process file.
 			ConstrainedTreeFindProblemDTO problem = marshaller.readFromFile(
 					problemFile.getPath(), ConstrainedTreeFindProblemDTO.class);
-			
+
 			analyzeProblem(problem);
 		}
 	}
@@ -88,42 +88,41 @@ public class FailureAnalysisApp {
 	}
 
 	private static void generateGraphimage(ConstrainedTreeFindProblemDTO problem) {
-		
-		try {
-		
-		File out = new File(DRAINAGE_DIR + "/" + problem.hashCode() + ".dot");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(out));
 
-		writer.write("digraph G {");
-		writer.newLine();
-		
-		for (EdgeDTO edge : problem.getGraph().getEdges()) {
-			
-			StringBuilder metricsString = new StringBuilder();
-			for(int i = 0; i < edge.getMetrics().size(); ++i) {
-				double metric = edge.getMetrics().get(i);
-				metricsString.append(String.format("%1$.2f", metric));
-				if(i < edge.getMetrics().size() - 1) {
-					metricsString.append(", ");
-				}
-			}
-			
-			String edgeLine = String.format(
-					"%1$d -> %2$d [label=\"%3$s\"];",
-					edge.getNodeFrom(),
-					edge.getNodeTo(),
-					metricsString.toString());
-			
-			writer.write(edgeLine);
+		try {
+
+			File out = new File(DRAINAGE_DIR + "/" + problem.hashCode()
+					+ ".dot");
+			BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+
+			writer.write("digraph G {");
 			writer.newLine();
-		}
-		
-		writer.write("}");
-		writer.newLine();		
-		
-		writer.close();
-		
-		} catch(IOException exception) {
+
+			for (EdgeDTO edge : problem.getGraph().getEdges()) {
+
+				StringBuilder metricsString = new StringBuilder();
+				for (int i = 0; i < edge.getMetrics().size(); ++i) {
+					double metric = edge.getMetrics().get(i);
+					metricsString.append(String.format("%1$.2f", metric));
+					if (i < edge.getMetrics().size() - 1) {
+						metricsString.append(", ");
+					}
+				}
+
+				String edgeLine = String.format(
+						"%1$d -> %2$d [label=\"%3$s\"];", edge.getNodeFrom(),
+						edge.getNodeTo(), metricsString.toString());
+
+				writer.write(edgeLine);
+				writer.newLine();
+			}
+
+			writer.write("}");
+			writer.newLine();
+
+			writer.close();
+
+		} catch (IOException exception) {
 			// Ignore...
 		}
 	}

@@ -5,6 +5,6 @@ import impossible.model.topology.SubGraph;
 
 public interface ResourceDrainer {
 
-	Graph drain(Graph graph, SubGraph subGraph);
+	Graph drain(Graph graph, SubGraph subGraph, double resources, double minResource);
 
 }

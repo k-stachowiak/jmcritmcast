@@ -3,14 +3,15 @@ package impossible.tfind.hmcmc;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.model.util.NodeComparator;
+import impossible.pfnd.CommonRelaxation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-public class PartialDijkstraRelaxation extends DijkstraRelaxation {
+public class PartialDijkstraRelaxation extends CommonRelaxation {
 
 	private final List<Double> constraints;
 
@@ -24,9 +25,9 @@ public class PartialDijkstraRelaxation extends DijkstraRelaxation {
 	@Override
 	public void reset(Graph graph, Node from) {
 
-		labels = new HashMap<>();
-		specifficLabels = new HashMap<>();
-		predecessors = new HashMap<>();
+		labels = new TreeMap<>(new NodeComparator());
+		specifficLabels = new TreeMap<>(new NodeComparator());
+		predecessors = new TreeMap<>(new NodeComparator());
 
 		for (Node node : graph.getNodes()) {
 

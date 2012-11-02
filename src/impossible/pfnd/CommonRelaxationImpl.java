@@ -1,33 +1,34 @@
-package impossible.pfnd.dkstr;
+package impossible.pfnd;
 
 import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
+import impossible.model.util.NodeComparator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
-public class DefaultDijkstraRelaxation extends DijkstraRelaxation {
+public class CommonRelaxationImpl extends CommonRelaxation {
 
 	private final MetricProvider metricProvider;
 
 	Map<Node, List<Double>> labels;
 	Map<Node, Double> aggregatedLabels;
 
-	public DefaultDijkstraRelaxation(MetricProvider metricProvider) {
+	public CommonRelaxationImpl(MetricProvider metricProvider) {
 		this.metricProvider = metricProvider;
 	}
 
 	@Override
 	public void reset(Graph graph, Node from) {
 
-		labels = new HashMap<>();
-		aggregatedLabels = new HashMap<>();
-		predecessors = new HashMap<>();
+		labels = new TreeMap<>(new NodeComparator());
+		aggregatedLabels = new TreeMap<>(new NodeComparator());
+		predecessors = new TreeMap<>(new NodeComparator());
 
 		for (Node node : graph.getNodes()) {
 

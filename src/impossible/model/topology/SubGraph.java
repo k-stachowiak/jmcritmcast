@@ -92,6 +92,16 @@ public class SubGraph {
 	}
 
 	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (EdgeDefinition edgeDefinition : edgeDefinitions) {
+			stringBuilder.append(edgeDefinition.getFrom() + " -> "
+					+ edgeDefinition.getTo() + " ");
+		}
+		return stringBuilder.toString();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

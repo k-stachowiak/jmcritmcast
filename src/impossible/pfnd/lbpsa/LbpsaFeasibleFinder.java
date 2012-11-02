@@ -7,10 +7,11 @@ import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
+import impossible.pfnd.CommonRelaxationImpl;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
-import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +23,30 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 	private final ConstraintsComparer constraintsComparer;
 
 	// State
-	private DefaultDijkstraRelaxation relaxation;
+	private CommonRelaxationImpl relaxation;
 	private List<Double> lambdas;
 	private double upperBound;
+
+	/*
+	 * private String stateString() {
+	 * 
+	 * StringBuilder stringBuilder = new StringBuilder();
+	 * 
+	 * // Record labels. if (relaxation != null) {
+	 * stringBuilder.append("Labels : "); for (Map.Entry<Node, List<Double>>
+	 * entry : relaxation.getLabels() .entrySet()) { stringBuilder.append("(");
+	 * for (Double label : entry.getValue()) { stringBuilder.append(label +
+	 * " "); } stringBuilder.append(") "); } stringBuilder.append("\n"); }
+	 * 
+	 * // Record lambdas. stringBuilder.append("Lambdas : "); for (Double lambda
+	 * : lambdas) { stringBuilder.append(lambda + " "); }
+	 * stringBuilder.append("\n");
+	 * 
+	 * // Record upper bound. stringBuilder.append("Upper bound : " +
+	 * upperBound);
+	 * 
+	 * return stringBuilder.toString(); }
+	 */
 
 	public LbpsaFeasibleFinder(PathFinderFactory pathFinderFactory,
 			ConstraintsComparer constraintsComparer) {
@@ -76,7 +98,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 			MetricProvider metricProvider = new LagrangeMetricProvider(1,
 					constraints, lambdas);
 
-			relaxation = new DefaultDijkstraRelaxation(metricProvider);
+			relaxation = new CommonRelaxationImpl(metricProvider);
 			PathFinder pathFinder = pathFinderFactory
 					.createDijkstra(relaxation);
 
@@ -110,12 +132,12 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 				prevL = L;
 			}
 
-			if (iterationsSinceLChange >= 5) {
+			if (iterationsSinceLChange >= 50) {
 				iterationsSinceLChange = 0;
 				lk *= 0.5;
 			}
 
-			if (++passes > 10) {
+			if (++passes > 50) {
 				passes = 0;
 				lk *= 0.5;
 			}

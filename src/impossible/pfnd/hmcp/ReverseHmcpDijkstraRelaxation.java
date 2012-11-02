@@ -3,15 +3,15 @@ package impossible.pfnd.hmcp;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.model.util.NodeComparator;
+import impossible.pfnd.CommonRelaxation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-
-public class ReverseHmcpDijkstraRelaxation extends DijkstraRelaxation {
+public class ReverseHmcpDijkstraRelaxation extends CommonRelaxation {
 
 	private final List<Double> constraints;
 
@@ -25,9 +25,9 @@ public class ReverseHmcpDijkstraRelaxation extends DijkstraRelaxation {
 	@Override
 	public void reset(Graph graph, Node from) {
 
-		r = new HashMap<>();
-		R = new HashMap<>();
-		predecessors = new HashMap<>();
+		r = new TreeMap<>(new NodeComparator());
+		R = new TreeMap<>(new NodeComparator());
+		predecessors = new TreeMap<>(new NodeComparator());
 
 		for (Node node : graph.getNodes()) {
 
@@ -69,7 +69,7 @@ public class ReverseHmcpDijkstraRelaxation extends DijkstraRelaxation {
 
 		// Check and relax
 		if (r.get(to) > maxWeight) {
-			
+
 			r.put(to, maxWeight);
 			predecessors.put(to, from);
 

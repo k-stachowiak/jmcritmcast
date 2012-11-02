@@ -7,6 +7,8 @@ import impossible.dto.ConstrainedTreeFindProblemDTO;
 import impossible.dto.GraphDTO;
 import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.ConstraintsComparerImpl;
+import impossible.helpers.CostResourceTranslation;
+import impossible.helpers.OspfCostResourceTranslation;
 import impossible.helpers.PathAggregator;
 import impossible.helpers.PathAggregatorImpl;
 import impossible.helpers.TopologyAnalyser;
@@ -15,7 +17,7 @@ import impossible.helpers.cstrch.FengGroupConstraintsChooser;
 import impossible.helpers.cstrch.GroupConstraintsChooser;
 import impossible.helpers.gphmut.MetricRedistribution;
 import impossible.helpers.gphmut.MetricRedistributionImpl;
-import impossible.helpers.gphmut.OspfResourceDrainer;
+import impossible.helpers.gphmut.IndexResourceDrainer;
 import impossible.helpers.gphmut.ResourceDrainer;
 import impossible.helpers.gphmut.UniformDistributionParameters;
 import impossible.helpers.metrprov.IndexMetricProvider;
@@ -38,6 +40,7 @@ import impossible.tfind.ConstrainedSteinerTreeFinder;
 import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.TreeFinderFactory;
 import impossible.tfind.TreeFinderFactoryImpl;
+import impossible.util.TimeMeasurement;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +48,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +69,7 @@ public class MultiDrainLogic {
 	// Strategies.
 	private final GroupConstraintsChooser constraintsChooser;
 	private final NodeGroupper nodeGroupper;
+	private final CostResourceTranslation costResourceTranslation;
 	private final ResourceDrainer resourceDrainer;
 	private final MetricProvider metricProvider;
 	private final MetricRedistribution metricResistribution;
@@ -78,9 +84,6 @@ public class MultiDrainLogic {
 	// Procedure setup.
 	private MultiDrainSetup setup;
 
-	// Logging.
-	private List<ConstrainedTreeFindProblemDTO> failedProblems;
-
 	public MultiDrainLogic(MultiDrainSetup setup) {
 
 		random = new Random(setup.getRandomSeed());
@@ -93,8 +96,11 @@ public class MultiDrainLogic {
 
 		nodeGroupper = new RandomNodeGroupper(random);
 
-		resourceDrainer = new OspfResourceDrainer(setup.getBaseBandwidth(),
-				setup.getDrainedBandwidth(), graphFactory);
+		costResourceTranslation = new OspfCostResourceTranslation(
+				setup.getBaseBandwidth());
+
+		resourceDrainer = new IndexResourceDrainer(costResourceTranslation,
+				setup.getDrainedIndex(), graphFactory);
 
 		metricProvider = new IndexMetricProvider(0);
 
@@ -112,25 +118,37 @@ public class MultiDrainLogic {
 	public void run(String[] args, OutputStream out, OutputStream debug) {
 
 		failuresReset();
-
+		TimeMeasurement timeMeasurement = new TimeMeasurement();
 		StringBuilder result = new StringBuilder();
-
 		PrintWriter debugWriter = new PrintWriter(debug, true);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM HH:mm:ss");
 
 		// Cartesian product of case variables.
 		for (Integer nodeSize : setup.getNodeSizes()) {
-			debugWriter.println("Node count: " + nodeSize);
+			String nodesString = "n = " + nodeSize;
 			for (Integer criteriaCount : setup.getCriteriaCounts()) {
-				debugWriter.println("Criteria count: " + criteriaCount);
+				String nodeCritString = nodesString + " c = " + criteriaCount;
 				for (Integer groupSize : setup.getGroupSizes()) {
-					debugWriter.println("Group size: " + groupSize);
+					String nodeCritGrioupString = nodeCritString + " g = "
+							+ groupSize;
 					for (String finderName : setup.getTreeFinderNames()) {
 
-						debugWriter.println("Alg: " + finderName);
+						String problemString = sdf.format(new Date()) + " "
+								+ nodeCritGrioupString + " alg = " + finderName;
+
+						debugWriter.print(problemString);
+						debugWriter.flush();
+
+						timeMeasurement.begin();
 
 						String partialResult = experiment(nodeSize,
 								criteriaCount, groupSize, setup.getGraphs(),
 								finderName, treeFinders.get(finderName));
+
+						timeMeasurement.end();
+
+						debugWriter.println(" Elapsed : "
+								+ timeMeasurement.getDurationString());
 
 						if (partialResult == null) {
 							debugWriter.println("Experiment failed.");
@@ -146,8 +164,6 @@ public class MultiDrainLogic {
 		PrintWriter outWriter = new PrintWriter(out, true);
 		outWriter.print(result.toString());
 		outWriter.close();
-
-		failuresReport();
 
 		debugWriter.println("Terminated normally");
 
@@ -207,7 +223,8 @@ public class MultiDrainLogic {
 		Graph copy = graph.copy();
 
 		// Drainage loop
-		while (topologyAnalyser.isConnected(copy)) {
+		while (topologyAnalyser.isConnected(copy)
+				&& copy.getNodes().size() >= groupSize) {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 			List<Double> constraints = constraintsChooser.choose(copy, group);
@@ -220,7 +237,8 @@ public class MultiDrainLogic {
 			}
 
 			++successCount;
-			copy = resourceDrainer.drain(copy, tree);
+			copy = resourceDrainer.drain(copy, tree,
+					setup.getDrainedBandwidth(), setup.getMinBandwidth());
 		}
 
 		return successCount;
@@ -306,23 +324,6 @@ public class MultiDrainLogic {
 	// Failure record related.
 
 	private void failuresReset() {
-		failedProblems = new ArrayList<>();
-	}
-
-	private void failuresStore(Graph graph, List<Node> group,
-			List<Double> constraints, String finderName) {
-
-		List<Integer> groupIds = new ArrayList<>();
-		for (Node node : group) {
-			groupIds.add(node.getId());
-		}
-
-		failedProblems.add(new ConstrainedTreeFindProblemDTO(GraphFactory
-				.createDTO(graph), groupIds, constraints, finderName));
-	}
-
-	private void failuresReport() {
-
 		// Make sure the target directory exists.
 		File drainageFailDir = new File("drainagefail");
 		if (!drainageFailDir.exists()) {
@@ -336,13 +337,26 @@ public class MultiDrainLogic {
 		for (File child : drainageFailDir.listFiles()) {
 			child.delete();
 		}
+	}
 
-		// Write the failure reports.
-		DTOMarshaller<ConstrainedTreeFindProblemDTO> marshaller = new DTOMarshaller<>();
-		for (ConstrainedTreeFindProblemDTO problem : failedProblems) {
-			String path = drainageFailDir.getPath() + "/problem"
-					+ problem.hashCode() + ".xml";
-			marshaller.writeToFile(path, problem);
+	private void failuresStore(Graph graph, List<Node> group,
+			List<Double> constraints, String finderName) {
+
+		List<Integer> groupIds = new ArrayList<>();
+		for (Node node : group) {
+			groupIds.add(node.getId());
 		}
+
+		ConstrainedTreeFindProblemDTO problem = new ConstrainedTreeFindProblemDTO(
+				GraphFactory.createDTO(graph), groupIds, constraints,
+				finderName);
+
+		DTOMarshaller<ConstrainedTreeFindProblemDTO> marshaller = new DTOMarshaller<>();
+
+		File drainageFailDir = new File("drainagefail");
+		String path = drainageFailDir.getPath() + "/" + problem.getFinderName()
+				+ "." + problem.getGraph().getNodes().size() + "."
+				+ problem.hashCode() + ".xml";
+		marshaller.writeToFile(path, problem);
 	}
 }

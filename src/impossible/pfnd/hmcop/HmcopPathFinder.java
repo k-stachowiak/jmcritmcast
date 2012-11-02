@@ -1,13 +1,13 @@
 package impossible.pfnd.hmcop;
 
-import java.util.List;
-
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
+
+import java.util.List;
 
 public class HmcopPathFinder implements ConstrainedPathFinder {
 
@@ -19,14 +19,14 @@ public class HmcopPathFinder implements ConstrainedPathFinder {
 
 	@Override
 	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
-
+		
 		int numMetrics = graph.getNumMetrics();
 
 		// Reverse search.
 		HmcopRevRelaxation revRelaxation = new HmcopRevRelaxation(constraints);
 		PathFinder revFinder = new DijkstraPathFinder(revRelaxation);
 
-		if (revFinder.find(graph, from, to) == null) {
+		if (revFinder.find(graph, to, from) == null) {
 			return null;
 		}
 

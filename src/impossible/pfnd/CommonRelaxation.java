@@ -1,4 +1,4 @@
-package impossible.pfnd.dkstr;
+package impossible.pfnd;
 
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
@@ -9,7 +9,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public abstract class DijkstraRelaxation {
+public abstract class CommonRelaxation {
+
+	protected String predecessorsString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("p\t");
+		for(Map.Entry<Node, Node> entry : predecessors.entrySet()) {
+			stringBuilder.append(entry.getValue().getId() + "\t");
+		}
+		stringBuilder.append("\n");
+		return stringBuilder.toString();
+	}
 
 	protected Map<Node, Node> predecessors;
 

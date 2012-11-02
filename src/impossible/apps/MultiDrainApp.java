@@ -15,6 +15,8 @@ public class MultiDrainApp {
     static double fengDelta;
     static double baseBandwidth;
     static double drainedBandwidth;
+    static double minBandwidth;
+    static int drainedIndex;
     static String topologiesDirecotry;
     static String topology;
     static int graphsInFile;
@@ -31,7 +33,7 @@ public class MultiDrainApp {
         Properties properties = new Properties();
         FileInputStream fis;
 
-        // Read and parse config file.
+        // Read and parse configuration file.
         // ---------------------------
         try {
             fis = new FileInputStream("config");
@@ -54,6 +56,8 @@ public class MultiDrainApp {
             fengDelta = Double.parseDouble(properties.getProperty("fengDelta"));
             baseBandwidth = Double.parseDouble(properties.getProperty("baseBandwidth"));
             drainedBandwidth = Double.parseDouble(properties.getProperty("drainedBandwidth"));
+            minBandwidth = Double.parseDouble(properties.getProperty("minBandwidth"));
+            drainedIndex = Integer.parseInt(properties.getProperty("drainedIndex"));
             graphsInFile = Integer.parseInt(properties.getProperty("graphsInFile"));
             redistributionMin = Double.parseDouble(properties.getProperty("redistributionMin"));
             redistributionMax = Double.parseDouble(properties.getProperty("redistributionMax"));
@@ -127,7 +131,7 @@ public class MultiDrainApp {
         // Build a setup definition for the application and run it.
         // --------------------------------------------------------
         final MultiDrainSetup setup = new MultiDrainSetup(randomSeed,
-                fengDelta, baseBandwidth, drainedBandwidth, graphs, nodeSizes,
+                fengDelta, baseBandwidth, drainedBandwidth, minBandwidth, drainedIndex, graphs, nodeSizes,
                 criteriaCounts, groupSizes, topologiesDirecotry, topology,
                 graphsInFile, redistributionMin, redistributionMax,
                 algNames);

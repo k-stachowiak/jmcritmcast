@@ -3,15 +3,16 @@ package impossible.pfnd.hmcp;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.model.util.NodeComparator;
+import impossible.pfnd.CommonRelaxation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
-public class LookAheadHmcpDijkstraRelaxation extends DijkstraRelaxation {
+public class LookAheadHmcpDijkstraRelaxation extends CommonRelaxation {
 
 	private final List<Double> constraints;
 	private final ReverseHmcpDijkstraRelaxation reverseRelaxation;
@@ -28,9 +29,9 @@ public class LookAheadHmcpDijkstraRelaxation extends DijkstraRelaxation {
 	@Override
 	public void reset(Graph graph, Node from) {
 
-		f = new HashMap<>();
-		G = new HashMap<>();
-		predecessors = new HashMap<>();
+		f = new TreeMap<>(new NodeComparator());
+		G = new TreeMap<>(new NodeComparator());
+		predecessors = new TreeMap<>(new NodeComparator());
 
 		for (Node node : graph.getNodes()) {
 

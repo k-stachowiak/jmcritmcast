@@ -9,6 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class GraphFactory {
+	
+	public Graph createOneEdge(List<Double> metrics) {
+		List<Node> nodes = new ArrayList<>();
+		nodes.add(new Node(0, 0.0, 0.0));
+		nodes.add(new Node(1, 1.0, 0.0));
+		
+		List<Edge> edges = new ArrayList<>();
+		edges.add(new Edge(0, 1, new ArrayList<>(metrics)));
+		
+		return createFromLists(nodes, edges);
+	}
 
     public Graph createTest() {
 
@@ -256,5 +267,7 @@ public abstract class GraphFactory {
 		return new GraphDTO(nodes, edges);
 	}
 
+	// TODO: Make this method accept a boolean argument to determine if
+	// the graph should be directed or not.
 	public abstract Graph createFromLists(List<Node> nodes, List<Edge> edges);
 }

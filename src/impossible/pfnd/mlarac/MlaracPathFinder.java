@@ -7,12 +7,12 @@ import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
+import impossible.pfnd.CommonRelaxation;
+import impossible.pfnd.CommonRelaxationImpl;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
-import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 
 			MetricProvider metricProvider = new IndexMetricProvider(m);
 
-			DijkstraRelaxation dijkstraRelaxation = new DefaultDijkstraRelaxation(
+			CommonRelaxation dijkstraRelaxation = new CommonRelaxationImpl(
 					metricProvider);
 
 			indexDijksrtas.add(new DijkstraPathFinder(dijkstraRelaxation));

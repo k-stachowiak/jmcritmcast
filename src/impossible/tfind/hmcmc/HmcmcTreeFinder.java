@@ -6,10 +6,10 @@ import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
 import impossible.model.topology.Tree;
+import impossible.pfnd.CommonRelaxation;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
 import impossible.tfind.ConstrainedSteinerTreeFinder;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class HmcmcTreeFinder implements ConstrainedSteinerTreeFinder {
 
 		// Partial search.
 		// ---------------
-		DijkstraRelaxation partialRelaxation = new PartialDijkstraRelaxation(
+		CommonRelaxation partialRelaxation = new PartialDijkstraRelaxation(
 				constraints);
 
 		PathFinder partialFinder = pathFinderFactory

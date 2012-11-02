@@ -20,7 +20,6 @@ public class AdjacencyList implements Graph {
 		private final int destination;
 
 		public AdjacencyDefinition(Edge edge, int destination) {
-			super();
 			this.edge = edge;
 			this.destination = destination;
 		}
@@ -82,6 +81,17 @@ public class AdjacencyList implements Graph {
 	@Override
 	public int getNumNodes() {
 		return map.keySet().size();
+	}
+
+	@Override
+	public int getNumEdges() {
+		Set<Edge> uniqueEdges = new HashSet<>();
+		for(List<AdjacencyDefinition> definitionsList : map.values()) {
+			for(AdjacencyDefinition definition : definitionsList) {
+				uniqueEdges.add(definition.getEdge());
+			}
+		}
+		return uniqueEdges.size();
 	}
 
 	@Override

@@ -26,11 +26,22 @@ public class LbpsaPathFinder implements ConstrainedPathFinder {
 		LbpsaFeasibleFinder feasibleFinder = new LbpsaFeasibleFinder(
 				pathFinderFactory, constraintsComparer);
 
-		if (feasibleFinder.find(graph, from, to, constraints) == null)
+		Path feasiblePath = feasibleFinder.find(graph, from, to, constraints);
+		if (feasiblePath == null) {
 			return null;
+		}
 
-		LbpsaBnbFinder bnbFinder = new LbpsaBnbFinder(feasibleFinder, constraints);
-		return bnbFinder.find(graph, from, to);
+		LbpsaBnbFinder bnbFinder = new LbpsaBnbFinder(feasibleFinder,
+				constraints);
+
+		// The fact that this is the reverse search is accounted for
+		// in the finder's implementation.
+		Path resultPath = bnbFinder.find(graph, from, to);
+
+		if (resultPath == null) {
+			return null;
+		}
+
+		return resultPath;
 	}
-
 }

@@ -3,14 +3,15 @@ package impossible.pfnd.hmcop;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
+import impossible.model.util.NodeComparator;
+import impossible.pfnd.CommonRelaxation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-public class HmcopLaRelaxation extends DijkstraRelaxation {
+public class HmcopLaRelaxation extends CommonRelaxation {
 
 	// Constants.
 	private final HmcopRevRelaxation revRelaxation;
@@ -20,6 +21,38 @@ public class HmcopLaRelaxation extends DijkstraRelaxation {
 	// State
 	private Map<Node, Double> f;
 	private Map<Node, List<Double>> G; // Indexing: G[node][metric]
+
+	/*
+	private String stateString() {
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		// Aggregated metrics
+		stringBuilder.append("f\t");
+		for (Map.Entry<Node, Double> entry : f.entrySet()) {
+			String value = String.format("%1$.2f", entry.getValue());
+			stringBuilder.append(value + "\t");
+		}
+		stringBuilder.append("\n");
+
+		// Specific metrics
+		stringBuilder.append("G\t");
+		for (Map.Entry<Node, List<Double>> entry : G.entrySet()) {
+			stringBuilder.append("(");
+			for (Double metric : entry.getValue()) {
+				String metricString = String.format("%1$.2f", metric);
+				stringBuilder.append(metricString + " ");
+			}
+			stringBuilder.append(")");
+		}
+		stringBuilder.append("\n");
+
+		// Predecessors
+		stringBuilder.append(predecessorsString());
+
+		return stringBuilder.toString();
+	}
+	*/
 
 	public HmcopLaRelaxation(HmcopRevRelaxation revRelaxation,
 			List<Double> constraints, double lambda) {
@@ -34,9 +67,9 @@ public class HmcopLaRelaxation extends DijkstraRelaxation {
 		int numMetrics = graph.getNumMetrics();
 
 		// Reallocate state.
-		f = new HashMap<>();
-		G = new HashMap<>();
-		predecessors = new HashMap<>();
+		f = new TreeMap<>(new NodeComparator());
+		G = new TreeMap<>(new NodeComparator());
+		predecessors = new TreeMap<>(new NodeComparator());
 
 		// Set initial labels.
 		for (Node node : graph.getNodes()) {
@@ -59,7 +92,6 @@ public class HmcopLaRelaxation extends DijkstraRelaxation {
 
 		f.put(from, 0.0);
 		G.put(from, zeroMetrics);
-
 	}
 
 	@Override
@@ -108,10 +140,10 @@ public class HmcopLaRelaxation extends DijkstraRelaxation {
 	public boolean failureCondition(Node destination, int numMetrics) {
 		for (int m = 1; m < numMetrics; ++m) {
 			if (G.get(destination).get(m) > constraints.get(m - 1)) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private double computeAggregatedCandidate(Node from, Node to, Edge edge,

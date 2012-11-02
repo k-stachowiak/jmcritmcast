@@ -6,6 +6,9 @@ import java.util.List;
 
 public class ConstraintsComparerImpl implements ConstraintsComparer {
 
+	/* (non-Javadoc)
+	 * @see impossible.helpers.ConstraintsComparer#fulfilsAll(impossible.model.topology.SubGraph, java.util.List)
+	 */
 	@Override
 	public boolean fulfilsAll(SubGraph subGraph, List<Double> constraints) {
 		List<Double> metrics = subGraph.getMetrics();
@@ -16,6 +19,9 @@ public class ConstraintsComparerImpl implements ConstraintsComparer {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see impossible.helpers.ConstraintsComparer#breaksAll(impossible.model.topology.SubGraph, java.util.List)
+	 */
 	@Override
 	public boolean breaksAll(SubGraph subGraph, List<Double> constraints) {
 		List<Double> metrics = subGraph.getMetrics();
@@ -26,6 +32,9 @@ public class ConstraintsComparerImpl implements ConstraintsComparer {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see impossible.helpers.ConstraintsComparer#fulfilsIndex(impossible.model.topology.SubGraph, int, double)
+	 */
 	@Override
 	public boolean fulfilsIndex(SubGraph subGraph, int m, double constraint) {
 		return subGraph.getMetrics().get(m) <= constraint;

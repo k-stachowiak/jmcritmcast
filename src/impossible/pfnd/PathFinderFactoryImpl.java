@@ -4,9 +4,7 @@ import impossible.helpers.ConstraintsComparer;
 import impossible.helpers.metrprov.IndexMetricProvider;
 import impossible.helpers.metrprov.LinearCombinationMetricProvider;
 import impossible.helpers.metrprov.MetricProvider;
-import impossible.pfnd.dkstr.DefaultDijkstraRelaxation;
 import impossible.pfnd.dkstr.DijkstraPathFinder;
-import impossible.pfnd.dkstr.DijkstraRelaxation;
 import impossible.pfnd.hmcop.HmcopPathFinder;
 import impossible.pfnd.hmcp.HmcpPathFinder;
 import impossible.pfnd.lbpsa.LbpsaPathFinder;
@@ -19,8 +17,8 @@ import java.util.List;
 public class PathFinderFactoryImpl implements PathFinderFactory {
 
 	@Override
-	public PathFinder createDijkstra(DijkstraRelaxation dijkstraRelaxation) {
-		return new DijkstraPathFinder(dijkstraRelaxation);
+	public PathFinder createDijkstra(CommonRelaxation commonRelaxation) {
+		return new DijkstraPathFinder(commonRelaxation);
 	}
 
 	@Override
@@ -28,10 +26,10 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 
 		MetricProvider metricProvider = new IndexMetricProvider(metricIndex);
 
-		DijkstraRelaxation dijkstraRelaxation = new DefaultDijkstraRelaxation(
+		CommonRelaxation commonRelaxation = new CommonRelaxationImpl(
 				metricProvider);
 
-		return new DijkstraPathFinder(dijkstraRelaxation);
+		return new DijkstraPathFinder(commonRelaxation);
 	}
 
 	@Override
@@ -39,9 +37,9 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 
 		MetricProvider metricProvider = new LinearCombinationMetricProvider(
 				offset, lambdas);
-		DijkstraRelaxation dijkstraRelaxation = new DefaultDijkstraRelaxation(
+		CommonRelaxation commonRelaxation = new CommonRelaxationImpl(
 				metricProvider);
-		return new DijkstraPathFinder(dijkstraRelaxation);
+		return new DijkstraPathFinder(commonRelaxation);
 	}
 
 	@Override

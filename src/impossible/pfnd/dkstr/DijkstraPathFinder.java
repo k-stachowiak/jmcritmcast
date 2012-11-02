@@ -3,6 +3,7 @@ package impossible.pfnd.dkstr;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
+import impossible.pfnd.CommonRelaxation;
 import impossible.pfnd.PathFinder;
 
 import java.util.HashSet;
@@ -12,10 +13,10 @@ import java.util.Set;
 
 public class DijkstraPathFinder implements PathFinder {
 
-	private final DijkstraRelaxation dijkstraRelaxation;
+	private final CommonRelaxation relaxation;
 
-	public DijkstraPathFinder(DijkstraRelaxation dijkstraRelaxation) {
-		this.dijkstraRelaxation = dijkstraRelaxation;
+	public DijkstraPathFinder(CommonRelaxation relaxation) {
+		this.relaxation = relaxation;
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class DijkstraPathFinder implements PathFinder {
 
 		open.add(from);
 
-		dijkstraRelaxation.reset(graph, from);
+		relaxation.reset(graph, from);
 
 		while (!open.isEmpty()) {
 
@@ -40,7 +41,7 @@ public class DijkstraPathFinder implements PathFinder {
 				if (closed.contains(neighbor))
 					continue;
 
-				boolean relaxed = dijkstraRelaxation.relax(graph, current,
+				boolean relaxed = relaxation.relax(graph, current,
 						neighbor);
 				
 				if (relaxed) {
@@ -49,14 +50,14 @@ public class DijkstraPathFinder implements PathFinder {
 			}
 		}
 
-		return dijkstraRelaxation.buildPath(graph, from, to);
+		return relaxation.buildPath(graph, from, to);
 	}
 
 	private Node cheapest(Set<Node> open) {
 		Node candidate = null;
 		for (Node node : open) {
 			if (candidate == null
-					|| dijkstraRelaxation.isCheaper(node, candidate)) {
+					|| relaxation.isCheaper(node, candidate)) {
 
 				candidate = node;
 			}

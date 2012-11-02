@@ -20,9 +20,9 @@ import org.junit.Test;
 
 public class LbpsaPathFinderTest {
 
-	private static GraphFactory graphFactory = new AdjacencyListFactory();
-	private static PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-	private static ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+	private static GraphFactory graphFactory;
+	private static PathFinderFactory pathFinderFactory;
+	private static ConstraintsComparer constraintsComparer;
 
 	@BeforeClass
 	public static void beforeClass() {

@@ -6,12 +6,39 @@ import impossible.dto.EdgeDTO;
 import impossible.dto.GraphDTO;
 import impossible.dto.NodeDTO;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ConstrainedFindProblemMarshallingTest {
+
+	private static final String TEMP_DIR = "temp";
+
+	@BeforeClass
+	public static void beforeClass() {
+		File tempDir = new File(TEMP_DIR);
+
+		if (tempDir.exists()) {
+			if (tempDir.isFile()) {
+				tempDir.delete();
+			}
+		} else {
+			tempDir.mkdir();
+		}
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		File tempDir = new File(TEMP_DIR);
+		for (File file : tempDir.listFiles()) {
+			file.delete();
+		}
+		tempDir.delete();
+	}
 
 	@Test
 	public void test() {
@@ -24,7 +51,8 @@ public class ConstrainedFindProblemMarshallingTest {
 		final List<Double> ANY_METRICS = Arrays.asList(new Double[] {
 				ANY_DOUBLE, ANY_DOUBLE, ANY_DOUBLE });
 
-		final String TEST_FILE_NAME = "temp/ConstrainedFindProblemMarshallingTest.xml";
+		final String TEST_FILE_NAME = TEMP_DIR
+				+ "/ConstrainedFindProblemMarshallingTest.xml";
 
 		// Elements.
 		NodeDTO node1 = new NodeDTO(1, ANY_DOUBLE, ANY_DOUBLE);
