@@ -9,6 +9,8 @@ import impossible.pfnd.PathFinderFactory;
 public interface TreeFinderFactory {
 	ConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator);
+	
+	ConstrainedSteinerTreeFinder createRdp();
 
 	ConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
