@@ -1,7 +1,7 @@
 randomSeed=1
 fengDelta=0.9
 topologiesDirectory=data/new
-topology=ASBarabasi
+topology=ASWaxman
 graphsInFile=1000
 redistributionMin=1.0
 redistributionMax=1000.0
