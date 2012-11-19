@@ -74,15 +74,31 @@ public class SubGraphToGraphAdapter implements Graph {
 		List<Node> allNeighbors = parent.getNeighbors(from);
 		List<Node> subGraphNeighbors = new ArrayList<>();
 		for (Node node : allNeighbors) {
-			if (!subGraph.containsNode(node.getId()))
+			if (!subGraph.containsNode(node.getId())) {
 				continue;
-
-			if (!subGraph.containsEdge(from.getId(), node.getId()))
+			}
+			if (!subGraph.containsEdge(from.getId(), node.getId())) {
 				continue;
-
+			}
 			subGraphNeighbors.add(node);
 		}
 		return subGraphNeighbors;
+	}
+
+	@Override
+	public List<Node> getPredecessors(Node to) {
+		List<Node> allPredecessors = parent.getPredecessors(to);
+		List<Node> subGraphPredecessors = new ArrayList<>();
+		for(Node node : allPredecessors) {
+			if(!subGraph.containsNode(node.getId())) {
+				continue;
+			}
+			if(!subGraph.containsEdge(node.getId(), to.getId())) {
+				continue;
+			}
+			subGraphPredecessors.add(node);
+		}
+		return subGraphPredecessors;
 	}
 
 }

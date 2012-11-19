@@ -50,4 +50,8 @@ public abstract class CommonRelaxation {
 
 		return new Path(graph, nodes);
 	}
+	
+	public Map<Node, Node> getPredecessors() {
+		return predecessors;
+	}
 }

@@ -184,6 +184,19 @@ public class AdjacencyList implements Graph {
 		}
 		return new ArrayList<>(result);
 	}
+	
+	@Override
+	public List<Node> getPredecessors(Node to) {
+		Set<Node> result = new HashSet<>();
+		for (Map.Entry<Node, List<AdjacencyDefinition>> e : map.entrySet()) {
+			for(AdjacencyDefinition ad : e.getValue()) {
+				if(ad.getDestination() == to.getId()) {
+					result.add(e.getKey());
+				}
+			}
+		}
+		return new ArrayList<>(result);
+	}
 
 	@Override
 	public int hashCode() {
