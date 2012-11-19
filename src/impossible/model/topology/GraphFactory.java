@@ -252,6 +252,32 @@ public abstract class GraphFactory {
     	return createFromLists(nodes, edges);
     }
 	
+	public Graph createNSimplePaths(List<Double> costs) {
+		
+		double anyDouble = 1.0;
+		int id = 0;
+		
+		int numNodes = costs.size() + 2;
+		List<Node> nodes = new ArrayList<>();
+		for(int i = 0; i < numNodes; ++i) {
+			nodes.add(new Node(id++, anyDouble, anyDouble));
+		}
+		
+		int first = 0;
+		int last = numNodes - 1;
+		List<Edge> edges = new ArrayList<>();
+		for(int i = 0; i < costs.size(); ++i) {
+			double half = costs.get(i) * 0.5;
+			List<Double> halfMetrics = new ArrayList<>();
+			halfMetrics.add(half);
+			int currentMiddle = i + 1;
+			edges.add(new Edge(first, currentMiddle, halfMetrics));
+			edges.add(new Edge(currentMiddle, last, halfMetrics));
+		}
+		
+		return createFromLists(nodes, edges);
+	}
+	
 	public static GraphDTO createDTO(Graph graph) {
 		
 		List<NodeDTO> nodes = new ArrayList<>();
