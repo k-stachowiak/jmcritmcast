@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import impossible.helpers.metrprov.IndexMetricProvider;
+import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.topology.AdjacencyListFactory;
 import impossible.model.topology.Graph;
 import impossible.model.topology.GraphFactory;
@@ -17,6 +19,10 @@ public class JimenezMarzalKspTest {
 
 	@Test
 	public void testGetPath() {
+		
+		// Helpers.
+		// --------
+		MetricProvider metricProvider = new IndexMetricProvider(0);
 
 		// Prepare model.
 		// --------------
@@ -28,14 +34,18 @@ public class JimenezMarzalKspTest {
 
 		// Instantiate SUT.
 		// ----------------
-		JimenezMarzalKsp ksp = new JimenezMarzalKsp();
+		JimenezMarzalKsp ksp = new JimenezMarzalKsp(metricProvider);
 		ksp.initialize(graph, first);
 
 		// Exercise SUT.
 		// -------------
-		Path p0 = ksp.getPath(0, last);
-		Path p1 = ksp.getPath(1, last);
-		Path p2 = ksp.getPath(2, last);
+		Path p0 = ksp.getPath(last, 0);
+		Path p1 = ksp.getPath(last, 1);
+		Path p2 = ksp.getPath(last, 2);
+		
+		System.out.println("p0 : " + p0.toString());
+		System.out.println("p1 : " + p1.toString());
+		System.out.println("p2 : " + p2.toString());
 
 		// Perform the assertions.
 		// -----------------------
