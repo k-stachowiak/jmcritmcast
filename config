@@ -1,7 +1,11 @@
 randomSeed=1
 fengDelta=0.9
+baseBandwidth=10000.0
+drainedBandwidth=100.0
+minBandwidth=1.0
+drainedIndex=0
 topologiesDirectory=data/new
-topology=ASBarabasi
+topology=ASWaxman
 graphsInFile=1000
 redistributionMin=1.0
 redistributionMax=1000.0

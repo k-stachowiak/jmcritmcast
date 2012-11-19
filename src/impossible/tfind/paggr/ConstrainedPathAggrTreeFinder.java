@@ -6,13 +6,13 @@ import impossible.model.topology.Node;
 import impossible.model.topology.Path;
 import impossible.model.topology.Tree;
 import impossible.pfnd.ConstrainedPathFinder;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConstrainedPathAggrTreeFinder implements
-		ConstrainedSteinerTreeFinder {
+		MetricConstrainedSteinerTreeFinder {
 
 	private final ConstrainedPathFinder pathFinder;
 	private final PathAggregator pathAggregator;

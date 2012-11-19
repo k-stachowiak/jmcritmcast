@@ -11,7 +11,7 @@ import impossible.model.topology.Graph;
 import impossible.model.topology.GraphFactory;
 import impossible.model.topology.Node;
 import impossible.model.topology.Tree;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public class RdpTreeFinderTest {
 		constraints.add(20.0);
 		constraints.add(20.0);
 		
-		ConstrainedSteinerTreeFinder finder = new RdpTreeFinder();
+		MetricConstrainedSteinerTreeFinder finder = new RdpTreeFinder();
 		Tree result = finder.find(graph, group, constraints);
 		
 		assertNotNull(result);

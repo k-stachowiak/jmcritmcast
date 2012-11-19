@@ -112,7 +112,7 @@ public class PathAggrTreeFinderTest {
 
 		// Case.
 		// -----
-		ConstrainedSteinerTreeFinder steinerTreeFinder = treeFinderFactory
+		MetricConstrainedSteinerTreeFinder steinerTreeFinder = treeFinderFactory
 				.createConstrainedPathAggr(pathFinder, pathAggregator);
 
 		Tree actualTree = steinerTreeFinder.find(graph, group, constraints);

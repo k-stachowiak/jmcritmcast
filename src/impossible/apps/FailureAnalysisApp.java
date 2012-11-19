@@ -19,7 +19,7 @@ import impossible.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import impossible.pfnd.mlarac.IntersectLambdaEstimator;
 import impossible.pfnd.mlarac.LambdaEstimator;
 import impossible.pfnd.mlarac.PathSubstiutor;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.TreeFinderFactory;
 import impossible.tfind.TreeFinderFactoryImpl;
@@ -71,7 +71,7 @@ public class FailureAnalysisApp {
 
 		List<Double> constraints = problem.getConstraints();
 
-		ConstrainedSteinerTreeFinder finder = finderFromName(
+		MetricConstrainedSteinerTreeFinder finder = finderFromName(
 				problem.getFinderName(), spanningTreeFinder, pathFinderFactory,
 				treeFinderFactory);
 
@@ -127,7 +127,7 @@ public class FailureAnalysisApp {
 		}
 	}
 
-	private static ConstrainedSteinerTreeFinder finderFromName(
+	private static MetricConstrainedSteinerTreeFinder finderFromName(
 			String finderName, SpanningTreeFinder spanningTreeFinder,
 			PathFinderFactory pathFinderFactory,
 			TreeFinderFactory treeFinderFactory) {

@@ -12,9 +12,9 @@ import impossible.model.topology.EdgeDefinition;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Tree;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 
-public class RdpTreeFinder implements ConstrainedSteinerTreeFinder {
+public class RdpTreeFinder implements MetricConstrainedSteinerTreeFinder {
 	
 	// Configuration.
 	private List<Double> constraints;

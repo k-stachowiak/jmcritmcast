@@ -30,7 +30,7 @@ import impossible.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import impossible.pfnd.mlarac.IntersectLambdaEstimator;
 import impossible.pfnd.mlarac.LambdaEstimator;
 import impossible.pfnd.mlarac.PathSubstiutor;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 import impossible.tfind.SpanningTreeFinder;
 import impossible.tfind.TreeFinderFactory;
 import impossible.tfind.TreeFinderFactoryImpl;
@@ -65,7 +65,7 @@ public class MultiCostLogic {
 	private final MetricRedistribution metricResistribution;
 
 	// Finders.
-	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
+	private final Map<String, MetricConstrainedSteinerTreeFinder> treeFinders;
 
 	// Procedure setup.
 	private MultiCostSetup setup;
@@ -146,7 +146,7 @@ public class MultiCostLogic {
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
 			Integer groupSize, int graphs, String finderName,
-			ConstrainedSteinerTreeFinder treeFinder) {
+			MetricConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		if (inputGraphStreamer == null) {
@@ -227,7 +227,7 @@ public class MultiCostLogic {
 		return inputGraphStreamer;
 	}
 
-	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
+	private Map<String, MetricConstrainedSteinerTreeFinder> allocateFinders() {
 
 		// Factories.
 		// ----------
@@ -266,7 +266,7 @@ public class MultiCostLogic {
 
 		// Build the result.
 		// -----------------
-		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
+		Map<String, MetricConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
 		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator));

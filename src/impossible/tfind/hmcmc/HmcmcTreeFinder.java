@@ -10,12 +10,12 @@ import impossible.pfnd.CommonRelaxation;
 import impossible.pfnd.ConstrainedPathFinder;
 import impossible.pfnd.PathFinder;
 import impossible.pfnd.PathFinderFactory;
-import impossible.tfind.ConstrainedSteinerTreeFinder;
+import impossible.tfind.MetricConstrainedSteinerTreeFinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HmcmcTreeFinder implements ConstrainedSteinerTreeFinder {
+public class HmcmcTreeFinder implements MetricConstrainedSteinerTreeFinder {
 
 	private final ConstraintsComparer constraintsComparer;
 	private final PathFinderFactory pathFinderFactory;

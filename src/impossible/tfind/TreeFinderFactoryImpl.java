@@ -13,19 +13,19 @@ import impossible.tfind.rdp.RdpTreeFinder;
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 	@Override
-	public ConstrainedSteinerTreeFinder createConstrainedPathAggr(
+	public MetricConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator) {
 
 		return new ConstrainedPathAggrTreeFinder(pathFinder, pathAggregator);
 	}
 	
 	@Override
-	public ConstrainedSteinerTreeFinder createRdp() {
+	public MetricConstrainedSteinerTreeFinder createRdp() {
 		return new RdpTreeFinder();
 	}
 
 	@Override
-	public ConstrainedSteinerTreeFinder createHmcmc(
+	public MetricConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator) {
 		return new HmcmcTreeFinder(constraintsComparer, pathFinderFactory,

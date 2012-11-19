@@ -6,7 +6,7 @@ import impossible.model.topology.Tree;
 
 import java.util.List;
 
-public interface ConstrainedSteinerTreeFinder {
+public interface MetricConstrainedSteinerTreeFinder {
 	
 	Tree find(Graph graph, List<Node> group, List<Double> constraints);
 	
