@@ -12,5 +12,6 @@ public enum Loggers {
 		logger = Logger.getLogger(name);
 		logger.setLevel(level);
 		logger.addAppender(appender.getAppender());
-	}
+	}	
+	
 }

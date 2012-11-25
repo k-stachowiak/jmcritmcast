@@ -9,19 +9,19 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class GraphFactory {
-	
+
 	public Graph createOneEdge(List<Double> metrics) {
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(new Node(0, 0.0, 0.0));
 		nodes.add(new Node(1, 1.0, 0.0));
-		
+
 		List<Edge> edges = new ArrayList<>();
 		edges.add(new Edge(0, 1, new ArrayList<>(metrics)));
-		
+
 		return createFromLists(nodes, edges);
 	}
 
-    public Graph createTest() {
+	public Graph createTest() {
 
 		List<Node> nodes = new ArrayList<>();
 		nodes.add(new Node(0, 0, 0));
@@ -218,11 +218,14 @@ public abstract class GraphFactory {
 
 		List<Edge> edges = new ArrayList<>();
 		edges.add(new Edge(0, 1, Arrays.asList(new Double[] { 1.0, 1.0, 20.0 })));
-		edges.add(new Edge(1, 2, Arrays.asList(new Double[] { 3.0, 130.0, 4.0 })));
+		edges.add(new Edge(1, 2, Arrays
+				.asList(new Double[] { 3.0, 130.0, 4.0 })));
 		edges.add(new Edge(1, 4, Arrays.asList(new Double[] { 4.0, 5.0, 12.0 })));
 		edges.add(new Edge(2, 5, Arrays.asList(new Double[] { 6.0, 3.0, 14.0 })));
-		edges.add(new Edge(2, 3, Arrays.asList(new Double[] { 7.0, 5.0, 130.0 })));
-		edges.add(new Edge(3, 4, Arrays.asList(new Double[] { 3.0, 130.0, 2.0 })));
+		edges.add(new Edge(2, 3, Arrays
+				.asList(new Double[] { 7.0, 5.0, 130.0 })));
+		edges.add(new Edge(3, 4, Arrays
+				.asList(new Double[] { 3.0, 130.0, 2.0 })));
 		edges.add(new Edge(3, 11, Arrays.asList(new Double[] { 6.0, 5.0, 1.0 })));
 		edges.add(new Edge(3, 5, Arrays.asList(new Double[] { 7.0, 10.0, 3.0 })));
 		edges.add(new Edge(4, 7, Arrays.asList(new Double[] { 7.0, 3.0, 25.0 })));
@@ -230,66 +233,124 @@ public abstract class GraphFactory {
 		edges.add(new Edge(6, 8, Arrays.asList(new Double[] { 9.0, 3.0, 1.0 })));
 		edges.add(new Edge(8, 9, Arrays.asList(new Double[] { 3.0, 5.0, 32.0 })));
 		edges.add(new Edge(9, 10, Arrays.asList(new Double[] { 3.0, 5.0, 8.0 })));
-		edges.add(new Edge(10, 11, Arrays.asList(new Double[] { 7.0, 3.0, 12.0 })));
-		edges.add(new Edge(11, 12, Arrays.asList(new Double[] { 5.0, 5.0, 13.0 })));
-		edges.add(new Edge(12, 13, Arrays.asList(new Double[] { 6.0, 3.0, 13.0 })));
+		edges.add(new Edge(10, 11, Arrays
+				.asList(new Double[] { 7.0, 3.0, 12.0 })));
+		edges.add(new Edge(11, 12, Arrays
+				.asList(new Double[] { 5.0, 5.0, 13.0 })));
+		edges.add(new Edge(12, 13, Arrays
+				.asList(new Double[] { 6.0, 3.0, 13.0 })));
 
 		return createFromLists(nodes, edges);
 	}
 
-	public Graph createFromDTO(GraphDTO graphDTO) {
-    	
-    	List<Node> nodes = new ArrayList<>();
-    	for(NodeDTO nodeDTO : graphDTO.getNodes()) {
-    		nodes.add(new Node(nodeDTO.getId(), nodeDTO.getX(), nodeDTO.getY()));
-    	}
-    	
-    	List<Edge> edges = new ArrayList<>();
-    	for(EdgeDTO edgeDTO : graphDTO.getEdges()) {
-    		edges.add(new Edge(edgeDTO.getNodeFrom(), edgeDTO.getNodeTo(), new ArrayList<>(edgeDTO.getMetrics())));
-    	}
-    	
-    	return createFromLists(nodes, edges);
-    }
-	
-	public Graph createNSimplePaths(List<Double> costs) {
-		
-		double anyDouble = 1.0;
-		int id = 0;
-		
-		int numNodes = costs.size() + 2;
+	public Path createPath(int numEdges, List<Double> edgeMetrics) {
+
+		final double anyDouble = -1.0;
+
 		List<Node> nodes = new ArrayList<>();
-		for(int i = 0; i < numNodes; ++i) {
-			nodes.add(new Node(id++, anyDouble, anyDouble));
+		for (int i = 0; i < numEdges + 1; ++i) {
+			nodes.add(new Node(i, anyDouble, anyDouble));
+		}
+
+		List<Edge> edges = new ArrayList<>();
+		for (int i = 0; i < numEdges; ++i) {
+			edges.add(new Edge(i, i + 1, new ArrayList<>(edgeMetrics)));
+		}
+
+		Graph parent = createFromLists(nodes, edges);
+		
+		List<Integer> nodeIds = new ArrayList<>();
+		for(int i = 0; i < numEdges + 1; ++i) {
+			nodeIds.add(i);
 		}
 		
+		return new Path(parent, nodeIds);
+	}
+
+	public Graph createFromDTO(GraphDTO graphDTO) {
+
+		List<Node> nodes = new ArrayList<>();
+		for (NodeDTO nodeDTO : graphDTO.getNodes()) {
+			nodes.add(new Node(nodeDTO.getId(), nodeDTO.getX(), nodeDTO.getY()));
+		}
+
+		List<Edge> edges = new ArrayList<>();
+		for (EdgeDTO edgeDTO : graphDTO.getEdges()) {
+			edges.add(new Edge(edgeDTO.getNodeFrom(), edgeDTO.getNodeTo(),
+					new ArrayList<>(edgeDTO.getMetrics())));
+		}
+
+		return createFromLists(nodes, edges);
+	}
+
+	public Graph createNSimplePaths1m(List<Double> metric) {
+
+		double anyDouble = 1.0;
+		int id = 0;
+
+		int numNodes = metric.size() + 2;
+		List<Node> nodes = new ArrayList<>();
+		for (int i = 0; i < numNodes; ++i) {
+			nodes.add(new Node(id++, anyDouble, anyDouble));
+		}
+
 		int first = 0;
 		int last = numNodes - 1;
 		List<Edge> edges = new ArrayList<>();
-		for(int i = 0; i < costs.size(); ++i) {
-			double half = costs.get(i) * 0.5;
+		for (int i = 0; i < metric.size(); ++i) {
 			List<Double> halfMetrics = new ArrayList<>();
+			double half = metric.get(i) * 0.5;
 			halfMetrics.add(half);
 			int currentMiddle = i + 1;
 			edges.add(new Edge(first, currentMiddle, halfMetrics));
 			edges.add(new Edge(currentMiddle, last, halfMetrics));
 		}
-		
+
 		return createFromLists(nodes, edges);
 	}
 	
+	// metrics indexing: metrics[path][metric]
+	public Graph createNSimplePathNm(List<List<Double>> metrics) {
+
+		double anyDouble = 1.0;
+		int id = 0;
+
+		int numNodes = metrics.size() + 2;
+		List<Node> nodes = new ArrayList<>();
+		for (int i = 0; i < numNodes; ++i) {
+			nodes.add(new Node(id++, anyDouble, anyDouble));
+		}
+
+		int first = 0;
+		int last = numNodes - 1;
+		List<Edge> edges = new ArrayList<>();
+		for (int i = 0; i < metrics.size(); ++i) {
+			List<Double> halfMetrics = new ArrayList<>();
+			for(int j = 0; j < metrics.get(i).size(); ++j) {
+				double half = metrics.get(i).get(j) * 0.5;
+				halfMetrics.add(half);
+			}
+			int currentMiddle = i + 1;
+			edges.add(new Edge(first, currentMiddle, halfMetrics));
+			edges.add(new Edge(currentMiddle, last, halfMetrics));
+		}
+
+		return createFromLists(nodes, edges);
+	}
+
 	public static GraphDTO createDTO(Graph graph) {
-		
+
 		List<NodeDTO> nodes = new ArrayList<>();
-		for(Node node : graph.getNodes()) {
-			nodes.add(new NodeDTO(node.getId(), node.getX(), node.getY()));			
+		for (Node node : graph.getNodes()) {
+			nodes.add(new NodeDTO(node.getId(), node.getX(), node.getY()));
 		}
-		
+
 		List<EdgeDTO> edges = new ArrayList<>();
-		for(Edge edge : graph.getEdges()) {
-			edges.add(new EdgeDTO(edge.getFrom(), edge.getTo(), new ArrayList<>(edge.getMetrics())));			
+		for (Edge edge : graph.getEdges()) {
+			edges.add(new EdgeDTO(edge.getFrom(), edge.getTo(),
+					new ArrayList<>(edge.getMetrics())));
 		}
-		
+
 		return new GraphDTO(nodes, edges);
 	}
 

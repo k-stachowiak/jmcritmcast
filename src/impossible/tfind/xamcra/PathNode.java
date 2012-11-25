@@ -2,21 +2,32 @@ package impossible.tfind.xamcra;
 
 import impossible.model.topology.Node;
 
-class PathNode {
-	public final Node node;
-	public final int k;	
-	public final PathNode prev;
-	public double label;
+public class PathNode {
+	private final Node node;
+	private final int k;	
+	private final PathNode prev;
 
 	public PathNode(Node node, int k, PathNode prev) {
 		this.node = node;
 		this.k = k;
 		this.prev = prev;
-		this.label = Double.NEGATIVE_INFINITY;
 	}
 	
-	public void setLabel(double label) {
-		this.label = label;
+	public Node getNode() {
+		return node;
+	}
+
+	public int getK() {
+		return k;
+	}
+
+	public PathNode getPrev() {
+		return prev;
+	}
+
+	@Override
+	public String toString() {
+		return "{" + node + "@" + k + " <- " + prev + "}";
 	}
 
 	@Override
@@ -24,10 +35,8 @@ class PathNode {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + k;
-		long temp;
-		temp = Double.doubleToLongBits(label);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((node == null) ? 0 : node.hashCode());
+		result = prime * result + ((prev == null) ? 0 : prev.hashCode());
 		return result;
 	}
 
@@ -42,14 +51,16 @@ class PathNode {
 		PathNode other = (PathNode) obj;
 		if (k != other.k)
 			return false;
-		if (Double.doubleToLongBits(label) != Double
-				.doubleToLongBits(other.label))
-			return false;
 		if (node == null) {
 			if (other.node != null)
 				return false;
 		} else if (!node.equals(other.node))
 			return false;
+		if (prev == null) {
+			if (other.prev != null)
+				return false;
+		} else if (!prev.equals(other.prev))
+			return false;
 		return true;
-	}
+	}	
 }

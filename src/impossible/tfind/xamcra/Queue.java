@@ -1,80 +1,70 @@
 package impossible.tfind.xamcra;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import impossible.model.topology.Node;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Queue {
 
-	private List<PathNode> storage;
-
-	Queue() {
-		storage = new ArrayList<>();
+	private final TreeMap<Double, PathNode> storage;
+	
+	// Intended for tests only.
+	Queue(TreeMap<Double, PathNode> injectedStorage) {
+		storage = injectedStorage;
 	}
 
-	public boolean queueEmpty() {
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+			sb.append(entry.getKey() + " -> " + storage + "\n");
+		}
+		return sb.toString();
+	}
+
+	public Queue() {
+		storage = new TreeMap<>();
+	}
+
+	public boolean isEmpty() {
 		return storage.isEmpty();
 	}
 
-	public void push(PathNode pathNode) {
-		storage.add(pathNode);
+	public void push(double label, PathNode pathNode) {
+		storage.put(label, pathNode);
 	}
 
 	public PathNode pop() {
-
-		// Find cheapest.
-		int cheapestIndex = -1;
-		double cheapestCost = Double.POSITIVE_INFINITY;
-		for (int i = 0; i < storage.size(); ++i) {
-			PathNode pNode = storage.get(i);
-			if (pNode.label < cheapestCost) {
-				cheapestIndex = i;
-				cheapestCost = pNode.label;
-			}
-		}
-
-		// Remove cheapest.
-		PathNode cheapestPNode = storage.get(cheapestIndex);
-		storage.remove(cheapestIndex);
-
-		// Return the cheapest.
-		return cheapestPNode;
+		Map.Entry<Double, PathNode> first = storage.firstEntry();
+		storage.remove(first.getKey());
+		return first.getValue();
 	}
 
-	public PathNode popMaxTo(Node node) {
+	public PathNode findMaxTo(Node node) {
 		
 		// Find farthest.
-		int farthestIndex = -1;
-		double greatestCost = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < storage.size(); ++i) {
-			
-			PathNode pNode = storage.get(i);
+		double farthestKey = -1.0;
+		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
 			
 			// Only consider paths to node.
-			if(!node.equals(pNode.node)) {
+			if(!node.equals(entry.getValue().getNode())) {
 				continue;
 			}
 			
-			if (pNode.label >  greatestCost) {
-				farthestIndex = i;
-				greatestCost = pNode.label;
+			if (entry.getKey() > farthestKey) {
+				farthestKey = entry.getKey();
 			}
 		}
 
-		// Remove cheapest.
-		PathNode farthestPNode = storage.get(farthestIndex);
-		storage.remove(farthestIndex);
-
 		// Return the cheapest.
-		return farthestPNode;
+		return storage.get(farthestKey);
 	}
 
-	public void queueReplace(PathNode oldPath, PathNode newPath) {
-		for(int i = 0; i < storage.size(); ++i) {
-			if(storage.get(i).equals(oldPath)) {
-				storage.set(i, newPath);
-				return;
+	public void replace(PathNode oldPath, PathNode newPath) {
+		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+			if(entry.getValue().equals(oldPath)) {
+				storage.put(entry.getKey(), newPath);
 			}
 		}
 	}
