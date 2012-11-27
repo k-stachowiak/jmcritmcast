@@ -12,18 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Tamcra implements ConstrainedPathFinder {
+public class Samcra implements ConstrainedPathFinder {
 
-	private final int k;
+	private double endValue;
 	private MetricProvider metricProvider;
 	private Queue queue;
 	private Map<Node, Map<Integer, PathNode>> paths;
 	private Map<Node, Map<Integer, List<Double>>> vLengths;
 	private Map<Node, Integer> counters;
-
-	public Tamcra(int k) {
-		this.k = k;
-	}
+	private Map<PathNode, Color> colorMap;
 
 	@Override
 	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
@@ -33,6 +30,7 @@ public class Tamcra implements ConstrainedPathFinder {
 		// Perform the relaxation.
 		while (!queue.isEmpty()) {
 			PathNode current = queue.pop();
+			colorMap.put(current, Color.GREY);
 
 			if (current.getNode().equals(to)) {
 				break;
@@ -70,6 +68,8 @@ public class Tamcra implements ConstrainedPathFinder {
 		paths = new HashMap<>();
 		vLengths = new HashMap<>();
 		counters = new HashMap<>();
+		
+		endValue = 1.0;
 
 		for (Node n : graph.getNodes()) {
 			setCounter(n, 0);
@@ -109,7 +109,21 @@ public class Tamcra implements ConstrainedPathFinder {
 		if (paths.containsKey(newPNode.getNode())) {
 			for (Map.Entry<Integer, PathNode> entry : paths.get(
 					newPNode.getNode()).entrySet()) {
+				
+				// Skip black nodes.
+				if(colorMap.get(entry.getValue()) == Color.BLACK) {
+					continue;
+				}
+				
+				// Mark black if necessary.
 				Path alternative = buildPath(entry.getValue(), graph);
+				double alternativeLength = metricProvider.getPostAdditive(alternative);
+				if(alternativeLength > endValue) {
+					colorMap.put(entry.getValue(), Color.BLACK);
+					continue;
+				}
+				
+				// Check for domination.				
 				if (isDominatedBy(vLength, alternative.getMetrics())) {
 					dominated = true;
 					break;
@@ -118,33 +132,30 @@ public class Tamcra implements ConstrainedPathFinder {
 		}
 
 		// If feasible then process the path.
-		if (length > 1) {
+		if (length > endValue) {
 			// Path is infeasible.
 
 		} else if (dominated) {
 			// Path is dominated.
 
 		} else {
-
-			if (getCounter(neighbor) < k) {
-
-				// It is possible to add yet another
-				// path candidate to this node.
-				setCounter(neighbor, newPNode.getK() + 1);
-				setPath(neighbor, newPNode.getK(), newPNode);
-				setVLength(neighbor, newPNode.getK(), vLength);
-
-				queue.push(length, newPNode);
-
-			} else {
-
-				// Can't add more paths. Try replacing
-				// the worst path with the new one.
-				PathNode oldPNode = queue.findMaxTo(neighbor);
-				Path oldPath = buildPath(oldPNode, graph);
-				if (length < metricProvider.getPostAdditive(oldPath)) {
-					queue.replace(oldPNode, newPNode);
+			
+			PathNode firstBlack = null;
+			for(PathNode pNode : queue.findAllTo(neighbor)) {
+				if(colorMap.get(pNode) == Color.BLACK) {
+					firstBlack = pNode;
+					break;
 				}
+			}
+
+			// No black paths in queue
+			if (firstBlack == null) {
+				setCounter(neighbor, newPNode.getK() + 1);
+				setPath(neighbor, newPNode.getK() + 1, newPNode);
+				setVLength(neighbor, newPNode.getK() + 1, vLength);
+				queue.push(length, newPNode);
+			} else {
+				queue.replace(firstBlack, newPNode);
 			}
 		}
 	}

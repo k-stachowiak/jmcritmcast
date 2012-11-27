@@ -2,13 +2,15 @@ package impossible.tfind.xamcra;
 
 import impossible.model.topology.Node;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Queue {
 
 	private final TreeMap<Double, PathNode> storage;
-	
+
 	// Intended for tests only.
 	Queue(TreeMap<Double, PathNode> injectedStorage) {
 		storage = injectedStorage;
@@ -17,8 +19,8 @@ public class Queue {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
-			sb.append(entry.getKey() + " -> " + storage + "\n");
+		for (Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+			sb.append(entry.getKey() + " -> " + entry.getValue() + "\n");
 		}
 		return sb.toString();
 	}
@@ -42,16 +44,16 @@ public class Queue {
 	}
 
 	public PathNode findMaxTo(Node node) {
-		
+
 		// Find farthest.
 		double farthestKey = -1.0;
-		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
-			
+		for (Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+
 			// Only consider paths to node.
-			if(!node.equals(entry.getValue().getNode())) {
+			if (!node.equals(entry.getValue().getNode())) {
 				continue;
 			}
-			
+
 			if (entry.getKey() > farthestKey) {
 				farthestKey = entry.getKey();
 			}
@@ -61,9 +63,21 @@ public class Queue {
 		return storage.get(farthestKey);
 	}
 
+	public List<PathNode> findAllTo(Node node) {
+		List<PathNode> result = new ArrayList<>();
+		for (Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+			// Only consider paths to node.
+			if (!node.equals(entry.getValue().getNode())) {
+				continue;
+			}
+			result.add(entry.getValue());
+		}
+		return result;
+	}
+
 	public void replace(PathNode oldPath, PathNode newPath) {
-		for(Map.Entry<Double, PathNode> entry : storage.entrySet()) {
-			if(entry.getValue().equals(oldPath)) {
+		for (Map.Entry<Double, PathNode> entry : storage.entrySet()) {
+			if (entry.getValue().equals(oldPath)) {
 				storage.put(entry.getKey(), newPath);
 			}
 		}

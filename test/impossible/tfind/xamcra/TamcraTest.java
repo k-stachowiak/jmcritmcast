@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.GraphFactory;
+import impossible.model.topology.Node;
 import impossible.model.topology.Path;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import org.junit.Test;
 public class TamcraTest {
 	
 	private static final int ANY_INT = -1;
-	
+
 	@Test
 	public void testSimpleFind() {
 		
@@ -67,13 +69,11 @@ public class TamcraTest {
 		// Exercise SUT.
 		Path actualPath = sut.find(graph, graph.getNode(0), graph.getNode(3),
 				constraints);
-		
-		System.out.println(actualPath.toString());
 
 		// Assertions.
 		assertEquals(expectedPath, actualPath);
 	}
-/*
+
 	@Test
 	public void testIntermediateFind() {
 		
@@ -82,8 +82,8 @@ public class TamcraTest {
 
 		// Input.
 		List<Double> constraints = new ArrayList<>();
-		constraints.add(10000.0);
-		constraints.add(10000.0);
+		constraints.add(1000.0);
+		constraints.add(2000.0);
 
 		// Model.
 		List<Node> nodes = new ArrayList<>();
@@ -108,8 +108,7 @@ public class TamcraTest {
 		// Expected.
 		List<Integer> expectedNodes = new ArrayList<>();
 		expectedNodes.add(4);
-		expectedNodes.add(1);
-		expectedNodes.add(0);
+		expectedNodes.add(3);
 		expectedNodes.add(2);
 
 		Path expectedPath = new Path(graph, expectedNodes);
@@ -120,12 +119,10 @@ public class TamcraTest {
 		// Exercise SUT.
 		Path actualPath = sut.find(graph, graph.getNode(4), graph.getNode(2),
 				constraints);
-		
-		System.out.println(actualPath.toString());
 
 		// Assertions.
 		assertEquals(expectedPath, actualPath);
-	}*/
+	}
 
 	@Test
 	public void testIsDominatedBy() {

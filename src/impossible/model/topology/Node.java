@@ -26,7 +26,7 @@ public class Node {
 
 	@Override
 	public String toString() {
-		return "{" + id + " : " + x + ", " + y + "}";
+		return "{" + id + "}";
 	}
 
 	@Override
