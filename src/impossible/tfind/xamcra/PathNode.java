@@ -27,8 +27,15 @@ public class PathNode {
 
 	@Override
 	public String toString() {
-		return "{" + node + "@" + k + " <- " + prev + "}";
+		return "{" + node + "[" + k + "] <- " + prev + "}";
 	}
+	
+	// Note that the equality and the hash code functions are recursive.
+	// Should it turn out inefficient, cutting the recursion may be
+	// considered once it is checked to be guaranteed that comparing the
+	// heads of the paths in case of the algorithm run is sufficient.
+	// This will, however, not be sufficient in the general case, which
+	// should be kept in mind!
 
 	@Override
 	public int hashCode() {

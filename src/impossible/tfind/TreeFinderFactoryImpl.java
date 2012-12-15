@@ -18,10 +18,11 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 		return new ConstrainedPathAggrTreeFinder(pathFinder, pathAggregator);
 	}
-	
+
 	@Override
-	public MetricConstrainedSteinerTreeFinder createRdp() {
-		return new RdpTreeFinder();
+	public MetricConstrainedSteinerTreeFinder createRdp(
+			ConstraintsComparer constraintsComparer) {
+		return new RdpTreeFinder(constraintsComparer);
 	}
 
 	@Override

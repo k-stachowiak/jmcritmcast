@@ -5,25 +5,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "problem")
 public class DrainageProblemDTO {
-	
+
 	@XmlElement(name = "num-nodes")
 	private final int numNodes;
-	
+
 	@XmlElement(name = "num-criteria")
 	private final int numCriteria;
-	
+
 	@XmlElement(name = "num-participants")
 	private final int numParticipants;
-	
+
 	@XmlElement(name = "num-graphs")
 	private final int numGraphs;
-	
+
 	@XmlElement(name = "finder-name")
 	private final String finderName;
-	
+
 	public DrainageProblemDTO(int numNodes, int numCriteria,
 			int numParticipants, int numGraphs, String finderName) {
-		
+
 		this.numNodes = numNodes;
 		this.numCriteria = numCriteria;
 		this.numParticipants = numParticipants;
@@ -31,28 +31,28 @@ public class DrainageProblemDTO {
 		this.finderName = finderName;
 	}
 
-	public int getNumNodes() {
+	public final int getNumNodes() {
 		return numNodes;
 	}
 
-	public int getNumCriteria() {
+	public final int getNumCriteria() {
 		return numCriteria;
 	}
 
-	public int getNumParticipants() {
+	public final int getNumParticipants() {
 		return numParticipants;
 	}
 
-	public int getNumGraphs() {
+	public final int getNumGraphs() {
 		return numGraphs;
 	}
 
-	public String getFinderName() {
+	public final String getFinderName() {
 		return finderName;
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
@@ -65,7 +65,7 @@ public class DrainageProblemDTO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

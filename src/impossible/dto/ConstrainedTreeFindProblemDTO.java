@@ -31,40 +31,40 @@ public class ConstrainedTreeFindProblemDTO {
 	ConstrainedTreeFindProblemDTO() {
 	}
 
-	public GraphDTO getGraph() {
+	public final GraphDTO getGraph() {
 		return graph;
 	}
 
-	public List<Integer> getGroup() {
+	public final List<Integer> getGroup() {
 		return group;
 	}
 
-	public List<Double> getConstraints() {
+	public final List<Double> getConstraints() {
 		return constraints;
 	}
 
-	public String getFinderName() {
+	public final String getFinderName() {
 		return finderName;
 	}
 
-	void setGraph(GraphDTO graph) {
+	final void setGraph(GraphDTO graph) {
 		this.graph = graph;
 	}
 
-	void setGroup(List<Integer> group) {
+	final void setGroup(List<Integer> group) {
 		this.group = group;
 	}
 
-	void setConstraints(List<Double> constraints) {
+	final void setConstraints(List<Double> constraints) {
 		this.constraints = constraints;
 	}
 
-	void setFinderName(String finderName) {
+	final void setFinderName(String finderName) {
 		this.finderName = finderName;
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
@@ -77,7 +77,7 @@ public class ConstrainedTreeFindProblemDTO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

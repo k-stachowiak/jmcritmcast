@@ -64,11 +64,11 @@ public class PrimTreeFinderTest {
 				new PrimTreeFinder(metricProvider));
 
 		// Input.
-		Graph graph = graphFactory.createTest();
+		Graph connectedGraph = graphFactory.createMaciejPiechowiakExample();
 
 		// Case.
 		boolean expected = true;
-		boolean actual = topologyAnalyser.isConnected(graph);
+		boolean actual = topologyAnalyser.isConnected(connectedGraph);
 
 		// Assert.
 		assertEquals(expected, actual);

@@ -20,24 +20,24 @@ public class GraphDTO {
 		this.edges = edges;
 	}
 
-	public List<NodeDTO> getNodes() {
+	public final List<NodeDTO> getNodes() {
 		return nodes;
 	}
 
-	public List<EdgeDTO> getEdges() {
+	public final List<EdgeDTO> getEdges() {
 		return edges;
 	}
 
-	void setNodes(List<NodeDTO> nodes) {
+	final void setNodes(List<NodeDTO> nodes) {
 		this.nodes = nodes;
 	}
 
-	void setEdges(List<EdgeDTO> edges) {
+	final void setEdges(List<EdgeDTO> edges) {
 		this.edges = edges;
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((edges == null) ? 0 : edges.hashCode());
@@ -46,7 +46,7 @@ public class GraphDTO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

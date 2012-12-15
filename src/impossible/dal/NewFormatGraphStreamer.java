@@ -28,7 +28,7 @@ public class NewFormatGraphStreamer implements InputGraphStreamer {
 	}
 
 	@Override
-	public boolean hasNext() {
+	public final boolean hasNext() {
 		return graphsRead < numGraphs;
 	}
 

@@ -93,6 +93,7 @@ public class FailureAnalysisApp {
 
 			File out = new File(DRAINAGE_DIR + "/" + problem.hashCode()
 					+ ".dot");
+			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(out));
 
 			writer.write("digraph G {");
@@ -166,6 +167,10 @@ public class FailureAnalysisApp {
 			ConstrainedPathFinder hmcop = pathFinderFactory.createHmcop(lambda);
 			return treeFinderFactory.createConstrainedPathAggr(hmcop,
 					pathAggregator);
+		}
+
+		if (finderName.equals("RDP")) {
+			return treeFinderFactory.createRdp(constraintsComparer);
 		}
 
 		return null;

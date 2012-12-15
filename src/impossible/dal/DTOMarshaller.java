@@ -28,9 +28,13 @@ public class DTOMarshaller<T> {
 			return true;
 
 		} catch (JAXBException exception) {
+			System.err.print("JAXB Exception : " + exception.getMessage());
+			System.err.print(exception.getStackTrace());
 			return false;
 
 		} catch (IOException exception) {
+			System.err.print("IO Exception : " + exception.getMessage());
+			System.err.print(exception.getStackTrace());
 			return false;
 
 		} finally {

@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import impossible.helpers.ConstraintsComparer;
+import impossible.helpers.ConstraintsComparerImpl;
 import impossible.model.topology.AdjacencyListFactory;
 import impossible.model.topology.EdgeDefinition;
 import impossible.model.topology.Graph;
@@ -21,6 +23,7 @@ public class RdpTreeFinderTest {
 	public void testFind() {
 		
 		GraphFactory graphFactory = new AdjacencyListFactory();
+		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
 		
 		List<EdgeDefinition> cheapEdges = new ArrayList<>();
 		cheapEdges.add(new EdgeDefinition(0, 3));
@@ -40,7 +43,7 @@ public class RdpTreeFinderTest {
 		constraints.add(20.0);
 		constraints.add(20.0);
 		
-		MetricConstrainedSteinerTreeFinder finder = new RdpTreeFinder();
+		MetricConstrainedSteinerTreeFinder finder = new RdpTreeFinder(constraintsComparer);
 		Tree result = finder.find(graph, group, constraints);
 		
 		assertNotNull(result);

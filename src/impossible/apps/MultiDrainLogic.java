@@ -317,8 +317,9 @@ public class MultiDrainLogic {
 
 		treeFinders.put("AGGR_HMCOP", treeFinderFactory
 				.createConstrainedPathAggr(hmcop, pathAggregator));
-		
-		treeFinders.put("RDP", treeFinderFactory.createRdp());
+
+		treeFinders
+				.put("RDP", treeFinderFactory.createRdp(constraintsComparer));
 
 		return treeFinders;
 	}

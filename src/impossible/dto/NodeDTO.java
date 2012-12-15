@@ -6,10 +6,10 @@ public class NodeDTO {
 
 	@XmlElement(name = "id")
 	private int id;
-	
+
 	@XmlElement(name = "x")
 	private double x;
-	
+
 	@XmlElement(name = "y")
 	private double y;
 
@@ -22,32 +22,32 @@ public class NodeDTO {
 		this.y = y;
 	}
 
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public double getX() {
+	public final double getX() {
 		return x;
 	}
 
-	public double getY() {
+	public final double getY() {
 		return y;
 	}
 
-	void setId(int id) {
+	final void setId(int id) {
 		this.id = id;
 	}
 
-	void setX(double x) {
+	final void setX(double x) {
 		this.x = x;
 	}
 
-	void setY(double y) {
+	final void setY(double y) {
 		this.y = y;
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -60,7 +60,7 @@ public class NodeDTO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

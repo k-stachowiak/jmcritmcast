@@ -4,14 +4,13 @@ import impossible.helpers.metrprov.MetricProvider;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
-import impossible.pfnd.ConstrainedPathFinder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Samcra implements ConstrainedPathFinder {
+public class MamcraA {
 
 	private final XamcraCommon xamcra;
 	private double endValue;
@@ -19,12 +18,12 @@ public class Samcra implements ConstrainedPathFinder {
 	private Queue queue;
 	private Map<PathNode, Color> colorMap;
 
-	public Samcra() {
+	public MamcraA() {
 		xamcra = new XamcraCommon();
 	}
 
-	@Override
-	public Path find(Graph graph, Node from, Node to, List<Double> constraints) {
+	public List<Path> findPaths(Graph graph, Node from,
+			List<Node> destinations, List<Double> constraints) {
 
 		initializeFind(graph, from, constraints);
 
@@ -33,33 +32,37 @@ public class Samcra implements ConstrainedPathFinder {
 			PathNode current = queue.pop();
 			colorMap.put(current, Color.GREY);
 
-			if (current.getNode().equals(to)) {
+			if (allPathsFound(destinations)) {
 				break;
 			}
 
 			for (Node neighbor : graph.getNeighbors(current.getNode())) {
 				if (!xamcra.leadsTo(neighbor, current)) {
-					analyzeNeighbor(current, neighbor, to, graph);
+					analyzeNeighbor(current, neighbor, graph);
 				}
 			}
 		}
 
 		// Account for failure.
-		if (!xamcra.hasPathTo(to)) {
+		if (!allPathsFound(destinations)) {
 			return null;
 		}
 
 		// Build the result.
-		int finalK = xamcra.getCounter(to);
-		PathNode finalPNode = xamcra.getPath(to, finalK);
-		Path finalPath = xamcra.buildPath(finalPNode, graph);
+		List<Path> finalPaths = new ArrayList<>();
+		for(Node destination : destinations) {
+			int finalK = xamcra.getCounter(destination);
+			PathNode finalPNode = xamcra.getPath(destination, finalK);
+			Path finalPath = xamcra.buildPath(finalPNode, graph);
+			finalPaths.add(finalPath);
+		}
 
 		// Hold the deinitialization until now because the
 		// result build process requires some of the
 		// accumulated state.
 		deinitializeFind();
 
-		return finalPath;
+		return finalPaths;
 	}
 
 	private void initializeFind(Graph graph, Node from, List<Double> constraints) {
@@ -92,7 +95,7 @@ public class Samcra implements ConstrainedPathFinder {
 		colorMap = null;
 	}
 
-	private void analyzeNeighbor(PathNode current, Node neighbor, Node destination, Graph graph) {
+	private void analyzeNeighbor(PathNode current, Node neighbor, Graph graph) {
 
 		int newK = xamcra.getCounter(neighbor) + 1;
 
@@ -156,10 +159,6 @@ public class Samcra implements ConstrainedPathFinder {
 			} else {
 				replacePath(firstBlack, candPNode);
 			}
-			
-			if(neighbor.equals(destination) && length < endValue) {
-				endValue = length;
-			}
 		}
 	}
 
@@ -167,6 +166,15 @@ public class Samcra implements ConstrainedPathFinder {
 	//
 	// Package scoped for testing purposes.
 	// ------------------------------------
+
+	private boolean allPathsFound(List<Node> destinations) {
+		for (Node destination : destinations) {
+			if (!xamcra.hasPathTo(destination)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	void replacePath(PathNode replaced, PathNode newPath) {
 		Map<Integer, PathNode> replCands = xamcra.getPathEntries(replaced

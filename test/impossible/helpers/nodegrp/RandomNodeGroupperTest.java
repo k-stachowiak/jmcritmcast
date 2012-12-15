@@ -32,10 +32,10 @@ public class RandomNodeGroupperTest {
 		GraphFactory graphFactory = new AdjacencyListFactory();
 
 		// Input.
-		Graph graph = graphFactory.createTest();
+		Graph graphWithMoreThan3Nodes = graphFactory.createMaciejPiechowiakExample();
 
 		// Case.
-		List<Node> actualList = groupper.group(graph, GROUP_SIZE);
+		List<Node> actualList = groupper.group(graphWithMoreThan3Nodes, GROUP_SIZE);
 		int actual = actualList.size();
 		int expected = GROUP_SIZE;
 

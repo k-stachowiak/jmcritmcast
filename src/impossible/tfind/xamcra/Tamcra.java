@@ -5,24 +5,31 @@ import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
 import impossible.model.topology.Path;
 import impossible.pfnd.ConstrainedPathFinder;
+import impossible.util.MyLog;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class Tamcra implements ConstrainedPathFinder {
 
+	private final MyLog logger = MyLog.GENERAL_ALGORITHM_FILE;
+	private final XamcraCommon xamcra;
 	private final int k;
 	private MetricProvider metricProvider;
 	private Queue queue;
-	private Map<Node, Map<Integer, PathNode>> paths;
-	private Map<Node, Map<Integer, List<Double>>> vLengths;
-	private Map<Node, Integer> counters;
 
 	public Tamcra(int k) {
+		this.xamcra = new XamcraCommon();
 		this.k = k;
+	}
+	
+	public String stateString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Counters : \n" + xamcra.countersString());
+		sb.append("Lengths : \n" + xamcra.lengthsString());
+		sb.append("Paths : \n" + xamcra.pathsString());
+		sb.append("Queue : \n" + queue.toString());
+		return sb.toString();
 	}
 
 	@Override
@@ -32,47 +39,59 @@ public class Tamcra implements ConstrainedPathFinder {
 
 		// Perform the relaxation.
 		while (!queue.isEmpty()) {
+			
+			logger.trace("************************************************");
+			logger.trace("State : \n" + stateString());
+			
 			PathNode current = queue.pop();
+			logger.trace("Popped from queue : " + current);
 
 			if (current.getNode().equals(to)) {
+				logger.trace("Current node is the target. Terminating.");
 				break;
 			}
 
 			for (Node neighbor : graph.getNeighbors(current.getNode())) {
-				PathNode previous = current.getPrev();
-				if (previous == null || !previous.getNode().equals(neighbor)) {
+				logger.trace("Considering neighbor : " + neighbor);
+				if (!xamcra.leadsTo(neighbor, current)) {
+					logger.trace("Neighbor doesn't lead to current node. Analyzing.");
 					analyzeNeighbor(current, neighbor, graph);
+				} else {
+					logger.trace("Neighbor leads to current node. Skipping.");
 				}
 			}
 		}
-		
+
 		// Account for failure.
-		if(!paths.containsKey(to)) {
+		if (!xamcra.hasPathTo(to)) {
+			logger.trace("No path to target found.");
 			return null;
+		} else {
+			logger.trace("Path to target found.");
 		}
 
 		// Build the result.
-		int finalK = getCounter(to);
-		PathNode finalPNode = paths.get(to).get(finalK);
-		Path finalPath = buildPath(finalPNode, graph);
+		int finalK = xamcra.getCounter(to);
+		PathNode finalPNode = xamcra.getPath(to, finalK);
+		Path finalPath = xamcra.buildPath(finalPNode, graph);
 
 		// Hold the deinitialization until now because the
-		// result build process requires some of the 
+		// result build process requires some of the
 		// accumulated state.
 		deinitializeFind();
+		
+		logger.trace("Returning path : " + finalPath);
 
 		return finalPath;
 	}
 
 	private void initializeFind(Graph graph, Node from, List<Double> constraints) {
+		xamcra.initialize();
 		metricProvider = new XamcraMetricProvider(constraints);
 		queue = new Queue();
-		paths = new HashMap<>();
-		vLengths = new HashMap<>();
-		counters = new HashMap<>();
 
 		for (Node n : graph.getNodes()) {
-			setCounter(n, 0);
+			xamcra.setCounter(n, 0);
 		}
 
 		List<Double> initialLength = new ArrayList<>();
@@ -80,25 +99,25 @@ public class Tamcra implements ConstrainedPathFinder {
 			initialLength.add(0.0);
 		}
 
-		setVLength(from, 0, initialLength);
+		xamcra.setVLength(from, 0, initialLength);
 		PathNode pNode = new PathNode(from, 0, null);
 		queue.push(0.0, pNode);
 	}
 
 	private void deinitializeFind() {
 		// Allow GC to take care of these.
+		xamcra.deinitialize();
 		metricProvider = null;
 		queue = null;
-		paths = null;
-		vLengths = null;
-		counters = null;
 	}
 
 	private void analyzeNeighbor(PathNode current, Node neighbor, Graph graph) {
 
+		int newK = xamcra.getCounter(neighbor) + 1;
+		
 		// Create the candidate path.
-		PathNode newPNode = new PathNode(neighbor, current.getK(), current);
-		Path newPath = buildPath(newPNode, graph);
+		PathNode newPNode = new PathNode(neighbor, newK, current);
+		Path newPath = xamcra.buildPath(newPNode, graph);
 
 		// Analyze the path.
 		double length = metricProvider.getPostAdditive(newPath);
@@ -106,11 +125,10 @@ public class Tamcra implements ConstrainedPathFinder {
 
 		// Check if the path is dominated
 		boolean dominated = false;
-		if (paths.containsKey(newPNode.getNode())) {
-			for (Map.Entry<Integer, PathNode> entry : paths.get(
-					newPNode.getNode()).entrySet()) {
-				Path alternative = buildPath(entry.getValue(), graph);
-				if (isDominatedBy(vLength, alternative.getMetrics())) {
+		if (xamcra.hasPathTo(newPNode.getNode())) {
+			for (PathNode pNode : xamcra.getPaths(newPNode.getNode())) {
+				Path alternative = xamcra.buildPath(pNode, graph);
+				if (xamcra.isDominatedBy(vLength, alternative.getMetrics())) {
 					dominated = true;
 					break;
 				}
@@ -126,14 +144,13 @@ public class Tamcra implements ConstrainedPathFinder {
 
 		} else {
 
-			if (getCounter(neighbor) < k) {
+			if (xamcra.getCounter(neighbor) < k) {
 
 				// It is possible to add yet another
 				// path candidate to this node.
-				setCounter(neighbor, newPNode.getK() + 1);
-				setPath(neighbor, newPNode.getK(), newPNode);
-				setVLength(neighbor, newPNode.getK(), vLength);
-
+				xamcra.setCounter(neighbor, newK);
+				xamcra.setPath(neighbor, newK, newPNode);
+				xamcra.setVLength(neighbor, newK, vLength);
 				queue.push(length, newPNode);
 
 			} else {
@@ -141,74 +158,11 @@ public class Tamcra implements ConstrainedPathFinder {
 				// Can't add more paths. Try replacing
 				// the worst path with the new one.
 				PathNode oldPNode = queue.findMaxTo(neighbor);
-				Path oldPath = buildPath(oldPNode, graph);
+				Path oldPath = xamcra.buildPath(oldPNode, graph);
 				if (length < metricProvider.getPostAdditive(oldPath)) {
 					queue.replace(oldPNode, newPNode);
 				}
 			}
 		}
 	}
-
-	// Helpers.
-	//
-	// Package scoped for testing purposes.
-	// ------------------------------------
-
-	boolean isDominatedBy(List<Double> aMetrics, List<Double> bMetrics) {
-		for (int i = 0; i < aMetrics.size(); ++i) {
-			if (bMetrics.get(i) > aMetrics.get(i)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// Path analysis.
-	//
-	// Package scoped for testing purposes.
-	// ------------------------------------
-
-	Path buildPath(PathNode pNode, Graph graph) {
-
-		List<Integer> nodes = new ArrayList<>();
-
-		while (pNode != null) {
-			nodes.add(pNode.getNode().getId());
-			pNode = pNode.getPrev();
-		}
-
-		return new Path(graph, nodes);
-	}
-
-	// State.
-	// ------
-
-	// Paths storage.
-
-	private void setPath(Node node, int counter, PathNode path) {
-		if (!paths.containsKey(node)) {
-			paths.put(node, new TreeMap<Integer, PathNode>());
-		}
-		paths.get(node).put(counter, path);
-	}
-
-	// Length storage.
-
-	private void setVLength(Node node, int i, List<Double> vLength) {
-		if (!vLengths.containsKey(node)) {
-			vLengths.put(node, new TreeMap<Integer, List<Double>>());
-		}
-		vLengths.get(node).put(i, vLength);
-	}
-
-	// Counter storage.
-
-	private int getCounter(Node node) {
-		return counters.get(node);
-	}
-
-	private void setCounter(Node node, int counter) {
-		counters.put(node, counter);
-	}
-
 }

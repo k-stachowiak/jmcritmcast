@@ -24,32 +24,32 @@ public class EdgeDTO {
 		this.metrics = metrics;
 	}
 
-	public int getNodeFrom() {
+	public final int getNodeFrom() {
 		return nodeFrom;
 	}
 
-	public int getNodeTo() {
+	public final int getNodeTo() {
 		return nodeTo;
 	}
 
-	public List<Double> getMetrics() {
+	public final List<Double> getMetrics() {
 		return metrics;
 	}
 
-	void setNodeFrom(int nodeFrom) {
+	final void setNodeFrom(int nodeFrom) {
 		this.nodeFrom = nodeFrom;
 	}
 
-	void setNodeTo(int nodeTo) {
+	final void setNodeTo(int nodeTo) {
 		this.nodeTo = nodeTo;
 	}
 
-	void setMetrics(List<Double> metrics) {
+	final void setMetrics(List<Double> metrics) {
 		this.metrics = metrics;
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((metrics == null) ? 0 : metrics.hashCode());
@@ -59,7 +59,7 @@ public class EdgeDTO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

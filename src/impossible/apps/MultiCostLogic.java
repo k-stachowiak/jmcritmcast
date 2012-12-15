@@ -175,7 +175,7 @@ public class MultiCostLogic {
 			// Simulate routing.
 			Tree tree = treeFinder.find(graph, group, constraints);
 			if(tree == null) {
-				failuresStore(graph, group, constraints, finderName);
+				// failuresStore(graph, group, constraints, finderName);
 				continue;
 			}
 
@@ -198,6 +198,11 @@ public class MultiCostLogic {
 				resultStringBuilder.append(metrics.get(i));
 				if(i < (metrics.size() - 1))
 					resultStringBuilder.append('\t');
+			}
+			
+			// Awkward failure.
+			if(metrics.size() == 0) {
+				failuresStore(graph, group, constraints, finderName);
 			}
 			
 			resultStringBuilder.append('\n');
@@ -280,7 +285,7 @@ public class MultiCostLogic {
 		treeFinders.put("AGGR_HMCOP", treeFinderFactory
 				.createConstrainedPathAggr(hmcop, pathAggregator));
 
-		treeFinders.put("RDP", treeFinderFactory.createRdp());
+		treeFinders.put("RDP", treeFinderFactory.createRdp(constraintsComparer));
 
 		return treeFinders;
 	}

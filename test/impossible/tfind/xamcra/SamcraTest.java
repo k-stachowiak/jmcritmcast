@@ -1,6 +1,6 @@
 package impossible.tfind.xamcra;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import impossible.model.topology.AdjacencyListFactory;
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
@@ -14,61 +14,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class TamcraTest {
-
-	@Test
-	public void testSimpleFind() {
-		
-		// Metrics.
-		double constraint1 = 2.0;
-		double less1 = constraint1 - 1.0;
-		double more1 = constraint1 + 1.0;
-		
-		double constraint2 = 4.0;
-		double less2 = constraint2 - 1.0;		
-		double more2 = constraint2 + 1.0;
-
-		// Helpers.
-		GraphFactory graphFactory = new AdjacencyListFactory();
-
-		// Input.
-		List<Double> constraints = new ArrayList<>();
-		constraints.add(constraint1);
-		constraints.add(constraint2);
-
-		// Model.		
-		List<Double> cheaperPathMetrics = new ArrayList<>();
-		cheaperPathMetrics.add(less1);
-		cheaperPathMetrics.add(less2);
-		
-		List<Double> expensivePathMetrics = new ArrayList<>();
-		expensivePathMetrics.add(more1);
-		expensivePathMetrics.add(more2);
-		
-		List<List<Double>> metrics = new ArrayList<>();
-		metrics.add(cheaperPathMetrics);
-		metrics.add(expensivePathMetrics);
-
-		Graph graph = graphFactory.createNSimplePathNm(metrics);
-
-		// Expected.
-		List<Integer> expectedNodes = new ArrayList<>();
-		expectedNodes.add(0);
-		expectedNodes.add(1);
-		expectedNodes.add(3);
-
-		Path expectedPath = new Path(graph, expectedNodes);
-
-		// Instantiate SUT.
-		Tamcra sut = new Tamcra(10);
-
-		// Exercise SUT.
-		Path actualPath = sut.find(graph, graph.getNode(0), graph.getNode(3),
-				constraints);
-
-		// Assertions.
-		assertEquals(expectedPath, actualPath);
-	}
+public class SamcraTest {
 
 	@Test
 	public void testIntermediateFind() {
@@ -110,7 +56,7 @@ public class TamcraTest {
 		Path expectedPath = new Path(graph, expectedNodes);
 
 		// Instantiate SUT.
-		Tamcra sut = new Tamcra(10);
+		Samcra sut = new Samcra();
 
 		// Exercise SUT.
 		Path actualPath = sut.find(graph, graph.getNode(4), graph.getNode(2),
@@ -119,4 +65,5 @@ public class TamcraTest {
 		// Assertions.
 		assertEquals(expectedPath, actualPath);
 	}
+
 }
