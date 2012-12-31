@@ -169,8 +169,12 @@ public class FailureAnalysisApp {
 					pathAggregator);
 		}
 
-		if (finderName.equals("RDP")) {
-			return treeFinderFactory.createRdp(constraintsComparer);
+		if (finderName.equals("RDP_QE")) {
+			return treeFinderFactory.createRdpQuasiExact(constraintsComparer);
+		}
+		
+		if (finderName.equals("RDP_H")) {
+			return treeFinderFactory.createRdpHeuristic(constraintsComparer);
 		}
 
 		return null;

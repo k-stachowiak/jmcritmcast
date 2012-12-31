@@ -8,7 +8,7 @@ import impossible.pfnd.PathFinderFactory;
 import impossible.tfind.hmcmc.HmcmcTreeFinder;
 import impossible.tfind.paggr.ConstrainedPathAggrTreeFinder;
 import impossible.tfind.prim.PrimTreeFinder;
-import impossible.tfind.rdp.RdpTreeFinder;
+import impossible.tfind.rdp.RdpQuasiExact;
 
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
@@ -20,9 +20,15 @@ public class TreeFinderFactoryImpl implements TreeFinderFactory {
 	}
 
 	@Override
-	public MetricConstrainedSteinerTreeFinder createRdp(
+	public MetricConstrainedSteinerTreeFinder createRdpQuasiExact(
 			ConstraintsComparer constraintsComparer) {
-		return new RdpTreeFinder(constraintsComparer);
+		return new RdpQuasiExact(constraintsComparer);
+	}
+	
+	@Override
+	public MetricConstrainedSteinerTreeFinder createRdpHeuristic(
+			ConstraintsComparer constraintsComparer) {
+		return new RdpQuasiExact(constraintsComparer);
 	}
 
 	@Override

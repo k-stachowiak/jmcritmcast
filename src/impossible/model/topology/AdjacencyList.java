@@ -64,6 +64,18 @@ public class AdjacencyList implements Graph {
 	Map<Node, List<AdjacencyDefinition>> map;
 
 	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(Node node : map.keySet()) {
+			sb.append(node + ":\n");
+			for(AdjacencyDefinition ad : map.get(node)) {
+				sb.append("\t -> " + ad.getDestination() + "\n");
+			}
+		}
+		return sb.toString();
+	}
+
+	@Override
 	public Graph copy() {
 
 		// Note: only references are copied as the objects in question are

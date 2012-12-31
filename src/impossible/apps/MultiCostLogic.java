@@ -166,7 +166,7 @@ public class MultiCostLogic {
 			GraphDTO graphDTO = inputGraphStreamer.getNext();
 			Graph graph = graphFactory.createFromDTO(graphDTO);
 			graphDTO = null;
-			
+
 			// Prepare the data and the utilities.
 			graph = metricResistribution.redistUniform(graph, parameters);
 			List<Node> group = nodeGroupper.group(graph, groupSize);
@@ -174,7 +174,7 @@ public class MultiCostLogic {
 
 			// Simulate routing.
 			Tree tree = treeFinder.find(graph, group, constraints);
-			if(tree == null) {
+			if (tree == null) {
 				// failuresStore(graph, group, constraints, finderName);
 				continue;
 			}
@@ -194,17 +194,17 @@ public class MultiCostLogic {
 
 			// Print the metrics.
 			List<Double> metrics = tree.getMetrics();
-			for(int i = 0; i < metrics.size(); ++i) {
+			for (int i = 0; i < metrics.size(); ++i) {
 				resultStringBuilder.append(metrics.get(i));
-				if(i < (metrics.size() - 1))
+				if (i < (metrics.size() - 1))
 					resultStringBuilder.append('\t');
 			}
-			
+
 			// Awkward failure.
-			if(metrics.size() == 0) {
+			if (metrics.size() == 0) {
 				failuresStore(graph, group, constraints, finderName);
 			}
-			
+
 			resultStringBuilder.append('\n');
 		}
 
@@ -285,7 +285,12 @@ public class MultiCostLogic {
 		treeFinders.put("AGGR_HMCOP", treeFinderFactory
 				.createConstrainedPathAggr(hmcop, pathAggregator));
 
-		treeFinders.put("RDP", treeFinderFactory.createRdp(constraintsComparer));
+		treeFinders.put("RDP_QE",
+				treeFinderFactory.createRdpQuasiExact(constraintsComparer));
+		
+		treeFinders.put("RDP_H",
+				treeFinderFactory.createRdpHeuristic(constraintsComparer));
+		
 
 		return treeFinders;
 	}

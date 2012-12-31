@@ -13,4 +13,4 @@ graphs=300
 nodeSizes=50,100,150
 criteriaCounts=2,3,4
 groupSizes=4,8,12,16,20,24,28
-algNames=HMCMC,AGGR_MLARAC,RDP
+algNames=HMCMC,AGGR_MLARAC,RDP_QE,RDP_H

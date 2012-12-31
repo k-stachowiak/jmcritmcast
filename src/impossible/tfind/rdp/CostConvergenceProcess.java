@@ -1,34 +1,35 @@
-package impossible.tfind.rdp.newimpl;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+package impossible.tfind.rdp;
 
 import impossible.model.topology.Edge;
 import impossible.model.topology.Graph;
 import impossible.model.topology.Node;
+import impossible.model.topology.Path;
 
-public class CostConvergenceProcess implements ConvergenceProcess {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class CostConvergenceProcess {
 
 	// External dependencies.
 	private final Graph graph;
+	private final Node source;
 	private final Map<Node, Double> costMap;
 	private final Map<Node, Node> predecessorMap;
+	private final Set<Node> open;
+	private final Set<Node> visited;
 
-	// State.
-	private Set<Node> open;
-	private Set<Node> visited;
-
-	public CostConvergenceProcess(Graph graph, Map<Node, Double> costMap,
-			Map<Node, Node> predecessorMap, Node source) {
+	public CostConvergenceProcess(Graph graph, Node source) {
 
 		this.graph = graph;
-		this.costMap = costMap;
-		this.predecessorMap = predecessorMap;
-
-		// Take over the maps.
-		costMap.clear();
-		predecessorMap.clear();
+		this.source = source;
+		this.costMap = new HashMap<>();
+		this.predecessorMap = new HashMap<>();
+		this.open = new HashSet<>();
+		this.visited = new HashSet<>();
 
 		// Initialize the maps.
 		for (Node n : graph.getNodes()) {
@@ -36,32 +37,25 @@ public class CostConvergenceProcess implements ConvergenceProcess {
 			predecessorMap.put(n, n);
 		}
 
-		// Initialize the state.
-		open = new HashSet<>();
-		visited = new HashSet<>();
-
 		// Initialize the logical procedure.
 		costMap.put(source, 0.0);
 		open.add(source);
 	}
 
-	@Override
 	public double nextEventTime() {
 		double min = Double.POSITIVE_INFINITY;
-		for(Node node : open) {
-			if(costMap.get(node) < min) {
+		for (Node node : open) {
+			if (costMap.get(node) < min) {
 				min = costMap.get(node);
 			}
 		}
 		return min;
 	}
 
-	@Override
 	public boolean isDone() {
 		return visited.size() == graph.getNumNodes();
 	}
 
-	@Override
 	public Node handleNextEvent() {
 
 		// Find cheapest open.
@@ -81,25 +75,41 @@ public class CostConvergenceProcess implements ConvergenceProcess {
 
 		// Analyze the cheapest's neighbors.
 		for (Node neighbor : graph.getNeighbors(cheapestNode)) {
-			
+
 			// Skip visited.
 			if (visited.contains(neighbor)) {
 				continue;
 			}
-			
+
 			// Compute candidate cost.
 			Edge edge = graph.getEdge(cheapestNode.getId(), neighbor.getId());
 			double newCost = cheapestCost + edge.getMetrics().get(0);
-			
+
 			// Replace if cheaper.
-			if(newCost < costMap.get(neighbor)) {
+			if (newCost < costMap.get(neighbor)) {
 				costMap.put(neighbor, newCost);
 				predecessorMap.put(neighbor, cheapestNode);
 				open.add(neighbor);
 			}
 		}
-		
+
 		// Signal, which node was selected.
 		return cheapestNode;
+	}
+	
+	public Path buildPathFrom(Node node) {
+		
+		List<Integer> nodeIds = new ArrayList<>();
+		
+		Node current = node;		
+		while(current != source) {
+			nodeIds.add(current.getId());
+			current = predecessorMap.get(current);
+		}
+		
+		nodeIds.add(source.getId());
+		
+		return new Path(graph, nodeIds);
+		
 	}
 }

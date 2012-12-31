@@ -10,7 +10,10 @@ public interface TreeFinderFactory {
 	MetricConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator);
 
-	MetricConstrainedSteinerTreeFinder createRdp(
+	MetricConstrainedSteinerTreeFinder createRdpQuasiExact(
+			ConstraintsComparer constraintsComparer);
+	
+	MetricConstrainedSteinerTreeFinder createRdpHeuristic(
 			ConstraintsComparer constraintsComparer);
 
 	MetricConstrainedSteinerTreeFinder createHmcmc(
