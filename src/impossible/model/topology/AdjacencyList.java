@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 public class AdjacencyList implements Graph {
 
 	static class AdjacencyDefinition {
