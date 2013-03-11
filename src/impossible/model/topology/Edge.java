@@ -26,6 +26,21 @@ public class Edge {
 	public List<Double> getMetrics() {
 		return metrics;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(from);
+		sb.append(" -> ");
+		sb.append(to);
+		sb.append(" {");
+		for(Double m : metrics) {
+			sb.append(m);
+			sb.append(' ');
+		}
+		sb.append("}");
+		return sb.toString();
+	}
 
 	@Override
 	public int hashCode() {

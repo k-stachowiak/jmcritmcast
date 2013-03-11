@@ -61,6 +61,10 @@ public class AdjacencyList implements Graph {
 	}
 
 	Map<Node, List<AdjacencyDefinition>> map;
+	
+	AdjacencyList(Map<Node, List<AdjacencyDefinition>> map) {
+		this.map = map;
+	}
 
 	@Override
 	public String toString() {
@@ -76,17 +80,8 @@ public class AdjacencyList implements Graph {
 
 	@Override
 	public Graph copy() {
-
-		// Note: only references are copied as the objects in question are
-		// immutable.
-		AdjacencyList copy = new AdjacencyList();
-		copy.map = new HashMap<>();
-
-		for (Map.Entry<Node, List<AdjacencyDefinition>> entry : map.entrySet()) {
-			copy.map.put(entry.getKey(), entry.getValue());
-		}
-
-		return copy;
+		Map<Node, List<AdjacencyDefinition>> map = new HashMap<>(this.map);
+		return new AdjacencyList(map);
 	}
 
 	@Override

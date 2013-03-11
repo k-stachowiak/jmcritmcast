@@ -13,7 +13,7 @@ public class MeanPairsLambdaEstimator implements LambdaEstimator {
 
 		List<Double> result = new ArrayList<>();
 		for (int p = 0; p < nonExceedingPaths.size(); ++p) {
-			double lhs = nonExceedingPaths.get(p).getMetrics().get(p + 1); // TODO: use offset here.
+			double lhs = nonExceedingPaths.get(p).getMetrics().get(p + 1);
 			double rhs = exceedingPath.getMetrics().get(p + 1);
 			result.add((lhs + rhs) * 0.5);
 		}

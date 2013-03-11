@@ -1,5 +1,7 @@
 package impossible.model.topology;
 
+import impossible.model.topology.AdjacencyList.AdjacencyDefinition;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +14,7 @@ public class AdjacencyListFactory extends GraphFactory {
 
 		// Allocate the object.
 		// --------------------
-		AdjacencyList result = new AdjacencyList();
-		result.map = new HashMap<>();
+		Map<Node, List<AdjacencyDefinition>> map = new HashMap<>();
 
 		// Generate helper map.
 		// --------------------
@@ -28,22 +29,22 @@ public class AdjacencyListFactory extends GraphFactory {
 			Node to = intNodeMap.get(edge.getTo());
 
 			// Add direct.
-			if (!result.map.containsKey(from))
-				result.map.put(from,
+			if (!map.containsKey(from))
+				map.put(from,
 						new ArrayList<AdjacencyList.AdjacencyDefinition>());
 
 			// Add reverse.
-			if (!result.map.containsKey(to))
-				result.map.put(to,
+			if (!map.containsKey(to))
+				map.put(to,
 						new ArrayList<AdjacencyList.AdjacencyDefinition>());
 
-			result.map.get(from).add(
+			map.get(from).add(
 					new AdjacencyList.AdjacencyDefinition(edge, to.getId()));
 			
-			result.map.get(to).add(
+			map.get(to).add(
 					new AdjacencyList.AdjacencyDefinition(edge, from.getId()));
 		}
 
-		return result;
+		return new AdjacencyList(map);
 	}
 }

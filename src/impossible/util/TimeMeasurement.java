@@ -14,6 +14,10 @@ public class TimeMeasurement {
 	public void end() {
 		duration = System.nanoTime() - begin;
 	}
+	
+	public long getNanos() {
+		return duration;
+	}
 
 	public String getDurationString() {
 

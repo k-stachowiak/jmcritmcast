@@ -16,7 +16,7 @@ public class ExpensiveNonBreakingPathSubstitutor implements PathSubstiutor {
 		int highestIndex = -1;
 		double highestMetric = Double.NEGATIVE_INFINITY;
 		for(int i = 0; i < constraints.size(); ++i) {
-			double metric = candidate.getMetrics().get(i + 1); // TODO: Use offset variable here!
+			double metric = candidate.getMetrics().get(i + 1);
 			if(metric <= constraints.get(i) && metric > highestMetric) {
 				highestMetric = metric;
 				highestIndex = i;

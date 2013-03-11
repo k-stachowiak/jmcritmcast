@@ -14,7 +14,6 @@ import impossible.tfind.prim.PrimTreeFinder;
 
 import org.junit.Test;
 
-
 public class PrimTreeFinderTest {
 
 	@Test
@@ -60,15 +59,15 @@ public class PrimTreeFinderTest {
 		final MetricProvider metricProvider = new IndexMetricProvider(
 				INDEX_FOR_METRIC_PROVIDER);
 
-		final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl(
-				new PrimTreeFinder(metricProvider));
+		final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl();
 
 		// Input.
 		Graph connectedGraph = graphFactory.createMaciejPiechowiakExample();
 
 		// Case.
 		boolean expected = true;
-		boolean actual = topologyAnalyser.isConnected(connectedGraph);
+		boolean actual = topologyAnalyser.isConnected(connectedGraph,
+				new PrimTreeFinder(metricProvider));
 
 		// Assert.
 		assertEquals(expected, actual);

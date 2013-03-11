@@ -7,22 +7,10 @@ import java.util.Set;
 
 public class AdjacencyMatrix implements Graph {
 
-	private final List<Node> nodes;
-	private final List<Edge> allEdges;
-	private int numNodes;
-	private int numEdges;
-	
-	int computeIndex(int from, int to) {
-		return from * numNodes + to;
-	}
-
-	private void setEdgeAt(int from, int to, Edge e) {
-		allEdges.set(computeIndex(from, to), e);
-	}
-
-	private Edge getEdgeAt(int from, int to) {
-		return allEdges.get(computeIndex(from, to));
-	}
+	final List<Node> nodes;
+	final List<Edge> allEdges;
+	int numNodes;
+	int numEdges;
 
 	AdjacencyMatrix(List<Node> nodes, List<Edge> allEdges, int numNodes,
 			int numEdges) {
@@ -31,24 +19,6 @@ public class AdjacencyMatrix implements Graph {
 		this.allEdges = allEdges;
 		this.numNodes = numNodes;
 		this.numEdges = numEdges;
-	}
-
-	public AdjacencyMatrix(List<Node> nodes, List<Edge> edges) {
-
-		this.nodes = nodes;
-
-		allEdges = new ArrayList<>();
-		for (int i = 0; i < (edges.size() * edges.size()); ++i) {
-			allEdges.add(null);
-		}
-		for (Edge e : edges) {
-			int from = e.getFrom();
-			int to = e.getTo();
-			setEdgeAt(from, to, e);
-		}
-
-		this.numNodes = nodes.size();
-		this.numEdges = edges.size();
 	}
 
 	@Override
@@ -88,7 +58,9 @@ public class AdjacencyMatrix implements Graph {
 	public List<Edge> getEdges() {
 		Set<Edge> uniqueEdges = new HashSet<>();
 		for(Edge e : allEdges) {
-			uniqueEdges.add(e);
+			if(e != null) {
+				uniqueEdges.add(e);
+			}
 		}
 		return new ArrayList<>(uniqueEdges);
 	}
@@ -105,7 +77,7 @@ public class AdjacencyMatrix implements Graph {
 
 	@Override
 	public Edge getEdge(int from, int to) {
-		return getEdgeAt(from, to);
+		return allEdges.get(from * numNodes + to);
 	}
 
 	@Override
