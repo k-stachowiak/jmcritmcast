@@ -27,7 +27,7 @@ import edu.put.et.stik.mm.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import edu.put.et.stik.mm.pfnd.mlarac.IntersectLambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.LambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.PathSubstiutor;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
 import edu.put.et.stik.mm.tfind.TreeFinderFactory;
 import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
@@ -72,7 +72,7 @@ public class FailureAnalysisApp {
 
 		List<Double> constraints = problem.getConstraints();
 
-		MetricConstrainedSteinerTreeFinder finder = finderFromName(
+		ConstrainedSteinerTreeFinder finder = finderFromName(
 				problem.getFinderName(), spanningTreeFinder, pathFinderFactory,
 				treeFinderFactory);
 
@@ -129,7 +129,7 @@ public class FailureAnalysisApp {
 		}
 	}
 
-	private static MetricConstrainedSteinerTreeFinder finderFromName(
+	private static ConstrainedSteinerTreeFinder finderFromName(
 			String finderName, SpanningTreeFinder spanningTreeFinder,
 			PathFinderFactory pathFinderFactory,
 			TreeFinderFactory treeFinderFactory) {

@@ -43,7 +43,7 @@ import edu.put.et.stik.mm.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import edu.put.et.stik.mm.pfnd.mlarac.IntersectLambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.LambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.PathSubstiutor;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
 import edu.put.et.stik.mm.tfind.TreeFinderFactory;
 import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
@@ -64,7 +64,7 @@ public class TimeCostLogic {
 	private final Map<String, GraphFactory> graphFactories;
 
 	// Finders.
-	private final Map<String, MetricConstrainedSteinerTreeFinder> treeFinders;
+	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
 
 	// Procedure setup.
 	private TimeCostSetup setup;
@@ -147,7 +147,7 @@ public class TimeCostLogic {
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
 			Integer groupSize, int graphs, String factoryName,
-			String finderName, MetricConstrainedSteinerTreeFinder treeFinder) {
+			String finderName, ConstrainedSteinerTreeFinder treeFinder) {
 
 		TimeMeasurement timeMeasurement = new TimeMeasurement();
 		
@@ -249,7 +249,7 @@ public class TimeCostLogic {
 		return graphFactories;
 	}
 
-	private Map<String, MetricConstrainedSteinerTreeFinder> allocateFinders() {
+	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
 
 		// Factories.
 		// ----------
@@ -288,7 +288,7 @@ public class TimeCostLogic {
 
 		// Build the result.
 		// -----------------
-		Map<String, MetricConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
 		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator));

@@ -14,9 +14,9 @@ import edu.put.et.stik.mm.model.topology.Graph;
 import edu.put.et.stik.mm.model.topology.Node;
 import edu.put.et.stik.mm.model.topology.Path;
 import edu.put.et.stik.mm.model.topology.Tree;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 
-public class RdpQuasiExact implements MetricConstrainedSteinerTreeFinder {
+public class RdpQuasiExact implements ConstrainedSteinerTreeFinder {
 	
 	// External dependencies.
 	private final ConstraintsComparer constraintsComparer;

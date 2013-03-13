@@ -14,9 +14,9 @@ import edu.put.et.stik.mm.pfnd.CommonRelaxation;
 import edu.put.et.stik.mm.pfnd.ConstrainedPathFinder;
 import edu.put.et.stik.mm.pfnd.PathFinder;
 import edu.put.et.stik.mm.pfnd.PathFinderFactory;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 
-public class HmcmcTreeFinder implements MetricConstrainedSteinerTreeFinder {
+public class HmcmcTreeFinder implements ConstrainedSteinerTreeFinder {
 
 	private final ConstraintsComparer constraintsComparer;
 	private final PathFinderFactory pathFinderFactory;

@@ -7,16 +7,16 @@ import edu.put.et.stik.mm.pfnd.ConstrainedPathFinder;
 import edu.put.et.stik.mm.pfnd.PathFinderFactory;
 
 public interface TreeFinderFactory {
-	MetricConstrainedSteinerTreeFinder createConstrainedPathAggr(
+	ConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator);
 
-	MetricConstrainedSteinerTreeFinder createRdpQuasiExact(
+	ConstrainedSteinerTreeFinder createRdpQuasiExact(
 			ConstraintsComparer constraintsComparer);
 	
-	MetricConstrainedSteinerTreeFinder createRdpHeuristic(
+	ConstrainedSteinerTreeFinder createRdpHeuristic(
 			ConstraintsComparer constraintsComparer);
 
-	MetricConstrainedSteinerTreeFinder createHmcmc(
+	ConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator);
 

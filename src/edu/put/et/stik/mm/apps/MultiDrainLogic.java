@@ -51,7 +51,7 @@ import edu.put.et.stik.mm.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import edu.put.et.stik.mm.pfnd.mlarac.IntersectLambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.LambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.PathSubstiutor;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
 import edu.put.et.stik.mm.tfind.TreeFinderFactory;
 import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
@@ -77,7 +77,7 @@ public class MultiDrainLogic {
 
 	// Finders.
 	private final SpanningTreeFinder spanningTreeFinder;
-	private final Map<String, MetricConstrainedSteinerTreeFinder> treeFinders;
+	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
 
 	// Special utilities.
 	private final TopologyAnalyser topologyAnalyser;
@@ -173,7 +173,7 @@ public class MultiDrainLogic {
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
 			Integer groupSize, int graphs, String finderName,
-			MetricConstrainedSteinerTreeFinder treeFinder) {
+			ConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		if (inputGraphStreamer == null) {
@@ -218,7 +218,7 @@ public class MultiDrainLogic {
 	}
 
 	private int experimentStep(Graph graph, int groupSize,
-			MetricConstrainedSteinerTreeFinder treeFinder, String finderName) {
+			ConstrainedSteinerTreeFinder treeFinder, String finderName) {
 
 		int successCount = 0;
 		Graph copy = graph.copy();
@@ -266,7 +266,7 @@ public class MultiDrainLogic {
 		return inputGraphStreamer;
 	}
 
-	private Map<String, MetricConstrainedSteinerTreeFinder> allocateFinders() {
+	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
 
 		// Factories.
 		// ----------
@@ -305,7 +305,7 @@ public class MultiDrainLogic {
 
 		// Build the result.
 		// -----------------
-		Map<String, MetricConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
 		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator));

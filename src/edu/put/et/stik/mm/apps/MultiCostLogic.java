@@ -45,7 +45,7 @@ import edu.put.et.stik.mm.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import edu.put.et.stik.mm.pfnd.mlarac.IntersectLambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.LambdaEstimator;
 import edu.put.et.stik.mm.pfnd.mlarac.PathSubstiutor;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
 import edu.put.et.stik.mm.tfind.TreeFinderFactory;
 import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
@@ -66,7 +66,7 @@ public class MultiCostLogic {
 	private final MetricRedistribution metricResistribution;
 
 	// Finders.
-	private final Map<String, MetricConstrainedSteinerTreeFinder> treeFinders;
+	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
 
 	// Procedure setup.
 	private MultiCostSetup setup;
@@ -147,7 +147,7 @@ public class MultiCostLogic {
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
 			Integer groupSize, int graphs, String finderName,
-			MetricConstrainedSteinerTreeFinder treeFinder) {
+			ConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		if (inputGraphStreamer == null) {
@@ -233,7 +233,7 @@ public class MultiCostLogic {
 		return inputGraphStreamer;
 	}
 
-	private Map<String, MetricConstrainedSteinerTreeFinder> allocateFinders() {
+	private Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
 
 		// Factories.
 		// ----------
@@ -272,7 +272,7 @@ public class MultiCostLogic {
 
 		// Build the result.
 		// -----------------
-		Map<String, MetricConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
+		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
 
 		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
 				constraintsComparer, pathFinderFactory, pathAggregator));

@@ -21,7 +21,7 @@ import edu.put.et.stik.mm.model.topology.Tree;
 import edu.put.et.stik.mm.pfnd.ConstrainedPathFinder;
 import edu.put.et.stik.mm.pfnd.PathFinderFactory;
 import edu.put.et.stik.mm.pfnd.PathFinderFactoryImpl;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
 import edu.put.et.stik.mm.tfind.TreeFinderFactory;
 import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
@@ -117,7 +117,7 @@ public class PathAggrTreeFinderTest {
 
 		// Case.
 		// -----
-		MetricConstrainedSteinerTreeFinder steinerTreeFinder = treeFinderFactory
+		ConstrainedSteinerTreeFinder steinerTreeFinder = treeFinderFactory
 				.createConstrainedPathAggr(pathFinder, pathAggregator);
 
 		Tree actualTree = steinerTreeFinder.find(graph, group, constraints);

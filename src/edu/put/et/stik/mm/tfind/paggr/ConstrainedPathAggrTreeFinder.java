@@ -10,10 +10,10 @@ import edu.put.et.stik.mm.model.topology.Node;
 import edu.put.et.stik.mm.model.topology.Path;
 import edu.put.et.stik.mm.model.topology.Tree;
 import edu.put.et.stik.mm.pfnd.ConstrainedPathFinder;
-import edu.put.et.stik.mm.tfind.MetricConstrainedSteinerTreeFinder;
+import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
 
 public class ConstrainedPathAggrTreeFinder implements
-		MetricConstrainedSteinerTreeFinder {
+		ConstrainedSteinerTreeFinder {
 
 	private final ConstrainedPathFinder pathFinder;
 	private final PathAggregator pathAggregator;

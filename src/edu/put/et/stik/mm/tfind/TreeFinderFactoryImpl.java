@@ -13,26 +13,26 @@ import edu.put.et.stik.mm.tfind.rdp.RdpQuasiExact;
 public class TreeFinderFactoryImpl implements TreeFinderFactory {
 
 	@Override
-	public MetricConstrainedSteinerTreeFinder createConstrainedPathAggr(
+	public ConstrainedSteinerTreeFinder createConstrainedPathAggr(
 			ConstrainedPathFinder pathFinder, PathAggregator pathAggregator) {
 
 		return new ConstrainedPathAggrTreeFinder(pathFinder, pathAggregator);
 	}
 
 	@Override
-	public MetricConstrainedSteinerTreeFinder createRdpQuasiExact(
+	public ConstrainedSteinerTreeFinder createRdpQuasiExact(
 			ConstraintsComparer constraintsComparer) {
 		return new RdpQuasiExact(constraintsComparer);
 	}
 	
 	@Override
-	public MetricConstrainedSteinerTreeFinder createRdpHeuristic(
+	public ConstrainedSteinerTreeFinder createRdpHeuristic(
 			ConstraintsComparer constraintsComparer) {
 		return new RdpQuasiExact(constraintsComparer);
 	}
 
 	@Override
-	public MetricConstrainedSteinerTreeFinder createHmcmc(
+	public ConstrainedSteinerTreeFinder createHmcmc(
 			ConstraintsComparer constraintsComparer,
 			PathFinderFactory pathFinderFactory, PathAggregator pathAggregator) {
 		return new HmcmcTreeFinder(constraintsComparer, pathFinderFactory,
