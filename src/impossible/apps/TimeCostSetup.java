@@ -13,6 +13,7 @@ public class TimeCostSetup {
 	private final List<Integer> criteriaCounts;
 	private final List<Integer> groupSizes;
 
+	private final List<String> topologyImplementations;
 	private final String topologiesDirectory;
 	private final String topology;
 	private final int graphsInFile;
@@ -24,9 +25,10 @@ public class TimeCostSetup {
 
 	public TimeCostSetup(long randomSeed, double fengDelta, int graphs,
 			List<Integer> nodeSizes, List<Integer> criteriaCounts,
-			List<Integer> groupSizes, String topologiesDirectory,
-			String topology, int graphsInFile, double redistributionMin,
-			double redistributionMax, List<String> treeFinderNames) {
+			List<Integer> groupSizes, List<String> topologyImplementations,
+			String topologiesDirectory, String topology, int graphsInFile,
+			double redistributionMin, double redistributionMax,
+			List<String> treeFinderNames) {
 
 		this.randomSeed = randomSeed;
 		this.fengDelta = fengDelta;
@@ -34,6 +36,7 @@ public class TimeCostSetup {
 		this.nodeSizes = nodeSizes;
 		this.criteriaCounts = criteriaCounts;
 		this.groupSizes = groupSizes;
+		this.topologyImplementations = topologyImplementations;
 		this.topologiesDirectory = topologiesDirectory;
 		this.topology = topology;
 		this.graphsInFile = graphsInFile;
@@ -64,6 +67,10 @@ public class TimeCostSetup {
 
 	public List<Integer> getGroupSizes() {
 		return groupSizes;
+	}
+	
+	public List<String> getTopologyImplementations() {
+		return topologyImplementations;
 	}
 
 	public String getTopologiesDirectory() {

@@ -17,6 +17,7 @@ import impossible.helpers.metrprov.MetricProvider;
 import impossible.helpers.nodegrp.NodeGroupper;
 import impossible.helpers.nodegrp.RandomNodeGroupper;
 import impossible.model.topology.AdjacencyListFactory;
+import impossible.model.topology.AdjacencyMatrixFactory;
 import impossible.model.topology.Graph;
 import impossible.model.topology.GraphFactory;
 import impossible.model.topology.Node;
@@ -53,13 +54,13 @@ public class TimeCostLogic {
 	private final Random random;
 
 	// Factories.
-	private final GraphFactory graphFactory;
 	private final PathFinderFactory pathFinderFactory;
 
 	// Strategies.
 	private final GroupConstraintsChooser constraintsChooser;
 	private final NodeGroupper nodeGroupper;
-	private final MetricRedistribution metricResistribution;
+
+	private final Map<String, GraphFactory> graphFactories;
 
 	// Finders.
 	private final Map<String, MetricConstrainedSteinerTreeFinder> treeFinders;
@@ -70,7 +71,6 @@ public class TimeCostLogic {
 	public TimeCostLogic(TimeCostSetup setup) {
 
 		random = new Random(setup.getRandomSeed());
-		graphFactory = new AdjacencyListFactory();
 		pathFinderFactory = new PathFinderFactoryImpl();
 
 		constraintsChooser = new FengGroupConstraintsChooser(
@@ -78,8 +78,7 @@ public class TimeCostLogic {
 
 		nodeGroupper = new RandomNodeGroupper(random);
 
-		metricResistribution = new MetricRedistributionImpl(graphFactory,
-				random);
+		graphFactories = allocateGraphFactories();
 
 		treeFinders = allocateFinders();
 
@@ -87,7 +86,8 @@ public class TimeCostLogic {
 	}
 
 	public void run(String[] args, OutputStream out, OutputStream debug) {
-		
+
+		TimeMeasurement timeMeasurement = new TimeMeasurement();
 		StringBuilder result = new StringBuilder();
 		PrintWriter debugWriter = new PrintWriter(debug, true);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM HH:mm:ss");
@@ -98,26 +98,38 @@ public class TimeCostLogic {
 			for (Integer criteriaCount : setup.getCriteriaCounts()) {
 				String nodeCritString = nodesString + " c = " + criteriaCount;
 				for (Integer groupSize : setup.getGroupSizes()) {
-					String nodeCritGrioupString = nodeCritString + " g = "
+					String nodeCritGroupString = nodeCritString + " g = "
 							+ groupSize;
-					for (String finderName : setup.getTreeFinderNames()) {
+					for (String factoryName : setup
+							.getTopologyImplementations()) {
+						String nodeCritGroupGFacString = nodeCritGroupString + " gf = " + factoryName;
+						for (String finderName : setup.getTreeFinderNames()) {
 
-						String problemString = sdf.format(new Date()) + " "
-								+ nodeCritGrioupString + " alg = " + finderName;
+							String problemString = sdf.format(new Date()) + " "
+									+ nodeCritGroupGFacString + " alg = "
+									+ finderName;
 
-						debugWriter.print(problemString);
-						debugWriter.flush();
+							debugWriter.print(problemString);
+							debugWriter.flush();
+							
+							timeMeasurement.begin();
 
-						String partialResult = experiment(nodeSize,
-								criteriaCount, groupSize, setup.getGraphs(),
-								finderName, treeFinders.get(finderName));
+							String partialResult = experiment(nodeSize,
+									criteriaCount, groupSize,
+									setup.getGraphs(), factoryName, finderName,
+									treeFinders.get(finderName));
+							
+							timeMeasurement.end();
+							debugWriter.println(" Elapsed : "
+									+ timeMeasurement.getDurationString());
 
-						if (partialResult == null) {
-							debugWriter.println("Experiment failed.");
-							return;
+							if (partialResult == null) {
+								debugWriter.println("Experiment failed.");
+								return;
+							}
+
+							result.append(partialResult);
 						}
-
-						result.append(partialResult);
 					}
 				}
 			}
@@ -133,10 +145,14 @@ public class TimeCostLogic {
 	}
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
-			Integer groupSize, int graphs, String finderName,
-			MetricConstrainedSteinerTreeFinder treeFinder) {
+			Integer groupSize, int graphs, String factoryName,
+			String finderName, MetricConstrainedSteinerTreeFinder treeFinder) {
 
 		TimeMeasurement timeMeasurement = new TimeMeasurement();
+		
+		GraphFactory graphFactory = graphFactories.get(factoryName);
+		MetricRedistribution metricResistribution = new MetricRedistributionImpl(graphFactory,
+				random);
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		if (inputGraphStreamer == null) {
@@ -166,7 +182,7 @@ public class TimeCostLogic {
 			timeMeasurement.begin();
 			Tree tree = treeFinder.find(graph, group, constraints);
 			timeMeasurement.end();
-			
+
 			if (tree == null) {
 				continue;
 			}
@@ -177,14 +193,17 @@ public class TimeCostLogic {
 
 			resultStringBuilder.append(finderName);
 			resultStringBuilder.append('\t');
+			
+			resultStringBuilder.append(factoryName);
+			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(criteriaCount);
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(groupSize);
 			resultStringBuilder.append('\t');
-			
-			resultStringBuilder.append(timeMeasurement.getNanos() * 0.e-6);
+
+			resultStringBuilder.append((double)timeMeasurement.getNanos() * 0.e-6);
 			resultStringBuilder.append('\t');
 
 			// Print the metrics.
@@ -196,7 +215,7 @@ public class TimeCostLogic {
 			}
 
 			resultStringBuilder.append('\n');
-		}		
+		}
 
 		return resultStringBuilder.toString();
 	}
@@ -220,6 +239,13 @@ public class TimeCostLogic {
 				nodeSize, setup.getGraphsInFile(), bufferedReader);
 
 		return inputGraphStreamer;
+	}
+
+	private Map<String, GraphFactory> allocateGraphFactories() {
+		Map<String, GraphFactory> graphFactories = new HashMap<>();
+		graphFactories.put("AdjacencyMatrix", new AdjacencyMatrixFactory());
+		graphFactories.put("AdjacencyList", new AdjacencyListFactory());
+		return graphFactories;
 	}
 
 	private Map<String, MetricConstrainedSteinerTreeFinder> allocateFinders() {
@@ -277,7 +303,7 @@ public class TimeCostLogic {
 
 		treeFinders.put("RDP_QE",
 				treeFinderFactory.createRdpQuasiExact(constraintsComparer));
-		
+
 		treeFinders.put("RDP_H",
 				treeFinderFactory.createRdpHeuristic(constraintsComparer));
 

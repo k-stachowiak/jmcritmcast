@@ -12,7 +12,8 @@ public class TimeMeasurement {
 	}
 
 	public void end() {
-		duration = System.nanoTime() - begin;
+		final long end = System.nanoTime();
+		duration = end - begin;
 	}
 	
 	public long getNanos() {
@@ -24,23 +25,23 @@ public class TimeMeasurement {
 		long tempDuration = duration;
 
 		// Extract particular values.
-		long hours = TimeUnit.HOURS.convert(tempDuration, TimeUnit.NANOSECONDS);
-		long hourNanos = TimeUnit.HOURS.toNanos(hours);
+		final long hours = TimeUnit.HOURS.convert(tempDuration, TimeUnit.NANOSECONDS);
+		final long hourNanos = TimeUnit.HOURS.toNanos(hours);
 		tempDuration -= hourNanos;
 
-		long minutes = TimeUnit.MINUTES.convert(tempDuration,
+		final long minutes = TimeUnit.MINUTES.convert(tempDuration,
 				TimeUnit.NANOSECONDS);
-		long minuteNanos = TimeUnit.MINUTES.toNanos(minutes);
+		final long minuteNanos = TimeUnit.MINUTES.toNanos(minutes);
 		tempDuration -= minuteNanos;
 
-		long seconds = TimeUnit.SECONDS.convert(tempDuration,
+		final long seconds = TimeUnit.SECONDS.convert(tempDuration,
 				TimeUnit.NANOSECONDS);
-		long secondNanos = TimeUnit.SECONDS.toNanos(seconds);
+		final long secondNanos = TimeUnit.SECONDS.toNanos(seconds);
 		tempDuration -= secondNanos;
 
-		long milliseconds = TimeUnit.MILLISECONDS.convert(tempDuration,
+		final long milliseconds = TimeUnit.MILLISECONDS.convert(tempDuration,
 				TimeUnit.NANOSECONDS);
-		long millisecondNanos = TimeUnit.SECONDS.toNanos(milliseconds);
+		final long millisecondNanos = TimeUnit.SECONDS.toNanos(milliseconds);
 		tempDuration -= millisecondNanos;
 
 		// Format the result.

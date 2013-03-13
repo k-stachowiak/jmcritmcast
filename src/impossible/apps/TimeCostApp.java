@@ -19,6 +19,7 @@ public class TimeCostApp {
 	static double redistributionMin;
 	static double redistributionMax;
 	static int graphs;
+	static List<String> topologyImplementations;
 	static List<Integer> nodeSizes;
 	static List<Integer> criteriaCounts;
 	static List<Integer> groupSizes;
@@ -63,6 +64,13 @@ public class TimeCostApp {
 			nodeSizes = new ArrayList<>();
 			for (String ns : nss) {
 				nodeSizes.add(Integer.parseInt(ns));
+			}
+
+			String tisStr = properties.getProperty("topologyImpls");
+			String[] tis = tisStr.split(",");
+			topologyImplementations = new ArrayList<>();
+			for (String ti : tis) {
+				topologyImplementations.add(ti);
 			}
 
 			String ccsStr = properties.getProperty("criteriaCounts");
@@ -129,8 +137,8 @@ public class TimeCostApp {
 		// --------------------------------------------------------
 		final TimeCostSetup setup = new TimeCostSetup(randomSeed, fengDelta,
 				graphs, nodeSizes, criteriaCounts, groupSizes,
-				topologiesDirecotry, topology, graphsInFile, redistributionMin,
-				redistributionMax, algNames);
+				topologyImplementations, topologiesDirecotry, topology,
+				graphsInFile, redistributionMin, redistributionMax, algNames);
 
 		new TimeCostLogic(setup).run(args, System.out, System.err);
 	}

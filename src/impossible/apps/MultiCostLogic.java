@@ -266,7 +266,7 @@ public class MultiCostLogic {
 
 		// HMCOP path finder.
 		// ------------------
-		double lambda = Double.POSITIVE_INFINITY;
+		final double lambda = Double.POSITIVE_INFINITY;
 		ConstrainedPathFinder hmcop = pathFinderFactory.createHmcop(lambda);
 
 		// Build the result.
