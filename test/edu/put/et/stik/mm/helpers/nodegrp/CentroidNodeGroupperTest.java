@@ -2,19 +2,21 @@ package edu.put.et.stik.mm.helpers.nodegrp;
 
 import static org.junit.Assert.*;
 
+import helpers.nodegrp.CentroidNodeGroupper;
+import helpers.nodegrp.NodeGroupper;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
+import model.topology.AdjacencyListFactory;
+import model.topology.Edge;
+import model.topology.Graph;
+import model.topology.GraphFactory;
+import model.topology.Node;
+
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.nodegrp.CentroidNodeGroupper;
-import edu.put.et.stik.mm.helpers.nodegrp.NodeGroupper;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.Edge;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
-import edu.put.et.stik.mm.model.topology.Node;
 
 public class CentroidNodeGroupperTest {
 

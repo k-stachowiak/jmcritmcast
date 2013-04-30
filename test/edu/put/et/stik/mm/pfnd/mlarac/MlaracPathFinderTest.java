@@ -2,25 +2,28 @@ package edu.put.et.stik.mm.pfnd.mlarac;
 
 import static org.junit.Assert.assertEquals;
 
+import helpers.ConstraintsComparer;
+import helpers.ConstraintsComparerImpl;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import model.topology.AdjacencyListFactory;
+import model.topology.Graph;
+import model.topology.GraphFactory;
+import model.topology.Node;
+import model.topology.Path;
+
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.ConstraintsComparer;
-import edu.put.et.stik.mm.helpers.ConstraintsComparerImpl;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
-import edu.put.et.stik.mm.model.topology.Node;
-import edu.put.et.stik.mm.model.topology.Path;
-import edu.put.et.stik.mm.pfnd.ConstrainedPathFinder;
-import edu.put.et.stik.mm.pfnd.PathFinderFactory;
-import edu.put.et.stik.mm.pfnd.PathFinderFactoryImpl;
-import edu.put.et.stik.mm.pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
-import edu.put.et.stik.mm.pfnd.mlarac.IntersectLambdaEstimator;
-import edu.put.et.stik.mm.pfnd.mlarac.LambdaEstimator;
-import edu.put.et.stik.mm.pfnd.mlarac.PathSubstiutor;
+import pfnd.ConstrainedPathFinder;
+import pfnd.PathFinderFactory;
+import pfnd.PathFinderFactoryImpl;
+import pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
+import pfnd.mlarac.IntersectLambdaEstimator;
+import pfnd.mlarac.LambdaEstimator;
+import pfnd.mlarac.PathSubstiutor;
+
 
 public class MlaracPathFinderTest {
 

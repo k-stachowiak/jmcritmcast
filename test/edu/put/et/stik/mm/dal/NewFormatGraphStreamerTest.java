@@ -16,10 +16,11 @@ import java.util.Locale;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.put.et.stik.mm.dal.NewFormatGraphStreamer;
-import edu.put.et.stik.mm.dto.EdgeDTO;
-import edu.put.et.stik.mm.dto.GraphDTO;
-import edu.put.et.stik.mm.dto.NodeDTO;
+import dal.NewFormatGraphStreamer;
+import dto.EdgeDTO;
+import dto.GraphDTO;
+import dto.NodeDTO;
+
 
 public class NewFormatGraphStreamerTest {
 

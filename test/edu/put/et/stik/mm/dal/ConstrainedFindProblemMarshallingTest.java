@@ -10,11 +10,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.put.et.stik.mm.dal.DTOMarshaller;
-import edu.put.et.stik.mm.dto.ConstrainedTreeFindProblemDTO;
-import edu.put.et.stik.mm.dto.EdgeDTO;
-import edu.put.et.stik.mm.dto.GraphDTO;
-import edu.put.et.stik.mm.dto.NodeDTO;
+import dal.DTOMarshaller;
+import dto.ConstrainedTreeFindProblemDTO;
+import dto.EdgeDTO;
+import dto.GraphDTO;
+import dto.NodeDTO;
+
 
 public class ConstrainedFindProblemMarshallingTest {
 

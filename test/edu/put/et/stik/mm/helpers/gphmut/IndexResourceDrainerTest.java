@@ -2,22 +2,24 @@ package edu.put.et.stik.mm.helpers.gphmut;
 
 import static org.junit.Assert.assertEquals;
 
+import helpers.CostResourceTranslation;
+import helpers.OspfCostResourceTranslation;
+import helpers.gphmut.IndexResourceDrainer;
+import helpers.gphmut.ResourceDrainer;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import model.topology.AdjacencyListFactory;
+import model.topology.Edge;
+import model.topology.EdgeDefinition;
+import model.topology.Graph;
+import model.topology.GraphFactory;
+import model.topology.Node;
+import model.topology.SubGraph;
+
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.CostResourceTranslation;
-import edu.put.et.stik.mm.helpers.OspfCostResourceTranslation;
-import edu.put.et.stik.mm.helpers.gphmut.IndexResourceDrainer;
-import edu.put.et.stik.mm.helpers.gphmut.ResourceDrainer;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.Edge;
-import edu.put.et.stik.mm.model.topology.EdgeDefinition;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
-import edu.put.et.stik.mm.model.topology.Node;
-import edu.put.et.stik.mm.model.topology.SubGraph;
 
 public class IndexResourceDrainerTest {
 

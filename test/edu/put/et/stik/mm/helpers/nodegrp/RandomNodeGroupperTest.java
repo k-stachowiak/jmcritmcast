@@ -6,17 +6,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
+import helpers.nodegrp.NodeGroupper;
+import helpers.nodegrp.RandomNodeGroupper;
+
 import java.util.List;
 import java.util.Random;
 
+import model.topology.AdjacencyListFactory;
+import model.topology.Graph;
+import model.topology.GraphFactory;
+import model.topology.Node;
+
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.nodegrp.NodeGroupper;
-import edu.put.et.stik.mm.helpers.nodegrp.RandomNodeGroupper;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
-import edu.put.et.stik.mm.model.topology.Node;
 
 
 public class RandomNodeGroupperTest {

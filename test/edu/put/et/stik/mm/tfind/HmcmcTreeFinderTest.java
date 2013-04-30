@@ -2,29 +2,33 @@ package edu.put.et.stik.mm.tfind;
 
 import static org.junit.Assert.assertNotNull;
 
+import helpers.ConstraintsComparer;
+import helpers.ConstraintsComparerImpl;
+import helpers.PathAggregator;
+import helpers.PathAggregatorImpl;
+import helpers.metrprov.IndexMetricProvider;
+import helpers.metrprov.MetricProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import model.topology.AdjacencyListFactory;
+import model.topology.EdgeDefinition;
+import model.topology.Graph;
+import model.topology.GraphFactory;
+import model.topology.Node;
+import model.topology.Tree;
+
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.ConstraintsComparer;
-import edu.put.et.stik.mm.helpers.ConstraintsComparerImpl;
-import edu.put.et.stik.mm.helpers.PathAggregator;
-import edu.put.et.stik.mm.helpers.PathAggregatorImpl;
-import edu.put.et.stik.mm.helpers.metrprov.IndexMetricProvider;
-import edu.put.et.stik.mm.helpers.metrprov.MetricProvider;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.EdgeDefinition;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
-import edu.put.et.stik.mm.model.topology.Node;
-import edu.put.et.stik.mm.model.topology.Tree;
-import edu.put.et.stik.mm.pfnd.PathFinderFactory;
-import edu.put.et.stik.mm.pfnd.PathFinderFactoryImpl;
-import edu.put.et.stik.mm.tfind.ConstrainedSteinerTreeFinder;
-import edu.put.et.stik.mm.tfind.SpanningTreeFinder;
-import edu.put.et.stik.mm.tfind.TreeFinderFactory;
-import edu.put.et.stik.mm.tfind.TreeFinderFactoryImpl;
+import pfnd.PathFinderFactory;
+import pfnd.PathFinderFactoryImpl;
+
+import tfind.ConstrainedSteinerTreeFinder;
+import tfind.SpanningTreeFinder;
+import tfind.TreeFinderFactory;
+import tfind.TreeFinderFactoryImpl;
+
 
 public class HmcmcTreeFinderTest {
 

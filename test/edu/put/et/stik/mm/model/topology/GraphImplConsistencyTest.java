@@ -1,15 +1,16 @@
 package edu.put.et.stik.mm.model.topology;
 
 import static org.junit.Assert.*;
+import helpers.TopologyAnalyser;
+import helpers.TopologyAnalyserImpl;
+
+import model.topology.AdjacencyListFactory;
+import model.topology.AdjacencyMatrixFactory;
+import model.topology.Graph;
+import model.topology.GraphFactory;
 
 import org.junit.Test;
 
-import edu.put.et.stik.mm.helpers.TopologyAnalyser;
-import edu.put.et.stik.mm.helpers.TopologyAnalyserImpl;
-import edu.put.et.stik.mm.model.topology.AdjacencyListFactory;
-import edu.put.et.stik.mm.model.topology.AdjacencyMatrixFactory;
-import edu.put.et.stik.mm.model.topology.Graph;
-import edu.put.et.stik.mm.model.topology.GraphFactory;
 
 
 public class GraphImplConsistencyTest {
