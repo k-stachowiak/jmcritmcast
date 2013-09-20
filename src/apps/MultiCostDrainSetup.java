@@ -5,7 +5,7 @@ import java.util.List;
 public class MultiCostDrainSetup {
 	private final long randomSeed;
 
-	private final double fengDelta;
+	private final List<List<Double>> constraintCases;
 
 	private final double baseBandwidth;
 	private final double drainedBandwidth;
@@ -27,15 +27,16 @@ public class MultiCostDrainSetup {
 
 	private final List<String> treeFinderNames;
 
-	public MultiCostDrainSetup(long randomSeed, double fengDelta,
-			double baseBandwidth, double drainedBandwidth, double minBandwidth, int drainedIndex, int graphs,
-			List<Integer> nodeSizes, List<Integer> criteriaCounts,
-			List<Integer> groupSizes, String topologiesDirectory,
-			String topology, int graphsInFile, double redistributionMin,
-			double redistributionMax, List<String> treeFinderNames) {
+	public MultiCostDrainSetup(long randomSeed, List<List<Double>> constraintCases,
+			double baseBandwidth, double drainedBandwidth, double minBandwidth,
+			int drainedIndex, int graphs, List<Integer> nodeSizes,
+			List<Integer> criteriaCounts, List<Integer> groupSizes,
+			String topologiesDirectory, String topology, int graphsInFile,
+			double redistributionMin, double redistributionMax,
+			List<String> treeFinderNames) {
 
 		this.randomSeed = randomSeed;
-		this.fengDelta = fengDelta;
+		this.constraintCases = constraintCases;
 		this.baseBandwidth = baseBandwidth;
 		this.drainedBandwidth = drainedBandwidth;
 		this.minBandwidth = minBandwidth;
@@ -56,8 +57,8 @@ public class MultiCostDrainSetup {
 		return randomSeed;
 	}
 
-	public double getFengDelta() {
-		return fengDelta;
+	public List<List<Double>> GetConstraintCases() {
+		return constraintCases;
 	}
 
 	public double getBaseBandwidth() {
@@ -67,7 +68,7 @@ public class MultiCostDrainSetup {
 	public double getDrainedBandwidth() {
 		return drainedBandwidth;
 	}
-	
+
 	public double getMinBandwidth() {
 		return minBandwidth;
 	}

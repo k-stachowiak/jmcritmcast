@@ -12,7 +12,7 @@ import java.util.Properties;
 public class MultiCostDrainApp {
 
     static long randomSeed;
-    static double fengDelta;
+    static List<List<Double>> constraintCases;
     static double baseBandwidth;
     static double drainedBandwidth;
     static double minBandwidth;
@@ -53,7 +53,7 @@ public class MultiCostDrainApp {
         // ----------------------------------------
         try {
             randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
-            fengDelta = Double.parseDouble(properties.getProperty("fengDelta"));
+            constraintCases = parseConstraintCases(properties.getProperty("constraintCases"));
             baseBandwidth = Double.parseDouble(properties.getProperty("baseBandwidth"));
             drainedBandwidth = Double.parseDouble(properties.getProperty("drainedBandwidth"));
             minBandwidth = Double.parseDouble(properties.getProperty("minBandwidth"));
@@ -117,7 +117,7 @@ public class MultiCostDrainApp {
         return true;
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
         Locale.setDefault(Locale.ENGLISH);
 
@@ -131,11 +131,16 @@ public class MultiCostDrainApp {
         // Build a setup definition for the application and run it.
         // --------------------------------------------------------
         final MultiCostDrainSetup setup = new MultiCostDrainSetup(randomSeed,
-                fengDelta, baseBandwidth, drainedBandwidth, minBandwidth, drainedIndex, graphs, nodeSizes,
+                constraintCases, baseBandwidth, drainedBandwidth, minBandwidth, drainedIndex, graphs, nodeSizes,
                 criteriaCounts, groupSizes, topologiesDirecotry, topology,
                 graphsInFile, redistributionMin, redistributionMax,
                 algNames);
 
         new MultiCostDrainLogic(setup).run(args, System.out, System.err);
     }
+
+    private static List<List<Double>> parseConstraintCases(String property) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

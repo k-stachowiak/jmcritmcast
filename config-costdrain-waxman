@@ -1,5 +1,4 @@
 randomSeed=1
-fengDelta=0.9
 baseBandwidth=10000.0
 drainedBandwidth=100.0
 minBandwidth=1.0

@@ -8,8 +8,6 @@ import helpers.PathAggregator;
 import helpers.PathAggregatorImpl;
 import helpers.TopologyAnalyser;
 import helpers.TopologyAnalyserImpl;
-import helpers.cstrch.FengGroupConstraintsChooser;
-import helpers.cstrch.GroupConstraintsChooser;
 import helpers.gphmut.IndexResourceDrainer;
 import helpers.gphmut.MetricRedistribution;
 import helpers.gphmut.MetricRedistributionImpl;
@@ -39,7 +37,6 @@ import model.topology.Graph;
 import model.topology.GraphFactory;
 import model.topology.Node;
 import model.topology.Tree;
-
 import pfnd.ConstrainedPathFinder;
 import pfnd.PathFinderFactory;
 import pfnd.PathFinderFactoryImpl;
@@ -47,13 +44,11 @@ import pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
 import pfnd.mlarac.IntersectLambdaEstimator;
 import pfnd.mlarac.LambdaEstimator;
 import pfnd.mlarac.PathSubstiutor;
-
 import tfind.ConstrainedSteinerTreeFinder;
 import tfind.SpanningTreeFinder;
 import tfind.TreeFinderFactory;
 import tfind.TreeFinderFactoryImpl;
 import util.TimeMeasurement;
-
 import dal.DTOMarshaller;
 import dal.InputGraphStreamer;
 import dal.NewFormatGraphStreamer;
@@ -67,11 +62,9 @@ public class MultiCostDrainLogic {
 
 	// Factories.
 	private final GraphFactory graphFactory;
-	private final PathFinderFactory pathFinderFactory;
 	private final TreeFinderFactory treeFinderFactory;
 
 	// Strategies.
-	private final GroupConstraintsChooser constraintsChooser;
 	private final NodeGroupper nodeGroupper;
 	private final CostResourceTranslation costResourceTranslation;
 	private final ResourceDrainer resourceDrainer;
@@ -92,11 +85,7 @@ public class MultiCostDrainLogic {
 
 		random = new Random(setup.getRandomSeed());
 		graphFactory = new AdjacencyListFactory();
-		pathFinderFactory = new PathFinderFactoryImpl();
 		treeFinderFactory = new TreeFinderFactoryImpl();
-
-		constraintsChooser = new FengGroupConstraintsChooser(
-				setup.getFengDelta(), pathFinderFactory);
 
 		nodeGroupper = new RandomNodeGroupper(random);
 
@@ -133,33 +122,39 @@ public class MultiCostDrainLogic {
 			for (Integer criteriaCount : setup.getCriteriaCounts()) {
 				String nodeCritString = nodesString + " c = " + criteriaCount;
 				for (Integer groupSize : setup.getGroupSizes()) {
-					String nodeCritGrioupString = nodeCritString + " g = "
+					String nodeCritGroupString = nodeCritString + " g = "
 							+ groupSize;
-					for (String finderName : setup.getTreeFinderNames()) {
+					for (List<Double> constraints : setup.GetConstraintCases()) {
+						String nodeCritGroupConstrString = nodeCritGroupString
+								+ " c = " + toString(constraints, ",");
+						for (String finderName : setup.getTreeFinderNames()) {
 
-						String problemString = sdf.format(new Date()) + " "
-								+ nodeCritGrioupString + " alg = " + finderName;
+							String problemString = sdf.format(new Date()) + " "
+									+ nodeCritGroupConstrString + " alg = "
+									+ finderName;
 
-						debugWriter.print(problemString);
-						debugWriter.flush();
+							debugWriter.print(problemString);
+							debugWriter.flush();
 
-						timeMeasurement.begin();
+							timeMeasurement.begin();
 
-						String partialResult = experiment(nodeSize,
-								criteriaCount, groupSize, setup.getGraphs(),
-								finderName, treeFinders.get(finderName));
+							String partialResult = experiment(nodeSize,
+									criteriaCount, groupSize,
+									setup.getGraphs(), constraints, finderName,
+									treeFinders.get(finderName));
 
-						timeMeasurement.end();
+							timeMeasurement.end();
 
-						debugWriter.println(" Elapsed : "
-								+ timeMeasurement.getDurationString());
+							debugWriter.println(" Elapsed : "
+									+ timeMeasurement.getDurationString());
 
-						if (partialResult == null) {
-							debugWriter.println("Experiment failed.");
-							return;
+							if (partialResult == null) {
+								debugWriter.println("Experiment failed.");
+								return;
+							}
+
+							result.append(partialResult);
 						}
-
-						result.append(partialResult);
 					}
 				}
 			}
@@ -175,8 +170,8 @@ public class MultiCostDrainLogic {
 	}
 
 	private String experiment(Integer nodeSize, Integer criteriaCount,
-			Integer groupSize, int graphs, String finderName,
-			ConstrainedSteinerTreeFinder treeFinder) {
+			Integer groupSize, int graphs, List<Double> constraints,
+			String finderName, ConstrainedSteinerTreeFinder treeFinder) {
 
 		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
 		if (inputGraphStreamer == null) {
@@ -199,7 +194,7 @@ public class MultiCostDrainLogic {
 			graph = metricResistribution.redistUniform(graph, parameters);
 
 			CostDrainResult result = experimentStep(graph, groupSize,
-					treeFinder, finderName);
+					constraints, treeFinder, finderName);
 
 			resultStringBuilder.append(nodeSize);
 			resultStringBuilder.append('\t');
@@ -222,7 +217,7 @@ public class MultiCostDrainLogic {
 				if (i < (firstCosts.size() - 1))
 					resultStringBuilder.append('\t');
 			}
-			
+
 			resultStringBuilder.append('\n');
 		}
 
@@ -230,7 +225,8 @@ public class MultiCostDrainLogic {
 	}
 
 	private CostDrainResult experimentStep(Graph graph, int groupSize,
-			ConstrainedSteinerTreeFinder treeFinder, String finderName) {
+			List<Double> constraints, ConstrainedSteinerTreeFinder treeFinder,
+			String finderName) {
 
 		boolean isFirstPass = true;
 		Graph copy = graph.copy();
@@ -242,7 +238,6 @@ public class MultiCostDrainLogic {
 				&& copy.getNodes().size() >= groupSize) {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
-			List<Double> constraints = constraintsChooser.choose(copy, group);
 
 			Tree tree = treeFinder.find(copy, group, constraints);
 
@@ -389,5 +384,16 @@ public class MultiCostDrainLogic {
 				+ "." + problem.getGraph().getNodes().size() + "."
 				+ problem.hashCode() + ".xml";
 		marshaller.writeToFile(path, problem);
+	}
+
+	private String toString(List<Double> values, String separator) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < values.size(); ++i){
+			sb.append(values.get(i));
+			if(i < (values.size() - 1)) {
+				sb.append(separator);
+			}
+		}
+		return sb.toString();
 	}
 }
