@@ -14,4 +14,4 @@ data/
 /new/
 /data/
 /drainagefail/
-/temp/
+.*

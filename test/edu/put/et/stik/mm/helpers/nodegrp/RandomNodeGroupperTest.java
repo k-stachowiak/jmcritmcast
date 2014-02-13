@@ -5,7 +5,6 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 import helpers.nodegrp.NodeGroupper;
 import helpers.nodegrp.RandomNodeGroupper;
 
@@ -18,8 +17,6 @@ import model.topology.GraphFactory;
 import model.topology.Node;
 
 import org.junit.Test;
-
-
 
 public class RandomNodeGroupperTest {
 

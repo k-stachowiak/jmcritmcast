@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 public enum MyLog {
 
-	CURRENT_ALGORITHM_CONSOLE("algConsoleDebug", Level.TRACE, EnumSet
+	CURRENT_ALGORITHM_CONSOLE("algConsoleDebug", Level.INFO, EnumSet
 			.of(MyApp.STDERR)),
 
 	GENERAL_ALGORITHM_FILE("algFileDebug", Level.DEBUG, EnumSet
@@ -25,6 +25,6 @@ public enum MyLog {
 	}
 
 	public void trace(Object message) {
-		logger.trace(message);
+		logger.info(message);
 	}
 }

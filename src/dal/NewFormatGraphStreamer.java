@@ -36,6 +36,7 @@ public class NewFormatGraphStreamer implements InputGraphStreamer {
 
 	@Override
 	public GraphDTO getNext() {
+		
 		int currentNumNodes = scanner.nextInt();
 		int currentNumMetrics = scanner.nextInt();
 
