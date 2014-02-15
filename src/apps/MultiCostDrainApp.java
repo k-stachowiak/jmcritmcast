@@ -140,7 +140,17 @@ public class MultiCostDrainApp {
     }
 
     private static List<List<Double>> parseConstraintCases(String property) {
-		// TODO Auto-generated method stub
-		return null;
+    	
+    	List<List<Double>> result = new ArrayList<>();
+    	
+		for (String constraintSetStr : property.split(";")) {
+			List<Double> constraintSet = new ArrayList<>();
+			for (String constraint : constraintSetStr.split("\\s+")) {
+				constraintSet.add(Double.parseDouble(constraint));
+			}
+			result.add(constraintSet);
+		}
+		
+		return result;
 	}
 }

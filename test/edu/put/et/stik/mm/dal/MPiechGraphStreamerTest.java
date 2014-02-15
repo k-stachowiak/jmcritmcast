@@ -27,13 +27,13 @@ public class MPiechGraphStreamerTest {
 		
 		String string =
 			"1\n" +
-			"0	1	100	200\n" +
-			"1	2	200 300\n" +
-			"2	0	300	400\n" +
+			"0	0	1	100	200\n" +
+			"1	1	2	200 300\n" +
+			"2	2	0	300	400\n" +
 			"2\n" +
-			"0	1	400	500\n" +
-			"1	2	500	600\n" +
-			"2	0	600	700";
+			"0	0	1	400	500\n" +
+			"1	1	2	500	600\n" +
+			"2	2	0	600	700";
 		
 		InputStream inputStream = new ByteArrayInputStream(string.getBytes());
 

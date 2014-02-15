@@ -79,4 +79,15 @@ public class EdgeDTO {
 		return true;
 	}
 
+@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("{ %d, %d, {", nodeFrom, nodeTo));
+		for (Double m : metrics) {
+			sb.append(m);
+			sb.append(", ");
+		}
+		sb.append("} }");
+		return sb.toString();
+	}
 }

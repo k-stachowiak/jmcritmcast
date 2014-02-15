@@ -14,4 +14,8 @@ data/
 /new/
 /data/
 /drainagefail/
+/debug_data/
 .*
+/bin
+*.txt
+*.sh

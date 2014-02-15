@@ -77,4 +77,8 @@ public class NodeDTO {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{ %d, { %.1f, %.1f } }", id, x, y);
+	}
 }

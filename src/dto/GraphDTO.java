@@ -67,4 +67,19 @@ public class GraphDTO {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Nodes:\n");
+		for (NodeDTO node : nodes) {
+			sb.append(node.toString());
+			sb.append('\n');
+		}
+		sb.append("Edges:\n");
+		for (EdgeDTO edge : edges) {
+			sb.append(edge.toString());
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
 }

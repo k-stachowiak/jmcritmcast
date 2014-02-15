@@ -51,7 +51,8 @@ import tfind.TreeFinderFactoryImpl;
 import util.TimeMeasurement;
 import dal.DTOMarshaller;
 import dal.InputGraphStreamer;
-import dal.NewFormatGraphStreamer;
+import dal.MPiechGraphStreamer;
+import dto.AdHocProblemDTO;
 import dto.ConstrainedTreeFindProblemDTO;
 import dto.GraphDTO;
 
@@ -69,11 +70,13 @@ public class MultiCostDrainLogic {
 	private final CostResourceTranslation costResourceTranslation;
 	private final ResourceDrainer resourceDrainer;
 	private final MetricProvider metricProvider;
-	private final MetricRedistribution metricResistribution;
 
 	// Finders.
 	private final SpanningTreeFinder spanningTreeFinder;
 	private final Map<String, ConstrainedSteinerTreeFinder> treeFinders;
+
+	// Graph streams.
+	private final List<String> streamerNames;
 
 	// Special utilities.
 	private final TopologyAnalyser topologyAnalyser;
@@ -97,11 +100,10 @@ public class MultiCostDrainLogic {
 
 		metricProvider = new IndexMetricProvider(0);
 
-		metricResistribution = new MetricRedistributionImpl(graphFactory,
-				random);
-
 		spanningTreeFinder = treeFinderFactory.createPrim(metricProvider);
 		treeFinders = allocateFinders();
+
+		streamerNames = new ArrayList<>();
 
 		topologyAnalyser = new TopologyAnalyserImpl();
 
@@ -116,29 +118,35 @@ public class MultiCostDrainLogic {
 		PrintWriter debugWriter = new PrintWriter(debug, true);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM HH:mm:ss");
 
-		// Cartesian product of case variables.
-		for (Integer nodeSize : setup.getNodeSizes()) {
-			String nodesString = "n = " + nodeSize;
-			for (Integer criteriaCount : setup.getCriteriaCounts()) {
-				String nodeCritString = nodesString + " c = " + criteriaCount;
-				for (Integer groupSize : setup.getGroupSizes()) {
-					String nodeCritGroupString = nodeCritString + " g = "
-							+ groupSize;
-					for (List<Double> constraints : setup.GetConstraintCases()) {
-						String nodeCritGroupConstrString = nodeCritGroupString
-								+ " c = " + toString(constraints, ",");
-						for (String finderName : setup.getTreeFinderNames()) {
+		for (Integer criteriaCount : setup.getCriteriaCounts()) {
+			String critString = "c = " + criteriaCount;
 
+			for (Integer groupSize : setup.getGroupSizes()) {
+				String critGroupString = critString + " g = " + groupSize;
+
+				for (List<Double> constraints : setup.GetConstraintCases()) {
+					String critGroupConstrString = critGroupString + " c = "
+							+ toString(constraints, ",");
+
+					for (String finderName : setup.getTreeFinderNames()) {
+						String critGroupConstrFndString = critGroupConstrString
+								+ " alg = " + finderName;
+
+						streamerNamesReset();
+						while (!streamerNames.isEmpty()) {
+							String topName = streamerNames.get(streamerNames
+									.size() - 1);
 							String problemString = sdf.format(new Date()) + " "
-									+ nodeCritGroupConstrString + " alg = "
-									+ finderName;
+									+ critGroupConstrFndString + " top = "
+									+ topName;
 
 							debugWriter.print(problemString);
 							debugWriter.flush();
 
 							timeMeasurement.begin();
 
-							String partialResult = experiment(nodeSize,
+							// Cartesian product of case variables.
+							String partialResult = experiment(topName,
 									criteriaCount, groupSize,
 									setup.getGraphs(), constraints, finderName,
 									treeFinders.get(finderName));
@@ -154,6 +162,8 @@ public class MultiCostDrainLogic {
 							}
 
 							result.append(partialResult);
+
+							streamerNames.remove(streamerNames.size() - 1);
 						}
 					}
 				}
@@ -169,11 +179,19 @@ public class MultiCostDrainLogic {
 		debugWriter.close();
 	}
 
-	private String experiment(Integer nodeSize, Integer criteriaCount,
+	private void streamerNamesReset() {
+		streamerNames.clear();
+		streamerNames.add("n_100_DistRNG_r_250__N_200");
+		streamerNames.add("n_100_k_100_Waxman_015_005__N_200");
+		streamerNames.add("n_100_k_200_Waxman_015_005__N_200");
+		streamerNames.add("n_100_LMST_r_250__N_200");
+	}
+
+	private String experiment(String topName, Integer criteriaCount,
 			Integer groupSize, int graphs, List<Double> constraints,
 			String finderName, ConstrainedSteinerTreeFinder treeFinder) {
 
-		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(nodeSize);
+		final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(topName);
 		if (inputGraphStreamer == null) {
 			throw new RuntimeException("Failed opening graph streamer.\n");
 		}
@@ -191,12 +209,10 @@ public class MultiCostDrainLogic {
 			Graph graph = graphFactory.createFromDTO(graphDTO);
 			graphDTO = null;
 
-			graph = metricResistribution.redistUniform(graph, parameters);
-
 			CostDrainResult result = experimentStep(graph, groupSize,
 					constraints, treeFinder, finderName);
 
-			resultStringBuilder.append(nodeSize);
+			resultStringBuilder.append(topName);
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(finderName);
@@ -239,12 +255,16 @@ public class MultiCostDrainLogic {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 
+			debugDumpCreate(graph, group, finderName);
+
 			Tree tree = treeFinder.find(copy, group, constraints);
 
 			if (tree == null) {
 				failuresStore(graph, group, constraints, finderName);
 				break;
 			}
+
+			debugDumpDestroy();
 
 			// Optionally record the first results.
 			if (isFirstPass) {
@@ -264,23 +284,25 @@ public class MultiCostDrainLogic {
 		return new CostDrainResult(successCount, firstCosts);
 	}
 
-	private InputGraphStreamer prepareGraphStreamer(int nodeSize) {
+	private InputGraphStreamer prepareGraphStreamer(String topName) {
 
-		String topologyFilename = setup.getTopologiesDirectory() + '/'
-				+ setup.getTopology() + '_' + nodeSize + '_'
-				+ setup.getGraphsInFile();
+		String edgesFilename = setup.getTopologiesDirectory() + "/edges_"
+				+ topName + ".txt";
+		String nodesFilename = setup.getTopologiesDirectory() + "/nodes_"
+				+ topName + ".txt";
 
-		BufferedReader bufferedReader = null;
+		BufferedReader edgesReader = null;
+		BufferedReader nodesReader = null;
 
 		try {
-			bufferedReader = new BufferedReader(
-					new FileReader(topologyFilename));
+			edgesReader = new BufferedReader(new FileReader(edgesFilename));
+			nodesReader = new BufferedReader(new FileReader(nodesFilename));
 		} catch (FileNotFoundException exception) {
 			return null;
 		}
 
-		InputGraphStreamer inputGraphStreamer = new NewFormatGraphStreamer(
-				nodeSize, setup.getGraphsInFile(), bufferedReader);
+		InputGraphStreamer inputGraphStreamer = new MPiechGraphStreamer(200,
+				nodesReader, edgesReader);
 
 		return inputGraphStreamer;
 	}
@@ -349,6 +371,7 @@ public class MultiCostDrainLogic {
 
 	// Failure record related.
 
+	// TODO: Abstract this mechanism.
 	private void failuresReset() {
 		// Make sure the target directory exists.
 		File drainageFailDir = new File("drainagefail");
@@ -386,11 +409,39 @@ public class MultiCostDrainLogic {
 		marshaller.writeToFile(path, problem);
 	}
 
+	// TODO: Abstract this mechanism too.
+	private void debugDumpCreate(Graph graph, List<Node> group,
+			String finderName) {
+
+		List<Integer> groupIds = new ArrayList<>();
+		for (Node node : group) {
+			groupIds.add(node.getId());
+		}
+
+		GraphDTO graphDto = GraphFactory.createDTO(graph);
+
+		AdHocProblemDTO problem = new AdHocProblemDTO(graphDto, groupIds,
+				finderName);
+		
+		DTOMarshaller<AdHocProblemDTO> marshaller = new DTOMarshaller<>();
+		
+		File debugDataFile = new File("debug_data/current_problem.xml");
+		String path = debugDataFile.getPath();
+		marshaller.writeToFile(path, problem);
+	}
+
+	private void debugDumpDestroy() {
+		File debugDataFile = new File("debug_data/current_problem.xml");
+		if (debugDataFile.exists()) {
+			debugDataFile.delete();
+		}
+	}
+
 	private String toString(List<Double> values, String separator) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < values.size(); ++i){
+		for (int i = 0; i < values.size(); ++i) {
 			sb.append(values.get(i));
-			if(i < (values.size() - 1)) {
+			if (i < (values.size() - 1)) {
 				sb.append(separator);
 			}
 		}

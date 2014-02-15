@@ -92,22 +92,25 @@ public class MPiechGraphStreamer implements InputGraphStreamer {
 	}
 
 	private EdgeDTO edgeFromLine(String edgeLine) {
+		
+		// Note that piece[0] is ignored here. The format stores the "id" of each edge,
+		// which we ignore as it is not necessary further into the computation.
 
 		String[] pieces = edgeLine.split("\\s+");
 
-		if (pieces.length < 3) {
+		if (pieces.length < 4) {
 			throw new IllegalArgumentException("Incorrect edge line format.");
 		}
 
 		List<Double> metrics = new ArrayList<>();
 
 		try {
-			for (int i = 2; i < pieces.length; ++i) {
+			for (int i = 3; i < pieces.length; ++i) {
 				metrics.add(Double.parseDouble(pieces[i]));
 			}
 
-			return new EdgeDTO(Integer.parseInt(pieces[0]),
-					Integer.parseInt(pieces[1]), metrics);
+			return new EdgeDTO(Integer.parseInt(pieces[1]),
+					Integer.parseInt(pieces[2]), metrics);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Incorrect edge line format.");
 		}
