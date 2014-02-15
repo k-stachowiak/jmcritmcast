@@ -1,16 +1,11 @@
-package apps;
+package apps.legacy;
 
 import java.util.List;
 
-public class MultiDrainSetup {
+public class MultiCostSetup {
 	private final long randomSeed;
 
 	private final double fengDelta;
-
-	private final double baseBandwidth;
-	private final double drainedBandwidth;
-	private final double minBandwidth;
-	private final int drainedIndex;
 
 	private final int graphs;
 
@@ -27,8 +22,7 @@ public class MultiDrainSetup {
 
 	private final List<String> treeFinderNames;
 
-	public MultiDrainSetup(long randomSeed, double fengDelta,
-			double baseBandwidth, double drainedBandwidth, double minBandwidth, int drainedIndex, int graphs,
+	public MultiCostSetup(long randomSeed, double fengDelta, int graphs,
 			List<Integer> nodeSizes, List<Integer> criteriaCounts,
 			List<Integer> groupSizes, String topologiesDirectory,
 			String topology, int graphsInFile, double redistributionMin,
@@ -36,10 +30,6 @@ public class MultiDrainSetup {
 
 		this.randomSeed = randomSeed;
 		this.fengDelta = fengDelta;
-		this.baseBandwidth = baseBandwidth;
-		this.drainedBandwidth = drainedBandwidth;
-		this.minBandwidth = minBandwidth;
-		this.drainedIndex = drainedIndex;
 		this.graphs = graphs;
 		this.nodeSizes = nodeSizes;
 		this.criteriaCounts = criteriaCounts;
@@ -58,22 +48,6 @@ public class MultiDrainSetup {
 
 	public double getFengDelta() {
 		return fengDelta;
-	}
-
-	public double getBaseBandwidth() {
-		return baseBandwidth;
-	}
-
-	public double getDrainedBandwidth() {
-		return drainedBandwidth;
-	}
-	
-	public double getMinBandwidth() {
-		return minBandwidth;
-	}
-
-	public int getDrainedIndex() {
-		return drainedIndex;
 	}
 
 	public int getGraphs() {

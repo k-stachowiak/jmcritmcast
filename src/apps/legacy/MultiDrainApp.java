@@ -1,4 +1,4 @@
-package apps;
+package apps.legacy;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

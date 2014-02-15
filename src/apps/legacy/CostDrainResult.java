@@ -1,4 +1,4 @@
-package apps;
+package apps.legacy;
 
 import java.util.List;
 

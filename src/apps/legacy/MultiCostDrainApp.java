@@ -1,4 +1,4 @@
-package apps;
+package apps.legacy;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-public class MultiCostApp {
+public class MultiCostDrainApp {
 
     static long randomSeed;
-    static double fengDelta;
+    static List<List<Double>> constraintCases;
+    static double baseBandwidth;
+    static double drainedBandwidth;
+    static double minBandwidth;
+    static int drainedIndex;
     static String topologiesDirecotry;
     static String topology;
     static int graphsInFile;
@@ -49,7 +53,11 @@ public class MultiCostApp {
         // ----------------------------------------
         try {
             randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
-            fengDelta = Double.parseDouble(properties.getProperty("fengDelta"));
+            constraintCases = parseConstraintCases(properties.getProperty("constraintCases"));
+            baseBandwidth = Double.parseDouble(properties.getProperty("baseBandwidth"));
+            drainedBandwidth = Double.parseDouble(properties.getProperty("drainedBandwidth"));
+            minBandwidth = Double.parseDouble(properties.getProperty("minBandwidth"));
+            drainedIndex = Integer.parseInt(properties.getProperty("drainedIndex"));
             graphsInFile = Integer.parseInt(properties.getProperty("graphsInFile"));
             redistributionMin = Double.parseDouble(properties.getProperty("redistributionMin"));
             redistributionMax = Double.parseDouble(properties.getProperty("redistributionMax"));
@@ -109,7 +117,7 @@ public class MultiCostApp {
         return true;
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
         Locale.setDefault(Locale.ENGLISH);
 
@@ -122,12 +130,27 @@ public class MultiCostApp {
 
         // Build a setup definition for the application and run it.
         // --------------------------------------------------------
-        final MultiCostSetup setup = new MultiCostSetup(randomSeed,
-                fengDelta, graphs, nodeSizes,
+        final MultiCostDrainSetup setup = new MultiCostDrainSetup(randomSeed,
+                constraintCases, baseBandwidth, drainedBandwidth, minBandwidth, drainedIndex, graphs, nodeSizes,
                 criteriaCounts, groupSizes, topologiesDirecotry, topology,
                 graphsInFile, redistributionMin, redistributionMax,
                 algNames);
 
-        new MultiCostLogic(setup).run(args, System.out, System.err);
+        new MultiCostDrainLogic(setup).run(args, System.out, System.err);
     }
+
+    private static List<List<Double>> parseConstraintCases(String property) {
+    	
+    	List<List<Double>> result = new ArrayList<>();
+    	
+		for (String constraintSetStr : property.split(";")) {
+			List<Double> constraintSet = new ArrayList<>();
+			for (String constraint : constraintSetStr.split("\\s+")) {
+				constraintSet.add(Double.parseDouble(constraint));
+			}
+			result.add(constraintSet);
+		}
+		
+		return result;
+	}
 }

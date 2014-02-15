@@ -1,11 +1,16 @@
-package apps;
+package apps.legacy;
 
 import java.util.List;
 
-public class TimeCostSetup {
+public class MultiCostDrainSetup {
 	private final long randomSeed;
 
-	private final double fengDelta;
+	private final List<List<Double>> constraintCases;
+
+	private final double baseBandwidth;
+	private final double drainedBandwidth;
+	private final double minBandwidth;
+	private final int drainedIndex;
 
 	private final int graphs;
 
@@ -13,7 +18,6 @@ public class TimeCostSetup {
 	private final List<Integer> criteriaCounts;
 	private final List<Integer> groupSizes;
 
-	private final List<String> topologyImplementations;
 	private final String topologiesDirectory;
 	private final String topology;
 	private final int graphsInFile;
@@ -23,20 +27,24 @@ public class TimeCostSetup {
 
 	private final List<String> treeFinderNames;
 
-	public TimeCostSetup(long randomSeed, double fengDelta, int graphs,
-			List<Integer> nodeSizes, List<Integer> criteriaCounts,
-			List<Integer> groupSizes, List<String> topologyImplementations,
+	public MultiCostDrainSetup(long randomSeed, List<List<Double>> constraintCases,
+			double baseBandwidth, double drainedBandwidth, double minBandwidth,
+			int drainedIndex, int graphs, List<Integer> nodeSizes,
+			List<Integer> criteriaCounts, List<Integer> groupSizes,
 			String topologiesDirectory, String topology, int graphsInFile,
 			double redistributionMin, double redistributionMax,
 			List<String> treeFinderNames) {
 
 		this.randomSeed = randomSeed;
-		this.fengDelta = fengDelta;
+		this.constraintCases = constraintCases;
+		this.baseBandwidth = baseBandwidth;
+		this.drainedBandwidth = drainedBandwidth;
+		this.minBandwidth = minBandwidth;
+		this.drainedIndex = drainedIndex;
 		this.graphs = graphs;
 		this.nodeSizes = nodeSizes;
 		this.criteriaCounts = criteriaCounts;
 		this.groupSizes = groupSizes;
-		this.topologyImplementations = topologyImplementations;
 		this.topologiesDirectory = topologiesDirectory;
 		this.topology = topology;
 		this.graphsInFile = graphsInFile;
@@ -49,8 +57,24 @@ public class TimeCostSetup {
 		return randomSeed;
 	}
 
-	public double getFengDelta() {
-		return fengDelta;
+	public List<List<Double>> GetConstraintCases() {
+		return constraintCases;
+	}
+
+	public double getBaseBandwidth() {
+		return baseBandwidth;
+	}
+
+	public double getDrainedBandwidth() {
+		return drainedBandwidth;
+	}
+
+	public double getMinBandwidth() {
+		return minBandwidth;
+	}
+
+	public int getDrainedIndex() {
+		return drainedIndex;
 	}
 
 	public int getGraphs() {
@@ -67,10 +91,6 @@ public class TimeCostSetup {
 
 	public List<Integer> getGroupSizes() {
 		return groupSizes;
-	}
-	
-	public List<String> getTopologyImplementations() {
-		return topologyImplementations;
 	}
 
 	public String getTopologiesDirectory() {
