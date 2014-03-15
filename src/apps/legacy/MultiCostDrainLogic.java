@@ -117,13 +117,13 @@ public class MultiCostDrainLogic {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM HH:mm:ss");
 
 		for (Integer criteriaCount : setup.getCriteriaCounts()) {
-			String critString = "c = " + criteriaCount;
+			String critString = "crit = " + criteriaCount;
 
 			for (Integer groupSize : setup.getGroupSizes()) {
 				String critGroupString = critString + " g = " + groupSize;
 
 				for (List<Double> constraints : setup.GetConstraintCases()) {
-					String critGroupConstrString = critGroupString + " c = "
+					String critGroupConstrString = critGroupString + " cstr = "
 							+ toString(constraints, ",");
 
 					for (String finderName : setup.getTreeFinderNames()) {
@@ -217,6 +217,9 @@ public class MultiCostDrainLogic {
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(criteriaCount);
+			resultStringBuilder.append('\t');
+			
+			resultStringBuilder.append(toString(constraints, ","));
 			resultStringBuilder.append('\t');
 
 			resultStringBuilder.append(groupSize);
