@@ -38,7 +38,7 @@ import dto.ConstrainedTreeFindProblemDTO;
 import dto.EdgeDTO;
 
 
-public class FailureAnalysisApp {
+public class DrainageFailureAnalysisApp {
 
 	private static final String DRAINAGE_DIR = "selected_drainagefail";
 

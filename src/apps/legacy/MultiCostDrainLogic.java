@@ -9,6 +9,8 @@ import helpers.PathAggregatorImpl;
 import helpers.TopologyAnalyser;
 import helpers.TopologyAnalyserImpl;
 import helpers.gphmut.IndexResourceDrainer;
+import helpers.gphmut.MetricRedistribution;
+import helpers.gphmut.MetricRedistributionImpl;
 import helpers.gphmut.ResourceDrainer;
 import helpers.gphmut.UniformDistributionParameters;
 import helpers.metrprov.IndexMetricProvider;
@@ -50,7 +52,6 @@ import util.TimeMeasurement;
 import dal.DTOMarshaller;
 import dal.InputGraphStreamer;
 import dal.MPiechGraphStreamer;
-import dto.AdHocProblemDTO;
 import dto.ConstrainedTreeFindProblemDTO;
 import dto.GraphDTO;
 
@@ -64,6 +65,7 @@ public class MultiCostDrainLogic {
 	private final TreeFinderFactory treeFinderFactory;
 
 	// Strategies.
+	private final MetricRedistribution metricResistribution;
 	private final NodeGroupper nodeGroupper;
 	private final CostResourceTranslation costResourceTranslation;
 	private final ResourceDrainer resourceDrainer;
@@ -87,6 +89,9 @@ public class MultiCostDrainLogic {
 		random = new Random(setup.getRandomSeed());
 		graphFactory = new AdjacencyListFactory();
 		treeFinderFactory = new TreeFinderFactoryImpl();
+
+		metricResistribution = new MetricRedistributionImpl(graphFactory,
+				random);
 
 		nodeGroupper = new RandomNodeGroupper(random);
 
@@ -123,6 +128,7 @@ public class MultiCostDrainLogic {
 				String critGroupString = critString + " g = " + groupSize;
 
 				for (List<Double> constraints : setup.GetConstraintCases()) {
+					constraints.subList(criteriaCount - 1, constraints.size()).clear();
 					String critGroupConstrString = critGroupString + " cstr = "
 							+ toString(constraints, ",");
 
@@ -179,10 +185,10 @@ public class MultiCostDrainLogic {
 
 	private void streamerNamesReset() {
 		streamerNames.clear();
-		streamerNames.add("n_100_DistRNG_r_250__N_200");
+		// streamerNames.add("n_100_DistRNG_r_250__N_200");
 		streamerNames.add("n_100_k_100_Waxman_015_005__N_200");
 		streamerNames.add("n_100_k_200_Waxman_015_005__N_200");
-		streamerNames.add("n_100_LMST_r_250__N_200");
+		// streamerNames.add("n_100_LMST_r_250__N_200");
 	}
 
 	private String experiment(String topName, Integer criteriaCount,
@@ -207,6 +213,8 @@ public class MultiCostDrainLogic {
 			Graph graph = graphFactory.createFromDTO(graphDTO);
 			graphDTO = null;
 
+			graph = metricResistribution.redistUniform(graph, parameters);
+
 			CostDrainResult result = experimentStep(graph, groupSize,
 					constraints, treeFinder, finderName);
 
@@ -218,7 +226,7 @@ public class MultiCostDrainLogic {
 
 			resultStringBuilder.append(criteriaCount);
 			resultStringBuilder.append('\t');
-			
+
 			resultStringBuilder.append(toString(constraints, ","));
 			resultStringBuilder.append('\t');
 
@@ -256,7 +264,7 @@ public class MultiCostDrainLogic {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 
-			debugDumpCreate(graph, group, finderName);
+			debugDumpCreate(graph, group, constraints, finderName);
 
 			Tree tree = treeFinder.find(copy, group, constraints);
 
@@ -412,7 +420,7 @@ public class MultiCostDrainLogic {
 
 	// TODO: Abstract this mechanism too.
 	private void debugDumpCreate(Graph graph, List<Node> group,
-			String finderName) {
+			List<Double> constraints, String finderName) {
 
 		List<Integer> groupIds = new ArrayList<>();
 		for (Node node : group) {
@@ -421,11 +429,11 @@ public class MultiCostDrainLogic {
 
 		GraphDTO graphDto = GraphFactory.createDTO(graph);
 
-		AdHocProblemDTO problem = new AdHocProblemDTO(graphDto, groupIds,
-				finderName);
-		
-		DTOMarshaller<AdHocProblemDTO> marshaller = new DTOMarshaller<>();
-		
+		ConstrainedTreeFindProblemDTO problem = new ConstrainedTreeFindProblemDTO(
+				graphDto, groupIds, constraints, finderName);
+
+		DTOMarshaller<ConstrainedTreeFindProblemDTO> marshaller = new DTOMarshaller<>();
+
 		File debugDataFile = new File("debug_data/current_problem.xml");
 		String path = debugDataFile.getPath();
 		marshaller.writeToFile(path, problem);
