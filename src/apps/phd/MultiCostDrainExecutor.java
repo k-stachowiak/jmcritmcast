@@ -1,45 +1,30 @@
 package apps.phd;
 
-import helpers.ConstraintsComparer;
-import helpers.ConstraintsComparerImpl;
 import helpers.OspfCostResourceTranslation;
-import helpers.PathAggregator;
-import helpers.PathAggregatorImpl;
 import helpers.TopologyAnalyser;
 import helpers.TopologyAnalyserImpl;
 import helpers.gphmut.IndexResourceDrainer;
 import helpers.gphmut.ResourceDrainer;
 import helpers.metrprov.IndexMetricProvider;
-import helpers.metrprov.MetricProvider;
 import helpers.nodegrp.NodeGroupper;
 import helpers.nodegrp.RandomNodeGroupper;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import dal.DTOMarshaller;
-import dto.ConstrainedTreeFindProblemDTO;
-import dto.GraphDTO;
-import pfnd.ConstrainedPathFinder;
-import pfnd.PathFinderFactory;
-import pfnd.PathFinderFactoryImpl;
-import pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
-import pfnd.mlarac.IntersectLambdaEstimator;
-import pfnd.mlarac.LambdaEstimator;
-import pfnd.mlarac.PathSubstiutor;
 import model.topology.AdjacencyListFactory;
 import model.topology.Graph;
 import model.topology.GraphFactory;
 import model.topology.Node;
 import model.topology.Tree;
-import tfind.ConstrainedSteinerTreeFinder;
 import tfind.SpanningTreeFinder;
 import tfind.TreeFinderFactory;
 import tfind.TreeFinderFactoryImpl;
+import dal.DTOMarshaller;
+import dto.ConstrainedTreeFindProblemDTO;
+import dto.GraphDTO;
 
 public class MultiCostDrainExecutor {
 
@@ -47,7 +32,6 @@ public class MultiCostDrainExecutor {
 	private static final GraphFactory graphFactory = new AdjacencyListFactory();
 	private static final TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
 	private static final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl();
-	private static final Map<String, ConstrainedSteinerTreeFinder> treeFinders = allocateFinders();
 	private static final SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 			.createPrim(new IndexMetricProvider(0));
 
@@ -74,16 +58,14 @@ public class MultiCostDrainExecutor {
 		int successCount = 0;
 		List<Double> firstCosts = new ArrayList<>();
 
-		ConstrainedSteinerTreeFinder treeFinder = treeFinders.get(finderName);
-
 		// Drainage loop
 		while (topologyAnalyser.isConnected(copy, spanningTreeFinder)
 				&& copy.getNodes().size() >= groupSize) {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 
-			debugDumpCreate(graph, group, constraints, finderName);
-			Tree tree = treeFinder.find(copy, group, constraints);
+			ConstrainedTreeFindProblemDTO problem = debugDumpCreate(graph, group, constraints, finderName);
+			Tree tree = new ConstrainedTreeFindProblemExecutor().execute(problem);
 			debugDumpDestroy();
 			
 			if (tree == null) {
@@ -105,70 +87,8 @@ public class MultiCostDrainExecutor {
 
 		return new CostDrainResult(successCount, firstCosts);
 	}
-
-	private static Map<String, ConstrainedSteinerTreeFinder> allocateFinders() {
-
-		// Factories.
-		// ----------
-		PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-		TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
-
-		// Strategies.
-		// -----------
-		MetricProvider metricProvider = new IndexMetricProvider(0);
-
-		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
-				.createPrim(metricProvider);
-
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
-
-		PathAggregator pathAggregator = new PathAggregatorImpl(
-				spanningTreeFinder);
-
-		// MLARAC path finder.
-		// -------------------
-		PathSubstiutor pathSubstitutor = new ExpensiveNonBreakingPathSubstitutor();
-		LambdaEstimator lambdaEstimator = new IntersectLambdaEstimator();
-
-		ConstrainedPathFinder mlarac = pathFinderFactory.createMlarac(
-				pathSubstitutor, lambdaEstimator, constraintsComparer);
-
-		// LBPSA path finder.
-		// ------------------
-		ConstrainedPathFinder lbpsa = pathFinderFactory
-				.createLbpsa(constraintsComparer);
-
-		// HMCOP path finder.
-		// ------------------
-		double lambda = Double.POSITIVE_INFINITY;
-		ConstrainedPathFinder hmcop = pathFinderFactory.createHmcop(lambda);
-
-		// Build the result.
-		// -----------------
-		Map<String, ConstrainedSteinerTreeFinder> treeFinders = new HashMap<>();
-
-		treeFinders.put("HMCMC", treeFinderFactory.createHmcmc(
-				constraintsComparer, pathFinderFactory, pathAggregator));
-
-		treeFinders.put("AGGR_MLARAC", treeFinderFactory
-				.createConstrainedPathAggr(mlarac, pathAggregator));
-
-		treeFinders.put("AGGR_LBPSA", treeFinderFactory
-				.createConstrainedPathAggr(lbpsa, pathAggregator));
-
-		treeFinders.put("AGGR_HMCOP", treeFinderFactory
-				.createConstrainedPathAggr(hmcop, pathAggregator));
-
-		treeFinders.put("RDP_QE",
-				treeFinderFactory.createRdpQuasiExact(constraintsComparer));
-
-		treeFinders.put("RDP_H",
-				treeFinderFactory.createRdpHeuristic(constraintsComparer));
-
-		return treeFinders;
-	}
 	
-	private void debugDumpCreate(Graph graph, List<Node> group,
+	private ConstrainedTreeFindProblemDTO debugDumpCreate(Graph graph, List<Node> group,
 			List<Double> constraints, String finderName) {
 
 		List<Integer> groupIds = new ArrayList<>();
@@ -186,6 +106,8 @@ public class MultiCostDrainExecutor {
 		File debugDataFile = new File("debug_data/current_problem.xml");
 		String path = debugDataFile.getPath();
 		marshaller.writeToFile(path, problem);
+		
+		return problem;
 	}
 
 	private void debugDumpDestroy() {
