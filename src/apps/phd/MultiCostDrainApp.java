@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,6 @@ public class MultiCostDrainApp {
 		}
 
 		final Random random = new Random(setup.getRandomSeed());
-
 		final MultiCostDrainExecutor exec = new MultiCostDrainExecutor(setup,
 				random);
 
@@ -50,23 +48,6 @@ public class MultiCostDrainApp {
 	}
 
 	private static MultiCostDrainSetup readConfig(String filename) {
-
-		final long randomSeed;
-		final List<List<Double>> constraintCases;
-		final double baseBandwidth;
-		final double drainedBandwidth;
-		final double minBandwidth;
-		final int drainedIndex;
-		final String topologiesDirecotry;
-		final String topology;
-		final int graphsInFile;
-		final double redistributionMin;
-		final double redistributionMax;
-		final int graphs;
-		final List<Integer> nodeSizes;
-		final List<Integer> criteriaCounts;
-		final List<Integer> groupSizes;
-		final List<String> algNames;
 
 		Properties properties = new Properties();
 		FileInputStream fis;
@@ -76,6 +57,7 @@ public class MultiCostDrainApp {
 		try {
 			fis = new FileInputStream(filename);
 			properties.load(fis);
+			return new MultiCostDrainSetup(properties);
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Exception: Configuration file not found.");
@@ -85,104 +67,11 @@ public class MultiCostDrainApp {
 			System.err.println("Exception: Error loading configuration file.");
 			return null;
 
-		}
-
-		// Peal out numeric values and collections.
-		// ----------------------------------------
-		try {
-			randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
-			constraintCases = parseConstraintCases(properties
-					.getProperty("constraintCases"));
-			baseBandwidth = Double.parseDouble(properties
-					.getProperty("baseBandwidth"));
-			drainedBandwidth = Double.parseDouble(properties
-					.getProperty("drainedBandwidth"));
-			minBandwidth = Double.parseDouble(properties
-					.getProperty("minBandwidth"));
-			drainedIndex = Integer.parseInt(properties
-					.getProperty("drainedIndex"));
-			graphsInFile = Integer.parseInt(properties
-					.getProperty("graphsInFile"));
-			redistributionMin = Double.parseDouble(properties
-					.getProperty("redistributionMin"));
-			redistributionMax = Double.parseDouble(properties
-					.getProperty("redistributionMax"));
-			graphs = Integer.parseInt(properties.getProperty("graphs"));
-
-			String nssStr = properties.getProperty("nodeSizes");
-			String[] nss = nssStr.split(",");
-			nodeSizes = new ArrayList<>();
-			for (String ns : nss) {
-				nodeSizes.add(Integer.parseInt(ns));
-			}
-
-			String ccsStr = properties.getProperty("criteriaCounts");
-			String[] ccs = ccsStr.split(",");
-			criteriaCounts = new ArrayList<>();
-			for (String cc : ccs) {
-				criteriaCounts.add(Integer.parseInt(cc));
-			}
-
-			String gssStr = properties.getProperty("groupSizes");
-			String[] gss = gssStr.split(",");
-			groupSizes = new ArrayList<>();
-			for (String gs : gss) {
-				groupSizes.add(Integer.parseInt(gs));
-			}
-
 		} catch (NumberFormatException ex) {
 			System.err.println("Exception: Parameter parsing error \""
 					+ ex.getMessage() + "\"");
 			return null;
-
 		}
-
-		// Read the string properties.
-		// ---------------------------
-		topologiesDirecotry = properties.getProperty("topologiesDirectory");
-		topology = properties.getProperty("topology");
-		String ansStr = properties.getProperty("algNames");
-
-		if (topologiesDirecotry == null) {
-			System.err
-					.println("Exception: Error while parsing topologies directory property.");
-			return null;
-		}
-
-		if (topology == null) {
-			System.err
-					.println("Exception: Error while parsing topology property.");
-			return null;
-		}
-
-		if (ansStr == null) {
-			System.err
-					.println("Exception: Error while parsing algorithm names property.");
-			return null;
-		}
-
-		algNames = new ArrayList<>(Arrays.asList(ansStr.split(",")));
-
-		return new MultiCostDrainSetup(randomSeed, constraintCases,
-				baseBandwidth, drainedBandwidth, minBandwidth, drainedIndex,
-				graphs, nodeSizes, criteriaCounts, groupSizes,
-				topologiesDirecotry, topology, graphsInFile, redistributionMin,
-				redistributionMax, algNames);
-	}
-
-	private static List<List<Double>> parseConstraintCases(String property) {
-
-		List<List<Double>> result = new ArrayList<>();
-
-		for (String constraintSetStr : property.split(";")) {
-			List<Double> constraintSet = new ArrayList<>();
-			for (String constraint : constraintSetStr.split("\\s+")) {
-				constraintSet.add(Double.parseDouble(constraint));
-			}
-			result.add(constraintSet);
-		}
-
-		return result;
 	}
 
 	private static void forEachCase(MultiCostDrainSetup setup, Random random,

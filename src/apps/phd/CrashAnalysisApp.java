@@ -13,6 +13,6 @@ public class CrashAnalysisApp {
 		DTOMarshaller<ConstrainedTreeFindProblemDTO> marshaller = new DTOMarshaller<>();
 		ConstrainedTreeFindProblemDTO problem = marshaller.readFromFile(
 				problemFile.getPath(), ConstrainedTreeFindProblemDTO.class);
-		new ConstrainedTreeFindProblemExecutor().execute(problem);
+		new ConstrainedTreeFindProblemSolver().solve(problem);
 	}
 }

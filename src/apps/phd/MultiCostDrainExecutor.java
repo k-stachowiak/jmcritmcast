@@ -65,7 +65,7 @@ public class MultiCostDrainExecutor {
 			List<Node> group = nodeGroupper.group(copy, groupSize);
 
 			ConstrainedTreeFindProblemDTO problem = debugDumpCreate(graph, group, constraints, finderName);
-			Tree tree = new ConstrainedTreeFindProblemExecutor().execute(problem);
+			Tree tree = new ConstrainedTreeFindProblemSolver().solve(problem);
 			debugDumpDestroy();
 			
 			if (tree == null) {

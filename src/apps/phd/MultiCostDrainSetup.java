@@ -1,6 +1,9 @@
 package apps.phd;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public class MultiCostDrainSetup {
 	private final long randomSeed;
@@ -27,30 +30,82 @@ public class MultiCostDrainSetup {
 
 	private final List<String> treeFinderNames;
 
-	public MultiCostDrainSetup(long randomSeed, List<List<Double>> constraintCases,
-			double baseBandwidth, double drainedBandwidth, double minBandwidth,
-			int drainedIndex, int graphs, List<Integer> nodeSizes,
-			List<Integer> criteriaCounts, List<Integer> groupSizes,
-			String topologiesDirectory, String topology, int graphsInFile,
-			double redistributionMin, double redistributionMax,
-			List<String> treeFinderNames) {
+	public MultiCostDrainSetup(Properties properties) {
 
-		this.randomSeed = randomSeed;
-		this.constraintCases = constraintCases;
-		this.baseBandwidth = baseBandwidth;
-		this.drainedBandwidth = drainedBandwidth;
-		this.minBandwidth = minBandwidth;
-		this.drainedIndex = drainedIndex;
-		this.graphs = graphs;
-		this.nodeSizes = nodeSizes;
-		this.criteriaCounts = criteriaCounts;
-		this.groupSizes = groupSizes;
-		this.topologiesDirectory = topologiesDirectory;
-		this.topology = topology;
-		this.graphsInFile = graphsInFile;
-		this.redistributionMin = redistributionMin;
-		this.redistributionMax = redistributionMax;
-		this.treeFinderNames = treeFinderNames;
+		// Peal out numeric values and collections.
+		// ----------------------------------------
+		randomSeed = Long.parseLong(properties.getProperty("randomSeed"));
+		constraintCases = parseConstraintCases(properties
+				.getProperty("constraintCases"));
+		baseBandwidth = Double.parseDouble(properties
+				.getProperty("baseBandwidth"));
+		drainedBandwidth = Double.parseDouble(properties
+				.getProperty("drainedBandwidth"));
+		minBandwidth = Double.parseDouble(properties
+				.getProperty("minBandwidth"));
+		drainedIndex = Integer.parseInt(properties.getProperty("drainedIndex"));
+		graphsInFile = Integer.parseInt(properties.getProperty("graphsInFile"));
+		redistributionMin = Double.parseDouble(properties
+				.getProperty("redistributionMin"));
+		redistributionMax = Double.parseDouble(properties
+				.getProperty("redistributionMax"));
+		graphs = Integer.parseInt(properties.getProperty("graphs"));
+
+		String nssStr = properties.getProperty("nodeSizes");
+		String[] nss = nssStr.split(",");
+		nodeSizes = new ArrayList<>();
+		for (String ns : nss) {
+			nodeSizes.add(Integer.parseInt(ns));
+		}
+
+		String ccsStr = properties.getProperty("criteriaCounts");
+		String[] ccs = ccsStr.split(",");
+		criteriaCounts = new ArrayList<>();
+		for (String cc : ccs) {
+			criteriaCounts.add(Integer.parseInt(cc));
+		}
+
+		String gssStr = properties.getProperty("groupSizes");
+		String[] gss = gssStr.split(",");
+		groupSizes = new ArrayList<>();
+		for (String gs : gss) {
+			groupSizes.add(Integer.parseInt(gs));
+		}
+
+		// Read the string properties.
+		// ---------------------------
+		topologiesDirectory = properties.getProperty("topologiesDirectory");
+		topology = properties.getProperty("topology");
+		String ansStr = properties.getProperty("algNames");
+
+		if (topologiesDirectory == null) {
+			throw new RuntimeException("Error while parsing topologies directory property.");
+		}
+
+		if (topology == null) {
+			throw new RuntimeException("Exception: Error while parsing topology property.");
+		}
+
+		if (ansStr == null) {
+			throw new RuntimeException("Exception: Error while parsing algorithm names property.");
+		}
+
+		treeFinderNames = new ArrayList<>(Arrays.asList(ansStr.split(",")));
+	}
+
+	private static List<List<Double>> parseConstraintCases(String property) {
+
+		List<List<Double>> result = new ArrayList<>();
+
+		for (String constraintSetStr : property.split(";")) {
+			List<Double> constraintSet = new ArrayList<>();
+			for (String constraint : constraintSetStr.split("\\s+")) {
+				constraintSet.add(Double.parseDouble(constraint));
+			}
+			result.add(constraintSet);
+		}
+
+		return result;
 	}
 
 	public long getRandomSeed() {

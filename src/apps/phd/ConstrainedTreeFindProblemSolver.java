@@ -29,12 +29,12 @@ import model.topology.Graph;
 import model.topology.Tree;
 import model.topology.Node;
 
-public class ConstrainedTreeFindProblemExecutor {
+public class ConstrainedTreeFindProblemSolver {
 	
 	private final static AdjacencyListFactory factory = new AdjacencyListFactory();
 	private final static Map<String, ConstrainedSteinerTreeFinder> finders = allocateFinders();	
 	
-	public Tree execute(ConstrainedTreeFindProblemDTO problem) {
+	public Tree solve(ConstrainedTreeFindProblemDTO problem) {
 		final Graph graph = factory.createFromDTO(problem.getGraph());
 		final ConstrainedSteinerTreeFinder finder = finders.get(problem.getFinderName());
 		List<Node> group = new ArrayList<>();
