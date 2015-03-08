@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.dal;
+package dal;
 
 import static org.junit.Assert.assertEquals;
 

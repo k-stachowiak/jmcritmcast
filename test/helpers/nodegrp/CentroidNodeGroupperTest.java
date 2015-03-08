@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.helpers.nodegrp;
+package helpers.nodegrp;
 
 import static org.junit.Assert.*;
 

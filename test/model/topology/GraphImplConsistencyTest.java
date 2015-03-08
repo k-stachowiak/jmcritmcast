@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.model.topology;
+package model.topology;
 
 import static org.junit.Assert.*;
 import helpers.TopologyAnalyser;

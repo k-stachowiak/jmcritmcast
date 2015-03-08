@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.pfnd.mlarac;
+package pfnd.mlarac;
 
 import static org.junit.Assert.assertEquals;
 

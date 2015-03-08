@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.pfnd.hmcp;
+package pfnd.hmcp;
 
 import static org.junit.Assert.assertEquals;
 

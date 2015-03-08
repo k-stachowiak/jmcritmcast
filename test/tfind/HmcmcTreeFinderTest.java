@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.tfind;
+package tfind;
 
 import static org.junit.Assert.assertNotNull;
 

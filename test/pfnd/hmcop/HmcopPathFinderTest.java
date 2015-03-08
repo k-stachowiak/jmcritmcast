@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.pfnd.hmcop;
+package pfnd.hmcop;
 
 import static org.junit.Assert.*;
 

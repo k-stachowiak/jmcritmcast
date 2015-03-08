@@ -1,4 +1,4 @@
-package edu.put.et.stik.mm.pfnd.lbpsa;
+package pfnd.lbpsa;
 
 import static org.junit.Assert.assertEquals;
 
