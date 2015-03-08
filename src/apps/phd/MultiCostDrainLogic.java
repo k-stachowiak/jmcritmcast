@@ -128,9 +128,17 @@ public class MultiCostDrainLogic {
 				String critGroupString = critString + " g = " + groupSize;
 
 				for (List<Double> constraints : setup.GetConstraintCases()) {
-					constraints.subList(criteriaCount - 1, constraints.size()).clear();
+
+					List<Double> constraintsCopy = new ArrayList<>(constraints);
+					int constraintsSize = criteriaCount - 1;
+					if (constraintsCopy.size() > (constraintsSize)) {
+						constraintsCopy
+								.subList(constraintsSize, constraintsCopy.size())
+								.clear();
+					}
+
 					String critGroupConstrString = critGroupString + " cstr = "
-							+ toString(constraints, ",");
+							+ toString(constraintsCopy, ",");
 
 					for (String finderName : setup.getTreeFinderNames()) {
 						String critGroupConstrFndString = critGroupConstrString
@@ -152,7 +160,7 @@ public class MultiCostDrainLogic {
 							// Cartesian product of case variables.
 							String partialResult = experiment(topName,
 									criteriaCount, groupSize,
-									setup.getGraphs(), constraints, finderName,
+									setup.getGraphs(), constraintsCopy, finderName,
 									treeFinders.get(finderName));
 
 							timeMeasurement.end();
