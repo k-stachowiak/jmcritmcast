@@ -1,4 +1,4 @@
-package apps.phd;
+package apps;
 
 import java.util.List;
 

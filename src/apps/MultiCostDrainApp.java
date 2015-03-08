@@ -1,4 +1,4 @@
-package apps.phd;
+package apps;
 
 import helpers.gphmut.MetricRedistribution;
 import helpers.gphmut.MetricRedistributionImpl;

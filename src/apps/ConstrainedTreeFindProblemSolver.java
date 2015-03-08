@@ -1,4 +1,4 @@
-package apps.phd;
+package apps;
 
 import helpers.ConstraintsComparer;
 import helpers.ConstraintsComparerImpl;
