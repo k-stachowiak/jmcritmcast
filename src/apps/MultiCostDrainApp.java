@@ -121,93 +121,85 @@ public class MultiCostDrainApp {
 							String critGroupConstrFndNodeString = critGroupConstrFndString
 									+ " n = " + nodeSize.toString();
 
-							while (!streamerNames.isEmpty()) {
-								String topName = streamerNames.get(nodeSize);
-								String problemString = sdf.format(new Date())
-										+ " " + critGroupConstrFndNodeString
-										+ " top = " + topName;
+							String topName = streamerNames.get(nodeSize);
+							String problemString = sdf.format(new Date()) + " "
+									+ critGroupConstrFndNodeString + " top = "
+									+ topName;
 
-								debugWriter.print(problemString);
-								debugWriter.flush();
+							debugWriter.print(problemString);
+							debugWriter.flush();
 
-								timeMeasurement.begin();
+							timeMeasurement.begin();
 
-								final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(
-										setup, topName);
-								if (inputGraphStreamer == null) {
-									throw new RuntimeException(
-											"Failed opening graph streamer.\n");
-								}
-
-								StringBuilder partialResultStringBuilder = new StringBuilder();
-
-								List<UniformDistributionParameters> parameters = new ArrayList<>();
-								for (int p = 0; p < criteriaCount; ++p)
-									parameters
-											.add(new UniformDistributionParameters(
-													setup.getRedistributionMin(),
-													setup.getRedistributionMax()));
-
-								for (int g = 0; g < setup.getGraphs(); ++g) {
-
-									GraphDTO graphDTO = inputGraphStreamer
-											.getNext();
-									Graph graph = graphFactory
-											.createFromDTO(graphDTO);
-									graphDTO = null;
-
-									graph = metricRedistribution.redistUniform(
-											graph, parameters);
-
-									CostDrainResult result = exec.execute(
-											graph, groupSize, constraints,
-											finderName);
-
-									partialResultStringBuilder.append(topName);
-									partialResultStringBuilder.append('\t');
-
-									partialResultStringBuilder
-											.append(finderName);
-									partialResultStringBuilder.append('\t');
-
-									partialResultStringBuilder
-											.append(criteriaCount);
-									partialResultStringBuilder.append('\t');
-
-									partialResultStringBuilder.append(toString(
-											constraints, ","));
-									partialResultStringBuilder.append('\t');
-
-									partialResultStringBuilder
-											.append(groupSize);
-									partialResultStringBuilder.append('\t');
-
-									partialResultStringBuilder.append(result
-											.getSuccessCount());
-									partialResultStringBuilder.append('\t');
-
-									List<Double> firstCosts = result
-											.getFirstCosts();
-									for (int i = 0; i < firstCosts.size(); ++i) {
-										partialResultStringBuilder
-												.append(firstCosts.get(i));
-										if (i < (firstCosts.size() - 1))
-											partialResultStringBuilder
-													.append('\t');
-									}
-
-									partialResultStringBuilder.append('\n');
-								}
-
-								timeMeasurement.end();
-
-								debugWriter.println(" Elapsed : "
-										+ timeMeasurement.getDurationString());
-
-								resultString.append(partialResultStringBuilder);
-
-								streamerNames.remove(streamerNames.size() - 1);
+							final InputGraphStreamer inputGraphStreamer = prepareGraphStreamer(
+									setup, topName);
+							if (inputGraphStreamer == null) {
+								throw new RuntimeException(
+										"Failed opening graph streamer.\n");
 							}
+
+							StringBuilder partialResultStringBuilder = new StringBuilder();
+
+							List<UniformDistributionParameters> parameters = new ArrayList<>();
+							for (int p = 0; p < criteriaCount; ++p)
+								parameters
+										.add(new UniformDistributionParameters(
+												setup.getRedistributionMin(),
+												setup.getRedistributionMax()));
+
+							for (int g = 0; g < setup.getGraphs(); ++g) {
+
+								GraphDTO graphDTO = inputGraphStreamer
+										.getNext();
+								Graph graph = graphFactory
+										.createFromDTO(graphDTO);
+								graphDTO = null;
+
+								graph = metricRedistribution.redistUniform(
+										graph, parameters);
+
+								CostDrainResult result = exec.execute(graph,
+										groupSize, constraintsCopy, finderName);
+
+								partialResultStringBuilder.append(topName);
+								partialResultStringBuilder.append('\t');
+
+								partialResultStringBuilder.append(finderName);
+								partialResultStringBuilder.append('\t');
+
+								partialResultStringBuilder
+										.append(criteriaCount);
+								partialResultStringBuilder.append('\t');
+
+								partialResultStringBuilder.append(toString(
+										constraintsCopy, ","));
+								partialResultStringBuilder.append('\t');
+
+								partialResultStringBuilder.append(groupSize);
+								partialResultStringBuilder.append('\t');
+
+								partialResultStringBuilder.append(result
+										.getSuccessCount());
+								partialResultStringBuilder.append('\t');
+
+								List<Double> firstCosts = result
+										.getFirstCosts();
+								for (int i = 0; i < firstCosts.size(); ++i) {
+									partialResultStringBuilder
+											.append(firstCosts.get(i));
+									if (i < (firstCosts.size() - 1))
+										partialResultStringBuilder.append('\t');
+								}
+
+								partialResultStringBuilder.append('\n');
+							}
+
+							timeMeasurement.end();
+
+							debugWriter.println(" Elapsed : "
+									+ timeMeasurement.getDurationString());
+
+							resultString.append(partialResultStringBuilder);
 						}
 					}
 				}
