@@ -3,9 +3,7 @@ package tfind;
 import static org.junit.Assert.assertNotNull;
 
 import helpers.ConstraintsComparer;
-import helpers.ConstraintsComparerImpl;
 import helpers.PathAggregator;
-import helpers.PathAggregatorImpl;
 import helpers.metrprov.IndexMetricProvider;
 import helpers.metrprov.MetricProvider;
 
@@ -37,12 +35,12 @@ public class HmcmcTreeFinderTest {
 
 		// Helpers.
 		MetricProvider metricProvider = new IndexMetricProvider(0);
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+		ConstraintsComparer constraintsComparer = new ConstraintsComparer();
 		TreeFinderFactory treeFinderFacotry = new TreeFinderFactoryImpl();
 		SpanningTreeFinder spanningTreeFinder = treeFinderFacotry
 				.createPrim(metricProvider);
 		PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-		PathAggregator pathAggregator = new PathAggregatorImpl(
+		PathAggregator pathAggregator = new PathAggregator(
 				spanningTreeFinder);
 
 		// Model.

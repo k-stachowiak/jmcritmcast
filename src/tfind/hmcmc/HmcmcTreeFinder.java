@@ -11,12 +11,10 @@ import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
 import model.topology.Tree;
-
 import pfnd.CommonRelaxation;
 import pfnd.ConstrainedPathFinder;
 import pfnd.PathFinder;
 import pfnd.PathFinderFactory;
-
 import tfind.ConstrainedSteinerTreeFinder;
 
 

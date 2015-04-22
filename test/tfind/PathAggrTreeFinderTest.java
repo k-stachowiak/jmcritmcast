@@ -3,7 +3,6 @@ package tfind;
 import static org.junit.Assert.assertEquals;
 
 import helpers.PathAggregator;
-import helpers.PathAggregatorImpl;
 import helpers.metrprov.IndexMetricProvider;
 import helpers.metrprov.MetricProvider;
 
@@ -62,7 +61,7 @@ public class PathAggrTreeFinderTest {
 				.createPrim(metricProvider);
 
 		// Other strategies.
-		PathAggregator pathAggregator = new PathAggregatorImpl(
+		PathAggregator pathAggregator = new PathAggregator(
 				spanningTreeFinder);
 
 		// Model.

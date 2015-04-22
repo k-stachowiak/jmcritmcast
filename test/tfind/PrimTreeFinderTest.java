@@ -2,7 +2,6 @@ package tfind;
 
 import static org.junit.Assert.assertEquals;
 import helpers.TopologyAnalyser;
-import helpers.TopologyAnalyserImpl;
 import helpers.metrprov.IndexMetricProvider;
 import helpers.metrprov.MetricProvider;
 
@@ -62,7 +61,7 @@ public class PrimTreeFinderTest {
 		final MetricProvider metricProvider = new IndexMetricProvider(
 				INDEX_FOR_METRIC_PROVIDER);
 
-		final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl();
+		final TopologyAnalyser topologyAnalyser = new TopologyAnalyser();
 
 		// Input.
 		Graph connectedGraph = graphFactory.createMaciejPiechowiakExample();

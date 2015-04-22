@@ -3,7 +3,6 @@ package pfnd.mlarac;
 import static org.junit.Assert.assertEquals;
 
 import helpers.ConstraintsComparer;
-import helpers.ConstraintsComparerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ public class MlaracPathFinderTest {
 		// Strategies.
 		PathSubstiutor pathSubstitutor = new ExpensiveNonBreakingPathSubstitutor();
 		LambdaEstimator lambdaEstimator = new IntersectLambdaEstimator();
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+		ConstraintsComparer constraintsComparer = new ConstraintsComparer();
 
 		// Model.
 		Graph graph = graphFactory.createMaciejPiechowiakExample();

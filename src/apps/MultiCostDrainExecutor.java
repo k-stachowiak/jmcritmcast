@@ -2,7 +2,6 @@ package apps;
 
 import helpers.OspfCostResourceTranslation;
 import helpers.TopologyAnalyser;
-import helpers.TopologyAnalyserImpl;
 import helpers.gphmut.IndexResourceDrainer;
 import helpers.gphmut.ResourceDrainer;
 import helpers.metrprov.IndexMetricProvider;
@@ -31,7 +30,7 @@ public class MultiCostDrainExecutor {
 	// Factories.
 	private static final GraphFactory graphFactory = new AdjacencyListFactory();
 	private static final TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
-	private static final TopologyAnalyser topologyAnalyser = new TopologyAnalyserImpl();
+	private static final TopologyAnalyser topologyAnalyser = new TopologyAnalyser();
 	private static final SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 			.createPrim(new IndexMetricProvider(0));
 

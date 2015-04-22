@@ -2,7 +2,6 @@ package model.topology;
 
 import static org.junit.Assert.*;
 import helpers.TopologyAnalyser;
-import helpers.TopologyAnalyserImpl;
 
 import model.topology.AdjacencyListFactory;
 import model.topology.AdjacencyMatrixFactory;
@@ -24,7 +23,7 @@ public class GraphImplConsistencyTest {
 		GraphFactory matFac = new AdjacencyMatrixFactory();
 		Graph matBasedGraph = matFac.createBig2Metr();
 		
-		TopologyAnalyser analyser = new TopologyAnalyserImpl();
+		TopologyAnalyser analyser = new TopologyAnalyser();
 		
 		assertTrue(analyser.equal(listBasedGraph, matBasedGraph));
 	}

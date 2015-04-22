@@ -1,9 +1,7 @@
 package apps;
 
 import helpers.ConstraintsComparer;
-import helpers.ConstraintsComparerImpl;
 import helpers.PathAggregator;
-import helpers.PathAggregatorImpl;
 import helpers.metrprov.IndexMetricProvider;
 import helpers.metrprov.MetricProvider;
 
@@ -58,9 +56,9 @@ public class ConstrainedTreeFindProblemSolver {
 		SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 				.createPrim(metricProvider);
 
-		ConstraintsComparer constraintsComparer = new ConstraintsComparerImpl();
+		ConstraintsComparer constraintsComparer = new ConstraintsComparer();
 
-		PathAggregator pathAggregator = new PathAggregatorImpl(
+		PathAggregator pathAggregator = new PathAggregator(
 				spanningTreeFinder);
 
 		// MLARAC path finder.

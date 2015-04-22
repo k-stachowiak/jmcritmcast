@@ -3,7 +3,6 @@ package pfnd.lbpsa;
 import static org.junit.Assert.assertEquals;
 
 import helpers.ConstraintsComparer;
-import helpers.ConstraintsComparerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class LbpsaPathFinderTest {
 	public static void beforeClass() {
 		graphFactory = new AdjacencyListFactory();
 		pathFinderFactory = new PathFinderFactoryImpl();
-		constraintsComparer = new ConstraintsComparerImpl();
+		constraintsComparer = new ConstraintsComparer();
 	}
 
 	/*
