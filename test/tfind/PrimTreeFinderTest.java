@@ -61,14 +61,12 @@ public class PrimTreeFinderTest {
 		final MetricProvider metricProvider = new IndexMetricProvider(
 				INDEX_FOR_METRIC_PROVIDER);
 
-		final TopologyAnalyser topologyAnalyser = new TopologyAnalyser();
-
 		// Input.
 		Graph connectedGraph = graphFactory.createMaciejPiechowiakExample();
 
 		// Case.
 		boolean expected = true;
-		boolean actual = topologyAnalyser.isConnected(connectedGraph,
+		boolean actual = TopologyAnalyser.isConnected(connectedGraph,
 				new PrimTreeFinder(metricProvider));
 
 		// Assert.

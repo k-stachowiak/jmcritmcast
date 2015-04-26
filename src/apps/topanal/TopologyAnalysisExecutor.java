@@ -1,5 +1,7 @@
 package apps.topanal;
 
+import apps.topanal.data.TopologyAnalysisCase;
+
 public interface TopologyAnalysisExecutor {
-	void Execute(TopologyAnalysisCase tac);
+	void execute(TopologyAnalysisCase tac);
 }

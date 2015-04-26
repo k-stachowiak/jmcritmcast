@@ -9,8 +9,7 @@ import java.util.TreeMap;
 import model.topology.Edge;
 import model.topology.Graph;
 import model.topology.Node;
-import model.util.NodeComparator;
-
+import model.topology.NodeComparator;
 import pfnd.CommonRelaxation;
 
 

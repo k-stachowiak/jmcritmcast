@@ -30,7 +30,6 @@ public class MultiCostDrainExecutor {
 	// Factories.
 	private static final GraphFactory graphFactory = new AdjacencyListFactory();
 	private static final TreeFinderFactory treeFinderFactory = new TreeFinderFactoryImpl();
-	private static final TopologyAnalyser topologyAnalyser = new TopologyAnalyser();
 	private static final SpanningTreeFinder spanningTreeFinder = treeFinderFactory
 			.createPrim(new IndexMetricProvider(0));
 
@@ -58,7 +57,7 @@ public class MultiCostDrainExecutor {
 		List<Double> firstCosts = new ArrayList<>();
 
 		// Drainage loop
-		while (topologyAnalyser.isConnected(copy, spanningTreeFinder)
+		while (TopologyAnalyser.isConnected(copy, spanningTreeFinder)
 				&& copy.getNodes().size() >= groupSize) {
 
 			List<Node> group = nodeGroupper.group(copy, groupSize);

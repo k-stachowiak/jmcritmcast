@@ -13,11 +13,9 @@ import model.topology.Tree;
 
 import tfind.SpanningTreeFinder;
 
-
-
 public class TopologyAnalyser {
 
-	public boolean isConnected(Graph graph, SpanningTreeFinder spanningTreeFinder) {
+	public static boolean isConnected(Graph graph, SpanningTreeFinder spanningTreeFinder) {
 
 		if (graph.getNumNodes() == 0)
 			return true;
@@ -28,7 +26,7 @@ public class TopologyAnalyser {
 		return graph.getNumNodes() == spanningTree.getNumNodes();
 	}
 
-	public List<Double> sumGraphMetrics(Graph graph) {
+	public static List<Double> sumGraphMetrics(Graph graph) {
 
 		List<Double> result = new ArrayList<>();
 		for (int m = 0; m < graph.getNumMetrics(); ++m) {
@@ -44,7 +42,7 @@ public class TopologyAnalyser {
 		return result;
 	}
 	
-	public boolean equal(Graph a, Graph b) {		
+	public static boolean equal(Graph a, Graph b) {		
 		Set<Node> aNodes = new HashSet<>(a.getNodes());
 		Set<Node> bNodes = new HashSet<>(b.getNodes());
 		if(!aNodes.equals(bNodes)) return false;
@@ -54,5 +52,17 @@ public class TopologyAnalyser {
 		if(!aEdges.equals(bEdges)) return false;
 		
 		return true;
+	}
+	
+	public static double averageDegree(Graph graph) {
+		return -1;
+	}
+	
+	public static double diameter(Graph graph) {
+		return -1;
+	}
+	
+	public static double clusteringCoefficient(Graph graph) {
+		return -1;
 	}
 }

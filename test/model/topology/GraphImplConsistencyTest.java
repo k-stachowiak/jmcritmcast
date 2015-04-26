@@ -23,9 +23,7 @@ public class GraphImplConsistencyTest {
 		GraphFactory matFac = new AdjacencyMatrixFactory();
 		Graph matBasedGraph = matFac.createBig2Metr();
 		
-		TopologyAnalyser analyser = new TopologyAnalyser();
-		
-		assertTrue(analyser.equal(listBasedGraph, matBasedGraph));
+		assertTrue(TopologyAnalyser.equal(listBasedGraph, matBasedGraph));
 	}
 	
 }

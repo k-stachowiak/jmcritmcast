@@ -1,9 +1,7 @@
-package model.util;
+package model.topology;
 
 
 import java.util.Comparator;
-
-import model.topology.Node;
 
 
 public class NodeComparator implements Comparator<Node> {
