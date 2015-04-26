@@ -10,7 +10,7 @@ import model.topology.Edge;
 import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
-import pfnd.CommonRelaxationImpl;
+import pfnd.MetricRelaxation;
 import pfnd.PathFinder;
 import pfnd.PathFinderFactory;
 
@@ -48,7 +48,7 @@ public class NodeGroupMetricDiameter implements NodeGroupMetric {
 
 		this.metricProvider = metricProvider;
 		this.pathDistanceComparator = new PathDistanceComparator(metricProvider);
-		this.finder = finderFactory.createDijkstra(new CommonRelaxationImpl(
+		this.finder = finderFactory.createDijkstra(new MetricRelaxation(
 				metricProvider));
 	}
 

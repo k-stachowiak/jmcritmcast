@@ -15,14 +15,14 @@ import model.topology.NodeComparator;
 
 
 
-public class CommonRelaxationImpl extends CommonRelaxation {
+public class MetricRelaxation extends Relaxation {
 
 	private final MetricProvider metricProvider;
 
 	Map<Node, List<Double>> labels;
 	Map<Node, Double> aggregatedLabels;
 
-	public CommonRelaxationImpl(MetricProvider metricProvider) {
+	public MetricRelaxation(MetricProvider metricProvider) {
 		this.metricProvider = metricProvider;
 	}
 

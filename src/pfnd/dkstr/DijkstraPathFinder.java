@@ -9,16 +9,16 @@ import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
 
-import pfnd.CommonRelaxation;
+import pfnd.Relaxation;
 import pfnd.PathFinder;
 
 
 
 public class DijkstraPathFinder implements PathFinder {
 
-	private final CommonRelaxation relaxation;
+	private final Relaxation relaxation;
 
-	public DijkstraPathFinder(CommonRelaxation relaxation) {
+	public DijkstraPathFinder(Relaxation relaxation) {
 		this.relaxation = relaxation;
 	}
 

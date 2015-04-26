@@ -10,10 +10,10 @@ import model.topology.Edge;
 import model.topology.Graph;
 import model.topology.Node;
 import model.topology.NodeComparator;
-import pfnd.CommonRelaxation;
+import pfnd.Relaxation;
 
 
-public class HmcopLaRelaxation extends CommonRelaxation {
+public class HmcopLaRelaxation extends Relaxation {
 
 	// Constants.
 	private final HmcopRevRelaxation revRelaxation;

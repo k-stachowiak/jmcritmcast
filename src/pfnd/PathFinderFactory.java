@@ -11,7 +11,7 @@ import pfnd.mlarac.PathSubstiutor;
 
 public interface PathFinderFactory {
 
-	PathFinder createDijkstra(CommonRelaxation commonRelaxation);
+	PathFinder createDijkstra(Relaxation commonRelaxation);
 
 	PathFinder createDijkstraIndex(int metricIndex);
 

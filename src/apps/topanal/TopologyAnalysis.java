@@ -55,7 +55,7 @@ public class TopologyAnalysis implements TopologyAnalysisExecutor {
 			graphDTO = null;
 			degreeStat.addValue(TopologyAnalyser.averageDegree(graph));
 			diameterStat.addValue(TopologyAnalyser.diameter(graph));
-			degreeStat.addValue(TopologyAnalyser.clusteringCoefficient(graph));
+			clusteringStat.addValue(TopologyAnalyser.clusteringCoefficient(graph));
 		}
 
 		TopologyAnalysisMacroResult summary = new TopologyAnalysisMacroResult(

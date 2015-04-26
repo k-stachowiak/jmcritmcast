@@ -11,7 +11,7 @@ import model.topology.Node;
 import model.topology.Path;
 
 
-public abstract class CommonRelaxation {
+public abstract class Relaxation {
 
 	protected String predecessorsString() {
 		StringBuilder stringBuilder = new StringBuilder();

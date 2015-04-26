@@ -11,7 +11,7 @@ import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
 import model.topology.Tree;
-import pfnd.CommonRelaxation;
+import pfnd.Relaxation;
 import pfnd.ConstrainedPathFinder;
 import pfnd.PathFinder;
 import pfnd.PathFinderFactory;
@@ -37,7 +37,7 @@ public class HmcmcTreeFinder implements ConstrainedSteinerTreeFinder {
 
 		// Partial search.
 		// ---------------
-		CommonRelaxation partialRelaxation = new PartialDijkstraRelaxation(
+		Relaxation partialRelaxation = new PartialDijkstraRelaxation(
 				constraints);
 
 		PathFinder partialFinder = pathFinderFactory

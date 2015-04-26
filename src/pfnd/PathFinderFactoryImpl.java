@@ -20,7 +20,7 @@ import pfnd.mlarac.PathSubstiutor;
 public class PathFinderFactoryImpl implements PathFinderFactory {
 
 	@Override
-	public PathFinder createDijkstra(CommonRelaxation commonRelaxation) {
+	public PathFinder createDijkstra(Relaxation commonRelaxation) {
 		return new DijkstraPathFinder(commonRelaxation);
 	}
 
@@ -29,7 +29,7 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 
 		MetricProvider metricProvider = new IndexMetricProvider(metricIndex);
 
-		CommonRelaxation commonRelaxation = new CommonRelaxationImpl(
+		Relaxation commonRelaxation = new MetricRelaxation(
 				metricProvider);
 
 		return new DijkstraPathFinder(commonRelaxation);
@@ -40,7 +40,7 @@ public class PathFinderFactoryImpl implements PathFinderFactory {
 
 		MetricProvider metricProvider = new LinearCombinationMetricProvider(
 				offset, lambdas);
-		CommonRelaxation commonRelaxation = new CommonRelaxationImpl(
+		Relaxation commonRelaxation = new MetricRelaxation(
 				metricProvider);
 		return new DijkstraPathFinder(commonRelaxation);
 	}

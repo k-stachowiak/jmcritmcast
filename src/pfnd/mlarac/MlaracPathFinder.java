@@ -13,8 +13,8 @@ import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
 
-import pfnd.CommonRelaxation;
-import pfnd.CommonRelaxationImpl;
+import pfnd.Relaxation;
+import pfnd.MetricRelaxation;
 import pfnd.ConstrainedPathFinder;
 import pfnd.PathFinder;
 import pfnd.PathFinderFactory;
@@ -47,7 +47,7 @@ public class MlaracPathFinder implements ConstrainedPathFinder {
 
 			MetricProvider metricProvider = new IndexMetricProvider(m);
 
-			CommonRelaxation dijkstraRelaxation = new CommonRelaxationImpl(
+			Relaxation dijkstraRelaxation = new MetricRelaxation(
 					metricProvider);
 
 			indexDijksrtas.add(new DijkstraPathFinder(dijkstraRelaxation));

@@ -14,7 +14,7 @@ import model.topology.Graph;
 import model.topology.Node;
 import model.topology.Path;
 
-import pfnd.CommonRelaxationImpl;
+import pfnd.MetricRelaxation;
 import pfnd.ConstrainedPathFinder;
 import pfnd.PathFinder;
 import pfnd.PathFinderFactory;
@@ -27,7 +27,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 	private final ConstraintsComparer constraintsComparer;
 
 	// State
-	private CommonRelaxationImpl relaxation;
+	private MetricRelaxation relaxation;
 	private List<Double> lambdas;
 	private double upperBound;
 
@@ -102,7 +102,7 @@ public class LbpsaFeasibleFinder implements ConstrainedPathFinder {
 			MetricProvider metricProvider = new LagrangeMetricProvider(1,
 					constraints, lambdas);
 
-			relaxation = new CommonRelaxationImpl(metricProvider);
+			relaxation = new MetricRelaxation(metricProvider);
 			PathFinder pathFinder = pathFinderFactory
 					.createDijkstra(relaxation);
 
