@@ -4,9 +4,6 @@ package model.topology;
 import java.util.ArrayList;
 import java.util.List;
 
-import exceptions.IllegalOperationException;
-
-
 public class SubGraphToGraphAdapter implements Graph {
 
 	private final SubGraph subGraph;
@@ -56,17 +53,11 @@ public class SubGraphToGraphAdapter implements Graph {
 
 	@Override
 	public Node getNode(int node) {
-		if (!subGraph.containsNode(node))
-			throw new IllegalOperationException(
-					"Attempt to get non-existent node from sub-graph");
 		return parent.getNode(node);
 	}
 
 	@Override
 	public Edge getEdge(int from, int to) {
-		if (!subGraph.containsEdge(from, to))
-			throw new IllegalOperationException(
-					"Attempt to get non-existent edge from sub-graph");
 		return parent.getEdge(from, to);
 	}
 

@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.math3.util.CombinatoricsUtils;
+
 import model.topology.Edge;
+import model.topology.EdgeDefinition;
 import model.topology.Graph;
 import model.topology.Node;
 import model.topology.NodePair;
+import model.topology.SubGraph;
 import model.topology.Tree;
 import tfind.SpanningTreeFinder;
 import aplfnd.FloydWarshallAllPathLengthFinder;
@@ -61,23 +65,80 @@ public class TopologyAnalyser {
 		return true;
 	}
 
-	public static double averageDegree(Graph graph) {
-		int sum = 0;
-		List<Node> nodes = graph.getNodes();
-		for (Node node : nodes) {
-			sum += graph.getNeighbors(node).size();
+	public static SubGraph getNeighborhood(Graph graph, Node node) {
+
+		HashSet<Integer> nodes = new HashSet<>();
+		for (Node n : graph.getNeighbors(node)) {
+			nodes.add(n.getId());
 		}
-		return (double) sum / (double) nodes.size();
+		for (Node n : graph.getPredecessors(node)) {
+			nodes.add(n.getId());
+		}
+
+		HashSet<EdgeDefinition> edges = new HashSet<>();
+		for (int u : nodes) {
+			for (int v : nodes) {
+				if (u == v) {
+					continue;
+				}
+				Edge edge = graph.getEdge(u, v);
+				if (edge != null) {
+					edges.add(new EdgeDefinition(u, v));
+				}
+			}
+		}
+		return new SubGraph(graph, new ArrayList<Integer>(nodes),
+				new ArrayList<EdgeDefinition>(edges));
+	}
+
+	public static double averageDegree(Graph graph) {
+		double sum = 0.0;
+		int count = 0;
+		for (Node node : graph.getNodes()) {
+			
+			HashSet<Integer> nodes = new HashSet<>();
+			for (Node n : graph.getNeighbors(node))
+				nodes.add(n.getId());
+			for (Node n : graph.getPredecessors(node))
+				nodes.add(n.getId());
+			
+			sum += nodes.size();
+			count += 1;
+		}
+		
+		return sum / count;
 	}
 
 	public static double diameter(Graph graph) {
 		IndexMetricProvider mp = new IndexMetricProvider(0);
 		FloydWarshallAllPathLengthFinder aplf = new FloydWarshallAllPathLengthFinder();
 		Map<NodePair, Double> lengths = aplf.find(graph, mp);
-		return Collections.min(lengths.values());
+		return Collections.max(lengths.values());
 	}
 
 	public static double clusteringCoefficient(Graph graph) {
-		return -1;
+		
+		double sum = 0.0;
+		int count = 0;
+		for (Node node : graph.getNodes()) {
+			
+			HashSet<Integer> nodes = new HashSet<>();
+			for (Node n : graph.getNeighbors(node))
+				nodes.add(n.getId());
+			for (Node n : graph.getPredecessors(node))
+				nodes.add(n.getId());
+			if (nodes.size() == 1)
+				continue;
+			
+			SubGraph neighgorhood = getNeighborhood(graph, node);
+			
+			double numerator = 2 * neighgorhood.getNumEdges();
+			double denominator = CombinatoricsUtils.binomialCoefficient(nodes.size(), 2);
+			
+			sum += numerator / denominator;
+			count += 1;
+		}
+		
+		return sum / count;
 	}
 }

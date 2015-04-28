@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import exceptions.IllegalOperationException;
-
 public class AdjacencyMatrix implements Graph {
 
 	final List<Node> nodes;
@@ -79,12 +77,7 @@ public class AdjacencyMatrix implements Graph {
 
 	@Override
 	public Edge getEdge(int from, int to) {
-		Edge result = allEdges.get(from * numNodes + to);
-		if (result == null) {
-			throw new IllegalOperationException("Attempt to get a non-existent edge from an adjacejcy matrix");
-		} else {
-			return result;
-		}
+		return allEdges.get(from * numNodes + to);
 	}
 
 	@Override

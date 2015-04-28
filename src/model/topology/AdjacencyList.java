@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import exceptions.IllegalOperationException;
-import exceptions.InvalidObjectsStateException;
-
 public class AdjacencyList implements Graph {
 
 	static class AdjacencyDefinition {
@@ -107,7 +104,7 @@ public class AdjacencyList implements Graph {
 				.entrySet().iterator();
 
 		if (!iterator.hasNext())
-			throw new InvalidObjectsStateException(
+			throw new RuntimeException(
 					"Getting number of metrics from an empty adjacency list.");
 
 		while (iterator.hasNext()) {
@@ -125,13 +122,13 @@ public class AdjacencyList implements Graph {
 			List<Double> metrics = edge.getMetrics();
 
 			if (metrics.isEmpty())
-				throw new InvalidObjectsStateException(
+				throw new RuntimeException(
 						"Edge with empty metrics list encountered.");
 
 			return metrics.size();
 		}
 
-		throw new InvalidObjectsStateException(
+		throw new RuntimeException(
 				"Adjacency list with no non-empty map entries encountered.");
 	}
 
@@ -141,19 +138,16 @@ public class AdjacencyList implements Graph {
 			if (node.getId() == id)
 				return node;
 
-		throw new IllegalOperationException(
-				"Attempt to get a non-existent node from an adjacency list.");
+		return null;
 	}
 
 	@Override
 	public Edge getEdge(int from, int to) {
-
-		String errorMessage = "Attempt to get a non-existent edge from an adjacency list.";
 		
 		Node nodeFrom = getNode(from);
 
 		if (!map.containsKey(nodeFrom))
-			throw new IllegalOperationException(errorMessage);
+			return null;
 
 		List<AdjacencyDefinition> adjacencyDefinitions = map.get(nodeFrom);
 
@@ -162,7 +156,7 @@ public class AdjacencyList implements Graph {
 				return adjacencyDefinition.getEdge();
 		}
 
-		throw new IllegalOperationException(errorMessage);
+		return null;
 	}
 
 	@Override

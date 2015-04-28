@@ -45,7 +45,7 @@ public class TimeMeasurement {
 		tempDuration -= millisecondNanos;
 
 		// Format the result.
-		return String.format("%1$dh %2$dm %3$ds %4$dms", hours, minutes,
+		return String.format("%1$d:%2$d:%3$d.%4$d", hours, minutes,
 				seconds, milliseconds);
 	}
 }

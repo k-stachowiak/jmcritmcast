@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
+import util.TimeMeasurement;
 import apps.topanal.data.TopologyAnalysisCase;
 import apps.topanal.data.TopologyAnalysisMacroResult;
 import apps.topanal.data.TopologyType;
@@ -19,20 +20,30 @@ import dto.GraphDTO;
 public class TopologyAnalysis implements TopologyAnalysisExecutor {
 
 	private final GraphFactory graphFactory = new AdjacencyListFactory();
+	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
 
 	private static final List<Integer> nodesCounts = Arrays
 			.asList(new Integer[] { 50, 100, 250, 500, 1500, 3037, 3600, 4750,
 					6000 });
 
 	private static void forEachCase(TopologyAnalysisExecutor executor, int graphsCount) {
+		
 		for (TopologyType type : TopologyType.values()) {
 			for (Integer nodesCount : nodesCounts) {
+				if (nodesCount < 3037 && type == TopologyType.Inet) {
+					continue;
+				}
 				executor.execute(new TopologyAnalysisCase(type, nodesCount, graphsCount));
 			}
 		}
 	}
 
 	public static void main(String[] args) {
+		
+		TopologyAnalysisCase.printHeader(System.out);
+		TopologyAnalysisMacroResult.printHeader(System.out);
+		System.out.println("time");
+		
 		forEachCase(new TopologyAnalysis(), 10);
 	}
 
@@ -46,8 +57,7 @@ public class TopologyAnalysis implements TopologyAnalysisExecutor {
 		SummaryStatistics diameterStat = new SummaryStatistics();
 		SummaryStatistics clusteringStat = new SummaryStatistics();
 		
-		TopologyAnalysisCase.printHeader(System.out);
-		TopologyAnalysisMacroResult.printHeader(System.out);
+		timeMeasurement.begin();
 
 		while (gs.hasNext()) {
 			GraphDTO graphDTO = gs.getNext();
@@ -62,9 +72,10 @@ public class TopologyAnalysis implements TopologyAnalysisExecutor {
 				degreeStat.getMean(), diameterStat.getMean(),
 				clusteringStat.getMean());
 		
-		tac.print(System.out);
-		summary.print(System.out);
+		timeMeasurement.end();
 		
-		System.out.println();
+		tac.print(System.out);
+		summary.print(System.out);		
+		System.out.println(timeMeasurement.getDurationString());
 	}
 }

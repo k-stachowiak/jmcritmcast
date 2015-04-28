@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exceptions.IllegalOperationException;
 import model.topology.Edge;
 import model.topology.Graph;
 import model.topology.Node;
@@ -26,11 +25,11 @@ public class FloydWarshallAllPathLengthFinder implements AllPathLengthFinder {
 				if (u.equals(v)) {
 					result.put(new NodePair(u, v), 0.0);
 				} else {
-					try {
-						Edge e = graph.getEdge(u.getId(), v.getId());
-						result.put(new NodePair(u, v), metricProvider.get(e));
-					} catch (IllegalOperationException ex) {
+					Edge e = graph.getEdge(u.getId(), v.getId());
+					if (e == null) {
 						result.put(new NodePair(u, v), Double.POSITIVE_INFINITY);
+					} else {
+						result.put(new NodePair(u, v), metricProvider.get(e));
 					}
 				}
 			}
