@@ -1,81 +1,54 @@
 package apps.topanal;
 
-import helpers.TopologyAnalyser;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-import java.util.Arrays;
-import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import apps.CommonConfig;
+import dal.TopologyType;
 
-import util.TimeMeasurement;
-import apps.topanal.data.TopologyAnalysisCase;
-import apps.topanal.data.TopologyAnalysisMacroResult;
-import apps.topanal.data.TopologyType;
-import model.topology.AdjacencyListFactory;
-import model.topology.Graph;
-import model.topology.GraphFactory;
-import dal.MultiBriteGraphStreamer;
-import dto.GraphDTO;
+public class TopologyAnalysis {
 
-public class TopologyAnalysis implements TopologyAnalysisExecutor {
+	private static final Logger logger = LogManager
+			.getLogger(TopologyAnalysis.class);
 
-	private final GraphFactory graphFactory = new AdjacencyListFactory();
-	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
+	private static void forEachCase(TopologyAnalysisExecutor executor) {
 
-	private static final List<Integer> nodesCounts = Arrays
-			.asList(new Integer[] { 50, 100, 250, 500, 1500, 3037, 3600, 4750,
-					6000 });
-
-	private static void forEachCase(TopologyAnalysisExecutor executor, int graphsCount) {
-		
 		for (TopologyType type : TopologyType.values()) {
-			for (Integer nodesCount : nodesCounts) {
-				if (nodesCount < 3037 && type == TopologyType.Inet) {
-					continue;
+			for (Integer nodesCount : CommonConfig.nodesCounts) {
+				try (Connection connection = DriverManager.getConnection(
+						"jdbc:postgresql://localhost:5432/phd", "postgres",
+						"admin")) {
+
+					if (nodesCount < 3037 && type == TopologyType.Inet) {
+						logger.trace("Too small graph for INET to support -- skipping.");
+						continue;
+					}
+
+					executor.execute(new TopologyExperimentCase(type,
+							nodesCount), connection);
+
+					connection.close();
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					logger.fatal("Sql error: {}", e.getMessage());
 				}
-				executor.execute(new TopologyAnalysisCase(type, nodesCount, graphsCount));
 			}
 		}
 	}
 
 	public static void main(String[] args) {
-		
-		TopologyAnalysisCase.printHeader(System.out);
-		TopologyAnalysisMacroResult.printHeader(System.out);
-		System.out.println("time");
-		
-		forEachCase(new TopologyAnalysis(), 10);
-	}
 
-	@Override
-	public void execute(TopologyAnalysisCase tac) {
+		try {
+			Class.forName("org.postgresql.Driver");
+			forEachCase(new TopologyAnalysisGatherExecutor());
 
-		MultiBriteGraphStreamer gs = new MultiBriteGraphStreamer("data/phd",
-				tac.getType(), tac.getNodesCount(), 100);
-
-		SummaryStatistics degreeStat = new SummaryStatistics();
-		SummaryStatistics diameterStat = new SummaryStatistics();
-		SummaryStatistics clusteringStat = new SummaryStatistics();
-		
-		timeMeasurement.begin();
-
-		while (gs.hasNext()) {
-			GraphDTO graphDTO = gs.getNext();
-			Graph graph = graphFactory.createFromDTO(graphDTO);
-			graphDTO = null;
-			degreeStat.addValue(TopologyAnalyser.averageDegree(graph));
-			diameterStat.addValue(TopologyAnalyser.diameter(graph));
-			clusteringStat.addValue(TopologyAnalyser.clusteringCoefficient(graph));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-
-		TopologyAnalysisMacroResult summary = new TopologyAnalysisMacroResult(
-				degreeStat.getMean(), diameterStat.getMean(),
-				clusteringStat.getMean());
-		
-		timeMeasurement.end();
-		
-		tac.print(System.out);
-		summary.print(System.out);		
-		System.out.println(timeMeasurement.getDurationString());
 	}
 }

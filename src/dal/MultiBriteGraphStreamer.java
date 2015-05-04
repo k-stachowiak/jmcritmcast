@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import apps.topanal.data.TopologyType;
 import dto.GraphDTO;
 
 public class MultiBriteGraphStreamer implements InputGraphStreamer {
@@ -54,7 +53,7 @@ public class MultiBriteGraphStreamer implements InputGraphStreamer {
 	private static List<File> getMatchingFiles(String path, TopologyType type,
 			int nodesCount) {
 
-		String topString = type.name();
+		String topString = type.toString();
 		String countString = Integer.toString(nodesCount);
 
 		ArrayList<File> result = new ArrayList<>();

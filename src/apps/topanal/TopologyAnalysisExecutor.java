@@ -1,7 +1,10 @@
 package apps.topanal;
 
-import apps.topanal.data.TopologyAnalysisCase;
+import java.sql.Connection;
 
 public interface TopologyAnalysisExecutor {
-	void execute(TopologyAnalysisCase tac);
+
+	public abstract void execute(TopologyExperimentCase xc,
+			Connection connection);
+
 }

@@ -1,6 +1,7 @@
 package aplfnd;
 
 import static org.junit.Assert.assertEquals;
+import helpers.PathMetric;
 import helpers.metrprov.IndexMetricProvider;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class FloydWarshallAllPathLengthFinderTest {
 
 	@Test
 	public void test() {
+
 		GraphFactory graphFactory = new AdjacencyListFactory();
 
 		ArrayList<Node> nodes = new ArrayList<>();
@@ -41,21 +43,32 @@ public class FloydWarshallAllPathLengthFinderTest {
 
 		Graph graph = graphFactory.createFromLists(nodes, edges);
 
+		IndexMetricProvider imp = new IndexMetricProvider(0);
+
 		FloydWarshallAllPathLengthFinder sut = new FloydWarshallAllPathLengthFinder();
 
-		Map<NodePair, Double> lengths = sut.find(graph,
-				new IndexMetricProvider(0));
+		Map<NodePair, PathMetric> lengths = sut.find(graph, imp);
 
-		assertEquals(10.0, lengths.get(new NodePair(nodes.get(0), nodes.get(1))), 0.1);
-		assertEquals(15.0, lengths.get(new NodePair(nodes.get(0), nodes.get(2))), 0.1);
-		assertEquals(5.0, lengths.get(new NodePair(nodes.get(0), nodes.get(3))), 0.1);
-		assertEquals(20.0, lengths.get(new NodePair(nodes.get(0), nodes.get(4))), 0.1);
-		assertEquals(5.0, lengths.get(new NodePair(nodes.get(1), nodes.get(2))), 0.1);
-		assertEquals(5.0, lengths.get(new NodePair(nodes.get(1), nodes.get(3))), 0.1);
-		assertEquals(10.0, lengths.get(new NodePair(nodes.get(1), nodes.get(4))), 0.1);
-		assertEquals(10.0, lengths.get(new NodePair(nodes.get(2), nodes.get(3))), 0.1);
-		assertEquals(15.0, lengths.get(new NodePair(nodes.get(2), nodes.get(4))), 0.1);
-		assertEquals(15.0, lengths.get(new NodePair(nodes.get(3), nodes.get(4))), 0.1);
+		assertEquals(10.0, lengths
+				.get(new NodePair(nodes.get(0), nodes.get(1))).getCost(), 0.1);
+		assertEquals(15.0, lengths
+				.get(new NodePair(nodes.get(0), nodes.get(2))).getCost(), 0.1);
+		assertEquals(5.0, lengths.get(new NodePair(nodes.get(0), nodes.get(3)))
+				.getCost(), 0.1);
+		assertEquals(20.0, lengths
+				.get(new NodePair(nodes.get(0), nodes.get(4))).getCost(), 0.1);
+		assertEquals(5.0, lengths.get(new NodePair(nodes.get(1), nodes.get(2)))
+				.getCost(), 0.1);
+		assertEquals(5.0, lengths.get(new NodePair(nodes.get(1), nodes.get(3)))
+				.getCost(), 0.1);
+		assertEquals(10.0, lengths
+				.get(new NodePair(nodes.get(1), nodes.get(4))).getCost(), 0.1);
+		assertEquals(10.0, lengths
+				.get(new NodePair(nodes.get(2), nodes.get(3))).getCost(), 0.1);
+		assertEquals(15.0, lengths
+				.get(new NodePair(nodes.get(2), nodes.get(4))).getCost(), 0.1);
+		assertEquals(15.0, lengths
+				.get(new NodePair(nodes.get(3), nodes.get(4))).getCost(), 0.1);
 	}
 
 }

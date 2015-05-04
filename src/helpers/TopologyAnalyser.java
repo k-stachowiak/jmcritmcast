@@ -1,6 +1,8 @@
 package helpers;
 
+import helpers.metrprov.HopMetricProvider;
 import helpers.metrprov.IndexMetricProvider;
+import helpers.metrprov.MetricProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,11 +13,15 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
+import pfnd.MetricRelaxation;
+import pfnd.PathFinder;
+import pfnd.dkstr.DijkstraPathFinder;
 import model.topology.Edge;
 import model.topology.EdgeDefinition;
 import model.topology.Graph;
 import model.topology.Node;
 import model.topology.NodePair;
+import model.topology.Path;
 import model.topology.SubGraph;
 import model.topology.Tree;
 import tfind.SpanningTreeFinder;
@@ -92,53 +98,137 @@ public class TopologyAnalyser {
 	}
 
 	public static double averageDegree(Graph graph) {
+		return averageDegree(graph, graph.getNodes());
+	}
+
+	public static double averageDegree(Graph graph, List<Node> nodes) {
 		double sum = 0.0;
 		int count = 0;
-		for (Node node : graph.getNodes()) {
-			
-			HashSet<Integer> nodes = new HashSet<>();
+		for (Node node : nodes) {
+
+			HashSet<Integer> neighbors = new HashSet<>();
 			for (Node n : graph.getNeighbors(node))
-				nodes.add(n.getId());
+				neighbors.add(n.getId());
 			for (Node n : graph.getPredecessors(node))
-				nodes.add(n.getId());
-			
-			sum += nodes.size();
+				neighbors.add(n.getId());
+
+			sum += neighbors.size();
 			count += 1;
 		}
-		
+
 		return sum / count;
 	}
 
-	public static double diameter(Graph graph) {
-		IndexMetricProvider mp = new IndexMetricProvider(0);
+	public static PathMetric diameter(Graph graph) {
+
 		FloydWarshallAllPathLengthFinder aplf = new FloydWarshallAllPathLengthFinder();
-		Map<NodePair, Double> lengths = aplf.find(graph, mp);
-		return Collections.max(lengths.values());
+		Map<NodePair, PathMetric> lengths = aplf.find(graph,
+				new IndexMetricProvider(0));
+
+		double maxHops = Collections.max(lengths.values(),
+				new PathMetric.HopComparer()).getHop();
+
+		double maxCost = Collections.max(lengths.values(),
+				new PathMetric.CostComparer()).getCost();
+
+		return new PathMetric(maxHops, maxCost);
+	}
+
+	public static PathMetric diameter(Graph graph, List<Node> nodes) {
+
+		MetricProvider imp = new IndexMetricProvider(0);
+		MetricProvider hmp = new HopMetricProvider();
+
+		PathFinder costPathFinder = new DijkstraPathFinder(
+				new MetricRelaxation(imp));
+		PathFinder hopPathFinder = new DijkstraPathFinder(new MetricRelaxation(
+				hmp));
+
+		ArrayList<Path> costPaths = new ArrayList<>();
+		ArrayList<Path> hopPaths = new ArrayList<>();
+		for (int i = 0; i < nodes.size(); ++i) {
+			for (int j = i + 1; j < nodes.size(); ++j) {
+				costPaths.add(costPathFinder.find(graph, nodes.get(i),
+						nodes.get(j)));
+				hopPaths.add(hopPathFinder.find(graph, nodes.get(i),
+						nodes.get(j)));
+			}
+		}
+
+		double maxCost = Double.NEGATIVE_INFINITY;
+		double maxHops = Double.NEGATIVE_INFINITY;
+		for (Path p : costPaths) {
+
+			double cost = imp.getPostAdditive(p);
+			if (cost > maxCost) {
+				maxCost = cost;
+			}
+
+			double hops = hmp.getPostAdditive(p);
+			if (hops > maxHops) {
+				maxHops = hops;
+			}
+		}
+
+		return new PathMetric(maxHops, maxCost);
 	}
 
 	public static double clusteringCoefficient(Graph graph) {
-		
+		return clusteringCoefficient(graph, graph.getNodes());
+	}
+
+	public static double clusteringCoefficient(Graph graph, List<Node> nodes) {
+
 		double sum = 0.0;
 		int count = 0;
-		for (Node node : graph.getNodes()) {
-			
-			HashSet<Integer> nodes = new HashSet<>();
+		for (Node node : nodes) {
+
+			HashSet<Integer> neighbors = new HashSet<>();
 			for (Node n : graph.getNeighbors(node))
-				nodes.add(n.getId());
+				neighbors.add(n.getId());
 			for (Node n : graph.getPredecessors(node))
-				nodes.add(n.getId());
-			if (nodes.size() == 1)
+				neighbors.add(n.getId());
+			if (neighbors.size() == 1)
 				continue;
-			
+
 			SubGraph neighgorhood = getNeighborhood(graph, node);
-			
+
 			double numerator = 2 * neighgorhood.getNumEdges();
-			double denominator = CombinatoricsUtils.binomialCoefficient(nodes.size(), 2);
-			
+			double denominator = CombinatoricsUtils.binomialCoefficient(
+					neighbors.size(), 2);
+
 			sum += numerator / denominator;
 			count += 1;
 		}
-		
+
 		return sum / count;
+	}
+
+	public static void minMaxCoordinates(Graph graph, Double minX, Double maxX,
+			Double minY, Double maxY) {
+
+		minX = Double.POSITIVE_INFINITY;
+		maxX = Double.NEGATIVE_INFINITY;
+		minY = Double.POSITIVE_INFINITY;
+		maxY = Double.NEGATIVE_INFINITY;
+
+		for (Node n : graph.getNodes()) {
+			if (n.getX() < minX) {
+				minX = n.getX();
+			}
+			if (n.getX() > maxX) {
+				maxX = n.getX();
+			}
+			if (n.getY() < minY) {
+				minY = n.getY();
+			}
+			if (n.getY() > maxY) {
+				maxY = n.getY();
+			}
+		}
+	}
+
+	public static double nodeGroupoDensity(Graph graph, List<Node> group) {
+		return (double) group.size() / (double) graph.getNumNodes();
 	}
 }

@@ -16,6 +16,11 @@ public class SubGraph {
 		this.edgeDefinitions = edges;
 	}
 
+	public SubGraph clone() {
+		return new SubGraph(parent, new ArrayList<>(nodes), new ArrayList<>(
+				edgeDefinitions));
+	}
+
 	public Graph getParent() {
 		return parent;
 	}
@@ -89,6 +94,24 @@ public class SubGraph {
 					result.set(m, result.get(m) + edge.getMetrics().get(m));
 		}
 		return result;
+	}
+
+	public void addEdge(Edge edge) {
+
+		int from = edge.getFrom();
+		if (!nodes.contains(from)) {
+			nodes.add(from);
+		}
+
+		int to = edge.getTo();
+		if (!nodes.contains(to)) {
+			nodes.add(to);
+		}
+
+		EdgeDefinition ed = new EdgeDefinition(from, to);
+		if (!edgeDefinitions.contains(ed)) {
+			edgeDefinitions.add(ed);
+		}
 	}
 
 	@Override
