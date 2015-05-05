@@ -13,7 +13,7 @@ import model.topology.GraphFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import util.TimeMeasurement;
+import apps.TimeMeasurement;
 import dal.MultiBriteGraphStreamer;
 import dto.GraphDTO;
 

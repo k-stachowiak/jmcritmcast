@@ -11,6 +11,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import apps.CommonDataAccess;
+
 public class TopologyResultDataAccess {
 
 	private static final Logger logger = LogManager
@@ -37,7 +39,8 @@ public class TopologyResultDataAccess {
 			ResultSet rs = prStatement.executeQuery();
 
 			while (rs.next()) {
-				result.add(new TopologyExperiment(tac, resultValuesFromResultSet(rs)));
+				result.add(new TopologyExperiment(tac, CommonDataAccess
+						.topologyResultValuesFromPartialResultSet(rs)));
 			}
 
 			return result;
@@ -70,7 +73,8 @@ public class TopologyResultDataAccess {
 			ResultSet rs = prStatement.executeQuery();
 
 			while (rs.next()) {
-				result.add(new TopologyExperiment(tac, resultValuesFromResultSet(rs)));
+				result.add(new TopologyExperiment(tac, CommonDataAccess
+						.topologyResultValuesFromPartialResultSet(rs)));
 			}
 
 			return result;
@@ -179,13 +183,6 @@ public class TopologyResultDataAccess {
 			logger.fatal("Sql error: {}", e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	private static TopologyExperimentValues resultValuesFromResultSet(ResultSet rs)
-			throws SQLException {
-		return new TopologyExperimentValues(rs.getInt(1), (Double) rs.getObject(2),
-				(Double) rs.getObject(3), (Double) rs.getObject(4),
-				(Double) rs.getObject(5));
 	}
 
 }

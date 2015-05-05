@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import apps.CommonDataAccess;
+
 public class GroupResultDataAccess {
 
 	private static final Logger logger = LogManager
@@ -36,8 +38,8 @@ public class GroupResultDataAccess {
 		}
 	}
 
-	public static List<GroupExperiment> selectResultsForCase(Connection connection,
-			GroupExperimentCase tac) {
+	public static List<GroupExperiment> selectResultsForCase(
+			Connection connection, GroupExperimentCase tac) {
 
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("SELECT graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient, density "
@@ -56,7 +58,8 @@ public class GroupResultDataAccess {
 			ResultSet rs = prStatement.executeQuery();
 
 			while (rs.next()) {
-				result.add(new GroupExperiment(tac, resultValuesFromResultSet(rs)));
+				result.add(new GroupExperiment(tac, CommonDataAccess
+						.groupResultValuesFromPartialResultSet(rs)));
 			}
 
 			return result;
@@ -73,7 +76,7 @@ public class GroupResultDataAccess {
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("INSERT INTO group_anal_results "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-			
+
 			prStatement.setString(1, result.getExperimentCase()
 					.getTopologyType().toString());
 			prStatement.setInt(2, result.getExperimentCase().getNodesCount());
@@ -99,12 +102,5 @@ public class GroupResultDataAccess {
 			logger.fatal("Sql error: {}", e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	private static GroupExperimentValues resultValuesFromResultSet(ResultSet rs)
-			throws SQLException {
-		return new GroupExperimentValues(rs.getInt(1), rs.getDouble(2),
-				rs.getDouble(3), rs.getDouble(4), rs.getDouble(5),
-				rs.getDouble(6));
 	}
 }

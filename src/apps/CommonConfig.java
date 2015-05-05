@@ -13,4 +13,8 @@ public class CommonConfig {
 			4, 8, 12, 16, 20, 24, 28 });
 
 	public static final double significance = 0.01;
+	
+	public static String dbUri = "jdbc:postgresql://localhost:5432/phd";
+	public static String dbUser = "postgres";
+	public static String dbPass = "admin";
 }

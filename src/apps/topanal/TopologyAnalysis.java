@@ -20,8 +20,8 @@ public class TopologyAnalysis {
 		for (TopologyType type : TopologyType.values()) {
 			for (Integer nodesCount : CommonConfig.nodesCounts) {
 				try (Connection connection = DriverManager.getConnection(
-						"jdbc:postgresql://localhost:5432/phd", "postgres",
-						"admin")) {
+						CommonConfig.dbUri, CommonConfig.dbUser,
+						CommonConfig.dbPass);) {
 
 					if (nodesCount < 3037 && type == TopologyType.Inet) {
 						logger.trace("Too small graph for INET to support -- skipping.");

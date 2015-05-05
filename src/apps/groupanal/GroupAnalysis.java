@@ -30,9 +30,9 @@ public class GroupAnalysis {
 					for (NodeGroupperType gType : NodeGroupperType.values()) {
 
 						try (Connection connection = DriverManager
-								.getConnection(
-										"jdbc:postgresql://localhost:5432/phd",
-										"postgres", "admin");) {
+								.getConnection(CommonConfig.dbUri,
+										CommonConfig.dbUser,
+										CommonConfig.dbPass);) {
 
 							executor.execute(new GroupExperimentCase(tType,
 									nodesCount, groupSize, gType), connection);
