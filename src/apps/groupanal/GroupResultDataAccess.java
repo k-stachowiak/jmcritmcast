@@ -71,6 +71,39 @@ public class GroupResultDataAccess {
 		}
 	}
 
+	public static GroupExperiment selectResultsForCaseAndGraphIndex(
+			Connection connection, GroupExperimentCase tac, int graphIndex) {
+
+		try (PreparedStatement prStatement = connection
+				.prepareStatement("SELECT graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient, density "
+						+ "FROM group_anal_results "
+						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ? AND graph_index = ?")) {
+
+			prStatement.setString(1, tac.getTopologyType().toString());
+			prStatement.setInt(2, tac.getNodesCount());
+			prStatement.setInt(3, tac.getGroupSize());
+			prStatement.setString(4, tac.getNodeGroupperType().toString());
+			prStatement.setInt(5, graphIndex);
+
+			logger.trace("About to execute statement: {}",
+					prStatement.toString());
+			ResultSet rs = prStatement.executeQuery();
+
+			if (!rs.next()) {
+				return null;
+			} else {
+				return new GroupExperiment(tac,
+						CommonDataAccess
+								.groupResultValuesFromPartialResultSet(rs));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.fatal("Sql error: {}", e.getMessage());
+			return null;
+		}
+	}
+
 	public static void insert(Connection connection, GroupExperiment result) {
 
 		try (PreparedStatement prStatement = connection

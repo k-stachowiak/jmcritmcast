@@ -5,6 +5,8 @@ import helpers.nodegrp.NodeGroupperType;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,9 +19,9 @@ public class GroupAnalysis {
 	private static final Logger logger = LogManager
 			.getLogger(GroupAnalysis.class);
 
-	private static void forEachCase(GroupAnalysisExecutor executor) {
-		for (TopologyType tType : TopologyType.values()) {
-			for (Integer nodesCount : CommonConfig.nodesCounts) {
+	private static void forEachCase(Executor executor) {
+		for (Integer nodesCount : CommonConfig.nodesCounts) {
+			for (TopologyType tType : TopologyType.values()) {
 
 				if (nodesCount < 3037 && tType == TopologyType.Inet) {
 					logger.trace("Too small graph for INET to support -- skipping.");
@@ -34,8 +36,9 @@ public class GroupAnalysis {
 										CommonConfig.dbUser,
 										CommonConfig.dbPass);) {
 
-							executor.execute(new GroupExperimentCase(tType,
-									nodesCount, groupSize, gType), connection);
+							executor.execute(new GroupAnalysisGatherExecutor(
+									new GroupExperimentCase(tType, nodesCount,
+											groupSize, gType), connection));
 
 						} catch (SQLException e) {
 							e.printStackTrace();
@@ -51,7 +54,8 @@ public class GroupAnalysis {
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			forEachCase(new GroupAnalysisGatherExecutor());
+			forEachCase(Executors
+					.newFixedThreadPool(CommonConfig.threadsPerWorker));
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

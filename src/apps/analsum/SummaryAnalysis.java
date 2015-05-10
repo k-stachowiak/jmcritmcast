@@ -66,6 +66,7 @@ public class SummaryAnalysis {
 				out.print("M\t");
 				for (NodeGroupperType nodeGroupperType : NodeGroupperType
 						.values()) {
+					out.printf("%s(n)\t", nodeGroupperType.toString());
 					out.printf("%s(mean)\t", nodeGroupperType.toString());
 					out.printf("%s(ci)\t", nodeGroupperType.toString());
 				}
@@ -79,14 +80,17 @@ public class SummaryAnalysis {
 					while (rowIterator.hasNext()) {
 						Entry<NodeGroupperType, SummaryGroupResults> entry = rowIterator
 								.next();
-						SummaryStatistics attribute = attributeSelector.select(entry
-								.getValue());
+						SummaryStatistics attribute = attributeSelector
+								.select(entry.getValue());
 
 						if (attribute.getN() == 0) {
-							out.print("-\t-\t");
+							out.print("0\t-\t-\t");
+						} else if (attribute.getN() == 1) {
+							out.printf("1\t%f\t-\t", attribute.getMean());
 						} else {
 							out.printf(
-									"%f\t%f\t",
+									"%d\t%f\t%f\t",
+									attribute.getN(),
 									attribute.getMean(),
 									getConfidenceIntervalWidth(attribute,
 											CommonConfig.significance));
@@ -148,6 +152,7 @@ public class SummaryAnalysis {
 		// 2. Print data header
 		out.print("N\t");
 		for (TopologyType topologyType : TopologyType.values()) {
+			out.printf("%s(n)\t", topologyType.toString());
 			out.printf("%s(mean)\t", topologyType.toString());
 			out.printf("%s(ci)\t", topologyType.toString());
 		}
@@ -165,10 +170,13 @@ public class SummaryAnalysis {
 						.getValue());
 
 				if (attribute.getN() == 0) {
-					out.print("-\t-\t");
+					out.print("0\t-\t-\t");
+				} else if (attribute.getN() == 1) {
+					out.printf("1\t%f\t-\t", attribute.getMean());
 				} else {
 					out.printf(
-							"%f\t%f\t",
+							"%d\t%f\t%f\t",
+							attribute.getN(),
 							attribute.getMean(),
 							getConfidenceIntervalWidth(attribute,
 									CommonConfig.significance));

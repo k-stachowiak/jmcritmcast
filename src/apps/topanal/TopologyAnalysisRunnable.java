@@ -17,31 +17,38 @@ import apps.TimeMeasurement;
 import dal.MultiBriteGraphStreamer;
 import dto.GraphDTO;
 
-public class TopologyAnalysisGatherExecutor implements TopologyAnalysisExecutor {
+public class TopologyAnalysisRunnable implements Runnable {
+
+	private final TopologyExperimentCase experimentCase;
+	private final Connection connection;
 
 	private final GraphFactory graphFactory = new AdjacencyListFactory();
 	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
 
 	private static final Logger logger = LogManager
-			.getLogger(TopologyAnalysisGatherExecutor.class);
+			.getLogger(TopologyAnalysisRunnable.class);
 
-	/* (non-Javadoc)
-	 * @see apps.topanal.TopologyAnalysisExecutor#execute(apps.topanal.TopologyExperimentCase, java.sql.Connection)
-	 */
+	public TopologyAnalysisRunnable(TopologyExperimentCase experimentCase,
+			Connection connection) {
+		this.experimentCase = experimentCase;
+		this.connection = connection;
+	}
+
 	@Override
-	public void execute(TopologyExperimentCase xc, Connection connection) {
+	public void run() {
 
 		final int neededResults = 30;
 		int currentGraphIndex = 1;
 
-		logger.trace("Solving case : {}", xc);
+		logger.trace("Solving case : {}", experimentCase);
 
 		MultiBriteGraphStreamer gs = new MultiBriteGraphStreamer("data/phd",
-				xc.getTopologyType(), xc.getNodesCount(), 1000);
+				experimentCase.getTopologyType(),
+				experimentCase.getNodesCount(), 1000);
 
 		// 1. Analyze already done.
-		List<TopologyExperiment> doneResults = TopologyResultDataAccess.selectFinishedResultsForCase(connection,
-				xc);
+		List<TopologyExperiment> doneResults = TopologyResultDataAccess
+				.selectFinishedResultsForCase(connection, experimentCase);
 		if (doneResults.size() >= neededResults) {
 			logger.trace("Enough results already computed -- skipping entire case");
 			return;
@@ -57,7 +64,7 @@ public class TopologyAnalysisGatherExecutor implements TopologyAnalysisExecutor 
 
 		// 2. Analyze partially done.
 		List<TopologyExperiment> unfinishedResults = TopologyResultDataAccess
-				.selectUnfinishedResultsForCase(connection, xc);
+				.selectUnfinishedResultsForCase(connection, experimentCase);
 		logger.trace("About to handle {} partially finished experiments",
 				unfinishedResults.size());
 		for (TopologyExperiment result : unfinishedResults) {
@@ -69,15 +76,17 @@ public class TopologyAnalysisGatherExecutor implements TopologyAnalysisExecutor 
 		logger.trace("About to handle {} new experiments", neededResults
 				- (doneResults.size() + unfinishedResults.size()));
 		for (int i = doneResults.size() + unfinishedResults.size() + 1; i < neededResults; ++i) {
-			TopologyExperiment result = new TopologyExperiment(xc, new TopologyExperimentValues(currentGraphIndex,
-					null, null, null, null));
+			TopologyExperiment result = new TopologyExperiment(experimentCase,
+					new TopologyExperimentValues(currentGraphIndex, null, null,
+							null, null));
 			TopologyResultDataAccess.insert(connection, result);
 			compute(gs.getNext(), result, connection);
 			++currentGraphIndex;
 		}
 	}
 
-	private void compute(GraphDTO graphDTO, TopologyExperiment experiment, Connection connection) {
+	private void compute(GraphDTO graphDTO, TopologyExperiment experiment,
+			Connection connection) {
 
 		Graph graph = graphFactory.createFromDTO(graphDTO);
 
@@ -107,8 +116,10 @@ public class TopologyAnalysisGatherExecutor implements TopologyAnalysisExecutor 
 				|| experiment.getExperimentValues().getDiameterCost() == null) {
 			timeMeasurement.begin();
 			PathMetric diameterResult = TopologyAnalyser.diameter(graph);
-			experiment.getExperimentValues().setDiameterHop(diameterResult.getHop());
-			experiment.getExperimentValues().setDiameterCost(diameterResult.getCost());
+			experiment.getExperimentValues().setDiameterHop(
+					diameterResult.getHop());
+			experiment.getExperimentValues().setDiameterCost(
+					diameterResult.getCost());
 			timeMeasurement.end();
 			logger.debug("Computed graph diameter in {}",
 					timeMeasurement.getDurationString());

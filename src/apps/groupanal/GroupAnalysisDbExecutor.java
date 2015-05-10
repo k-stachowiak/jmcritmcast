@@ -8,6 +8,7 @@ import helpers.nodegrp.NodeGroupper;
 import helpers.nodegrp.RandomNodeGroupper;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,10 +23,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.TimeMeasurement;
-import dal.MultiBriteGraphStreamer;
+import dal.TopologyDAO;
 import dto.GraphDTO;
 
-public class GroupAnalysisGatherExecutor implements Runnable {
+public class GroupAnalysisDbExecutor implements Runnable {
 
 	private final GroupExperimentCase experimentCase;
 	private final Connection connection;
@@ -37,13 +38,12 @@ public class GroupAnalysisGatherExecutor implements Runnable {
 	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
 
 	private static final Logger logger = LogManager
-			.getLogger(GroupAnalysisGatherExecutor.class);
+			.getLogger(GroupAnalysisDbExecutor.class);
 
 	private static Random r = new Random(System.currentTimeMillis());
 
-	public GroupAnalysisGatherExecutor(GroupExperimentCase experimentCase,
+	public GroupAnalysisDbExecutor(GroupExperimentCase experimentCase,
 			Connection connection) {
-		super();
 		this.experimentCase = experimentCase;
 		this.connection = connection;
 	}
@@ -51,57 +51,63 @@ public class GroupAnalysisGatherExecutor implements Runnable {
 	@Override
 	public void run() {
 
-		int currentGraphIndex = 1;
+		for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
 
-		logger.trace("Solving case : {}", experimentCase);
+			GroupExperiment experiment = GroupResultDataAccess
+					.selectResultsForCaseAndGraphIndex(connection,
+							experimentCase, graphIndex);
 
-		MultiBriteGraphStreamer gs = new MultiBriteGraphStreamer("data/phd",
-				experimentCase.getTopologyType(),
-				experimentCase.getNodesCount(), 1000);
+			if (experiment != null) {
+				continue;
+			}
 
-		int computed = GroupResultDataAccess.selectResultsForCase(connection,
-				experimentCase).size();
+			TopologyDAO topologyDAO = new TopologyDAO(connection);
 
-		if (computed >= neededGraphResults) {
-			return;
-		}
+			GroupResultDataAccess.insert(connection, new GroupExperiment(
+					experimentCase, new GroupExperimentValues(graphIndex, -1,
+							-1, -1, -1, -1)));
 
-		GroupResultDataAccess.deleteAll(connection, experimentCase);
-		while (currentGraphIndex <= neededGraphResults) {
+			GraphDTO graphDTO;
+			try {
+				graphDTO = topologyDAO.select(experimentCase.getTopologyType(),
+						experimentCase.getNodesCount(), graphIndex);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				logger.fatal("Sql error: {}", e.getMessage());
+				continue;
+			}
+
+			Graph graph = graphFactory.createFromDTO(graphDTO);
 
 			timeMeasurement.begin();
-
-			GraphDTO graphDTO = gs.getNext();
-			++currentGraphIndex;
-			Graph graph = graphFactory.createFromDTO(graphDTO);
 
 			GroupExperimentValues xv = null;
 
 			switch (experimentCase.getNodeGroupperType()) {
 			case Degree:
-				xv = compute(currentGraphIndex, graph,
-						new DegreeNodeGroupper(), experimentCase);
+				xv = compute(graphIndex, graph, new DegreeNodeGroupper(),
+						experimentCase);
 				break;
 
 			case Centroid:
-				xv = compute(currentGraphIndex, graph,
+				xv = compute(graphIndex, graph,
 						genCentroidGrouppers(graph, neededGroupResults),
 						experimentCase);
 				break;
 
 			case Random:
-				xv = compute(currentGraphIndex, graph,
+				xv = compute(graphIndex, graph,
 						genRandomGrouppers(neededGroupResults), experimentCase);
 				break;
 			}
-
-			GroupResultDataAccess.insert(connection, new GroupExperiment(
-					experimentCase, xv));
 
 			timeMeasurement.end();
 			logger.debug(
 					"Computed multicast group parameters for a graph in {}",
 					timeMeasurement.getDurationString());
+
+			GroupResultDataAccess.insert(connection, new GroupExperiment(
+					experimentCase, xv));
 		}
 	}
 
@@ -153,8 +159,7 @@ public class GroupAnalysisGatherExecutor implements Runnable {
 		return result;
 	}
 
-	private static ArrayList<NodeGroupper> genCentroidGrouppers(Graph graph,
-			int count) {
+	private ArrayList<NodeGroupper> genCentroidGrouppers(Graph graph, int count) {
 
 		Double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
 		TopologyAnalyser.minMaxCoordinates(graph, minX, maxX, minY, maxY);
