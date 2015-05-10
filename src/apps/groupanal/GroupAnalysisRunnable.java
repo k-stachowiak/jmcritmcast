@@ -26,23 +26,22 @@ import apps.TimeMeasurement;
 import dal.TopologyDAO;
 import dto.GraphDTO;
 
-public class GroupAnalysisDbExecutor implements Runnable {
+public class GroupAnalysisRunnable implements Runnable {
 
 	private final GroupExperimentCase experimentCase;
 	private final Connection connection;
 
-	private final int neededGraphResults = 30;
 	private final int neededGroupResults = 30;
 
 	private final GraphFactory graphFactory = new AdjacencyListFactory();
 	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
 
 	private static final Logger logger = LogManager
-			.getLogger(GroupAnalysisDbExecutor.class);
+			.getLogger(GroupAnalysisRunnable.class);
 
 	private static Random r = new Random(System.currentTimeMillis());
 
-	public GroupAnalysisDbExecutor(GroupExperimentCase experimentCase,
+	public GroupAnalysisRunnable(GroupExperimentCase experimentCase,
 			Connection connection) {
 		this.experimentCase = experimentCase;
 		this.connection = connection;
@@ -51,70 +50,68 @@ public class GroupAnalysisDbExecutor implements Runnable {
 	@Override
 	public void run() {
 
-		for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
+		logger.trace("Begin analysis for case {}", experimentCase);
 
-			GroupExperiment experiment = GroupResultDataAccess
-					.selectResultsForCaseAndGraphIndex(connection,
-							experimentCase, graphIndex);
+		GroupExperimentValues experimentValues = GroupResultDataAccess
+				.selectResultForCase(connection, experimentCase);
 
-			if (experiment != null) {
-				continue;
-			}
-
-			TopologyDAO topologyDAO = new TopologyDAO(connection);
-
-			GroupResultDataAccess.insert(connection, new GroupExperiment(
-					experimentCase, new GroupExperimentValues(graphIndex, -1,
-							-1, -1, -1, -1)));
-
-			GraphDTO graphDTO;
-			try {
-				graphDTO = topologyDAO.select(experimentCase.getTopologyType(),
-						experimentCase.getNodesCount(), graphIndex);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				logger.fatal("Sql error: {}", e.getMessage());
-				continue;
-			}
-
-			Graph graph = graphFactory.createFromDTO(graphDTO);
-
-			timeMeasurement.begin();
-
-			GroupExperimentValues xv = null;
-
-			switch (experimentCase.getNodeGroupperType()) {
-			case Degree:
-				xv = compute(graphIndex, graph, new DegreeNodeGroupper(),
-						experimentCase);
-				break;
-
-			case Centroid:
-				xv = compute(graphIndex, graph,
-						genCentroidGrouppers(graph, neededGroupResults),
-						experimentCase);
-				break;
-
-			case Random:
-				xv = compute(graphIndex, graph,
-						genRandomGrouppers(neededGroupResults), experimentCase);
-				break;
-			}
-
-			timeMeasurement.end();
-			logger.debug(
-					"Computed multicast group parameters for a graph in {}",
-					timeMeasurement.getDurationString());
-
-			GroupResultDataAccess.insert(connection, new GroupExperiment(
-					experimentCase, xv));
+		if (experimentValues == null) {
+			logger.trace("No result found, commencing...");
+			GroupResultDataAccess.insert(connection, experimentCase,
+					new GroupExperimentValues(-1, -1, -1, -1, -1));
+		} else if (experimentValues.isValid()) {
+			logger.trace("Valid result for case found, aborting...");
+			return;
+		} else {
+			logger.trace("Found invalid result, resuming...");
 		}
+
+		TopologyDAO topologyDAO = new TopologyDAO(connection);
+		GraphDTO graphDTO;
+		try {
+			graphDTO = topologyDAO.select(experimentCase.getTopologyType(),
+					experimentCase.getNodesCount(),
+					experimentCase.getGraphIndex());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.fatal("Sql error: {}", e.getMessage());
+			return;
+		}
+		Graph graph = graphFactory.createFromDTO(graphDTO);
+
+		timeMeasurement.begin();
+
+		switch (experimentCase.getNodeGroupperType()) {
+		case Degree:
+			experimentValues = compute(graph, new DegreeNodeGroupper(),
+					experimentCase);
+			break;
+
+		case Centroid:
+			experimentValues = compute(graph,
+					genCentroidGrouppers(graph, neededGroupResults),
+					experimentCase);
+			break;
+
+		case Random:
+			experimentValues = compute(graph,
+					genRandomGrouppers(neededGroupResults), experimentCase);
+			break;
+		}
+
+		timeMeasurement.end();
+		logger.debug("Computed multicast group parameters for a graph in {}",
+				timeMeasurement.getDurationString());
+
+		GroupResultDataAccess.update(connection, experimentCase,
+				experimentValues);
 	}
 
-	private GroupExperimentValues compute(int graphIndex, Graph graph,
-			NodeGroupper nodeGroupper, GroupExperimentCase xc) {
+	private GroupExperimentValues compute(Graph graph,
+			NodeGroupper nodeGroupper, GroupExperimentCase experimentCase) {
 
-		List<Node> group = nodeGroupper.group(graph, xc.getGroupSize());
+		List<Node> group = nodeGroupper.group(graph,
+				experimentCase.getGroupSize());
 
 		double degree = TopologyAnalyser.averageDegree(graph, group);
 		PathMetric diameter = TopologyAnalyser.diameter(graph, group);
@@ -122,12 +119,13 @@ public class GroupAnalysisDbExecutor implements Runnable {
 				graph, group);
 		double density = TopologyAnalyser.nodeGroupoDensity(graph, group);
 
-		return new GroupExperimentValues(graphIndex, degree, diameter.getHop(),
+		return new GroupExperimentValues(degree, diameter.getHop(),
 				diameter.getCost(), clusteringCoefficient, density);
 	}
 
-	private GroupExperimentValues compute(int graphIndex, Graph graph,
-			ArrayList<NodeGroupper> grouppers, GroupExperimentCase xc) {
+	private GroupExperimentValues compute(Graph graph,
+			ArrayList<NodeGroupper> grouppers,
+			GroupExperimentCase experimentCase) {
 
 		SummaryStatistics degreeStat = new SummaryStatistics();
 		SummaryStatistics diameterHopStat = new SummaryStatistics();
@@ -136,8 +134,8 @@ public class GroupAnalysisDbExecutor implements Runnable {
 		SummaryStatistics densityStat = new SummaryStatistics();
 
 		for (NodeGroupper groupper : grouppers) {
-			GroupExperimentValues partialValues = compute(graphIndex, graph,
-					groupper, xc);
+			GroupExperimentValues partialValues = compute(graph, groupper,
+					experimentCase);
 			degreeStat.addValue(partialValues.getDegree());
 			diameterHopStat.addValue(partialValues.getDiameterHop());
 			diameterCostStat.addValue(partialValues.getDiameterCost());
@@ -146,7 +144,7 @@ public class GroupAnalysisDbExecutor implements Runnable {
 			densityStat.addValue(partialValues.getClusteringCoefficient());
 		}
 
-		return new GroupExperimentValues(graphIndex, degreeStat.getMean(),
+		return new GroupExperimentValues(degreeStat.getMean(),
 				diameterHopStat.getMean(), diameterCostStat.getMean(),
 				clusteringCoefficientStat.getMean(), densityStat.getMean());
 	}

@@ -8,13 +8,15 @@ public class GroupExperimentCase {
 	private final int nodesCount;
 	private final int groupSize;
 	private final NodeGroupperType nodeGroupperType;
+	private final int graphIndex;
 
 	public GroupExperimentCase(TopologyType topologyType, int nodesCount,
-			int groupSize, NodeGroupperType nodeGroupperType) {
+			int groupSize, NodeGroupperType nodeGroupperType, int graphIndex) {
 		this.topologyType = topologyType;
 		this.nodesCount = nodesCount;
 		this.groupSize = groupSize;
 		this.nodeGroupperType = nodeGroupperType;
+		this.graphIndex = graphIndex;
 	}
 
 	public TopologyType getTopologyType() {
@@ -33,10 +35,15 @@ public class GroupExperimentCase {
 		return nodeGroupperType;
 	}
 
+	public int getGraphIndex() {
+		return graphIndex;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + graphIndex;
 		result = prime * result + groupSize;
 		result = prime
 				* result
@@ -56,6 +63,8 @@ public class GroupExperimentCase {
 		if (getClass() != obj.getClass())
 			return false;
 		GroupExperimentCase other = (GroupExperimentCase) obj;
+		if (graphIndex != other.graphIndex)
+			return false;
 		if (groupSize != other.groupSize)
 			return false;
 		if (nodeGroupperType != other.nodeGroupperType)
@@ -69,8 +78,9 @@ public class GroupExperimentCase {
 
 	@Override
 	public String toString() {
-		return "ExperimentCase [topologyType=" + topologyType + ", nodesCount="
-				+ nodesCount + ", groupSize=" + groupSize
-				+ ", nodeGroupperType=" + nodeGroupperType + "]";
+		return "GroupExperimentCase [topologyType=" + topologyType
+				+ ", nodesCount=" + nodesCount + ", groupSize=" + groupSize
+				+ ", nodeGroupperType=" + nodeGroupperType + ", graphIndex="
+				+ graphIndex + "]";
 	}
 }

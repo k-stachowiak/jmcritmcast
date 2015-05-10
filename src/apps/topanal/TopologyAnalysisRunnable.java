@@ -4,7 +4,7 @@ import helpers.PathMetric;
 import helpers.TopologyAnalyser;
 
 import java.sql.Connection;
-import java.util.List;
+import java.sql.SQLException;
 
 import model.topology.AdjacencyListFactory;
 import model.topology.Graph;
@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.TimeMeasurement;
-import dal.MultiBriteGraphStreamer;
+import dal.TopologyDAO;
 import dto.GraphDTO;
 
 public class TopologyAnalysisRunnable implements Runnable {
@@ -37,93 +37,74 @@ public class TopologyAnalysisRunnable implements Runnable {
 	@Override
 	public void run() {
 
-		final int neededResults = 30;
-		int currentGraphIndex = 1;
+		logger.trace("Begin analysis for case {}", experimentCase);
 
-		logger.trace("Solving case : {}", experimentCase);
+		TopologyExperimentValues experimentValues = TopologyResultDataAccess
+				.selectResultForCase(connection, experimentCase);
 
-		MultiBriteGraphStreamer gs = new MultiBriteGraphStreamer("data/phd",
-				experimentCase.getTopologyType(),
-				experimentCase.getNodesCount(), 1000);
+		if (experimentValues == null) {
+			logger.trace("No result found, commencing...");
+			experimentValues = new TopologyExperimentValues(null, null, null,
+					null);
+			TopologyResultDataAccess.insert(connection, experimentCase,
+					experimentValues);
+		} else if (experimentValues.isValid()) {
+			logger.trace("Valid result for case found, aborting...");
+			return;
+		} else {
+			logger.trace("Found invalid result, resuming...");
+		}
 
-		// 1. Analyze already done.
-		List<TopologyExperiment> doneResults = TopologyResultDataAccess
-				.selectFinishedResultsForCase(connection, experimentCase);
-		if (doneResults.size() >= neededResults) {
-			logger.trace("Enough results already computed -- skipping entire case");
+		TopologyDAO topologyDAO = new TopologyDAO(connection);
+		GraphDTO graphDTO;
+		try {
+			graphDTO = topologyDAO.select(experimentCase.getTopologyType(),
+					experimentCase.getNodesCount(),
+					experimentCase.getGraphIndex());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.fatal("Sql error: {}", e.getMessage());
 			return;
 		}
-
-		// ...skip graphs for the already performed experiments
-		logger.trace("Skipping {} topologies for already computed results",
-				doneResults.size());
-		for (int i = 0; i < doneResults.size(); ++i) {
-			gs.getNext();
-			++currentGraphIndex;
-		}
-
-		// 2. Analyze partially done.
-		List<TopologyExperiment> unfinishedResults = TopologyResultDataAccess
-				.selectUnfinishedResultsForCase(connection, experimentCase);
-		logger.trace("About to handle {} partially finished experiments",
-				unfinishedResults.size());
-		for (TopologyExperiment result : unfinishedResults) {
-			compute(gs.getNext(), result, connection);
-			++currentGraphIndex;
-		}
-
-		// 3. Analyze missing.
-		logger.trace("About to handle {} new experiments", neededResults
-				- (doneResults.size() + unfinishedResults.size()));
-		for (int i = doneResults.size() + unfinishedResults.size() + 1; i < neededResults; ++i) {
-			TopologyExperiment result = new TopologyExperiment(experimentCase,
-					new TopologyExperimentValues(currentGraphIndex, null, null,
-							null, null));
-			TopologyResultDataAccess.insert(connection, result);
-			compute(gs.getNext(), result, connection);
-			++currentGraphIndex;
-		}
-	}
-
-	private void compute(GraphDTO graphDTO, TopologyExperiment experiment,
-			Connection connection) {
-
 		Graph graph = graphFactory.createFromDTO(graphDTO);
 
-		logger.entry(experiment);
+		compute(graph, experimentValues);
+	}
 
-		if (experiment.getExperimentValues().getDegree() == null) {
+	private void compute(Graph graph, TopologyExperimentValues experimentValues) {
+
+		if (experimentValues.getDegree() == null) {
 			timeMeasurement.begin();
-			experiment.getExperimentValues().setDegree(
-					TopologyAnalyser.averageDegree(graph));
+			experimentValues.setDegree(TopologyAnalyser.averageDegree(graph));
 			timeMeasurement.end();
 			logger.debug("Computed graph average degree in {}",
 					timeMeasurement.getDurationString());
 		}
-		TopologyResultDataAccess.update(connection, experiment);
+		TopologyResultDataAccess.update(connection, experimentCase,
+				experimentValues);
 
-		if (experiment.getExperimentValues().getClusteringCoefficient() == null) {
+		if (experimentValues.getClusteringCoefficient() == null) {
 			timeMeasurement.begin();
-			experiment.getExperimentValues().setClusteringCoefficient(
-					TopologyAnalyser.clusteringCoefficient(graph));
+			experimentValues.setClusteringCoefficient(TopologyAnalyser
+					.clusteringCoefficient(graph));
 			timeMeasurement.end();
 			logger.debug("Computed graph clustering coefficient in {}",
 					timeMeasurement.getDurationString());
 		}
-		TopologyResultDataAccess.update(connection, experiment);
+		TopologyResultDataAccess.update(connection, experimentCase,
+				experimentValues);
 
-		if (experiment.getExperimentValues().getDiameterHop() == null
-				|| experiment.getExperimentValues().getDiameterCost() == null) {
+		if (experimentValues.getDiameterHop() == null
+				|| experimentValues.getDiameterCost() == null) {
 			timeMeasurement.begin();
 			PathMetric diameterResult = TopologyAnalyser.diameter(graph);
-			experiment.getExperimentValues().setDiameterHop(
-					diameterResult.getHop());
-			experiment.getExperimentValues().setDiameterCost(
-					diameterResult.getCost());
+			experimentValues.setDiameterHop(diameterResult.getHop());
+			experimentValues.setDiameterCost(diameterResult.getCost());
 			timeMeasurement.end();
 			logger.debug("Computed graph diameter in {}",
 					timeMeasurement.getDurationString());
 		}
-		TopologyResultDataAccess.update(connection, experiment);
+		TopologyResultDataAccess.update(connection, experimentCase,
+				experimentValues);
 	}
 }

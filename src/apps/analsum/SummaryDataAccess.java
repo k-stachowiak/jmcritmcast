@@ -23,8 +23,8 @@ public class SummaryDataAccess {
 			Connection connection) {
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("SELECT "
-						+ "type, nodes, "
-						+ "graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient "
+						+ "type, nodes, graph_index, "
+						+ "degree, diameter_hop, diameter_cost, clustering_coefficient "
 						+ "FROM top_anal_results "
 						+ "WHERE "
 						+ "degree IS NOT NULL AND diameter_hop IS NOT NULL AND diameter_cost IS NOT NULL AND clustering_coefficient IS NOT NULL ")) {
@@ -54,9 +54,11 @@ public class SummaryDataAccess {
 			Connection connection) {
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("SELECT "
-						+ "type, nodes, group_size, group_type, "
-						+ "graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient, density "
-						+ "FROM group_anal_results")) {
+						+ "type, nodes, group_size, group_type, graph_index, "
+						+ "degree, diameter_hop, diameter_cost, clustering_coefficient, density "
+						+ "FROM group_anal_results "
+						+ "WHERE "
+						+ "degree <> -1 AND diameter_hop <> -1 AND diameter_cost <> -1 AND clustering_coefficient <> -1 AND density <> -1")) {
 
 			ArrayList<GroupExperiment> result = new ArrayList<>();
 

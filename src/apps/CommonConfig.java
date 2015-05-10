@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CommonConfig {
 	
-	public static final int threadsPerWorker = 1;
+	public static final int threadsPerWorker = 3;
 
 	public static final List<Integer> nodesCounts = Arrays
 			.asList(new Integer[] { 50, 100, 250, 500, 1500, 3037, 3600, 4750,

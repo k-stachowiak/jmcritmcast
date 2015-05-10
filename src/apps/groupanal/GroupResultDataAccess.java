@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,73 +15,21 @@ public class GroupResultDataAccess {
 	private static final Logger logger = LogManager
 			.getLogger(GroupResultDataAccess.class);
 
-	public static void deleteAll(Connection connection, GroupExperimentCase xc) {
+	public static GroupExperimentValues selectResultForCase(
+			Connection connection, GroupExperimentCase experimentCase) {
 
 		try (PreparedStatement prStatement = connection
-				.prepareStatement("DELETE FROM group_anal_results "
-						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ?")) {
-			prStatement.setString(1, xc.getTopologyType().toString());
-			prStatement.setInt(2, xc.getNodesCount());
-			prStatement.setInt(3, xc.getGroupSize());
-			prStatement.setString(4, xc.getNodeGroupperType().toString());
-
-			logger.trace("About to execute statement: {}",
-					prStatement.toString());
-
-			prStatement.executeUpdate();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.fatal("Sql error: {}", e.getMessage());
-		}
-	}
-
-	public static List<GroupExperiment> selectResultsForCase(
-			Connection connection, GroupExperimentCase tac) {
-
-		try (PreparedStatement prStatement = connection
-				.prepareStatement("SELECT graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient, density "
-						+ "FROM group_anal_results "
-						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ?")) {
-
-			ArrayList<GroupExperiment> result = new ArrayList<>();
-
-			prStatement.setString(1, tac.getTopologyType().toString());
-			prStatement.setInt(2, tac.getNodesCount());
-			prStatement.setInt(3, tac.getGroupSize());
-			prStatement.setString(4, tac.getNodeGroupperType().toString());
-
-			logger.trace("About to execute statement: {}",
-					prStatement.toString());
-			ResultSet rs = prStatement.executeQuery();
-
-			while (rs.next()) {
-				result.add(new GroupExperiment(tac, CommonDataAccess
-						.groupResultValuesFromPartialResultSet(rs)));
-			}
-
-			return result;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.fatal("Sql error: {}", e.getMessage());
-			return null;
-		}
-	}
-
-	public static GroupExperiment selectResultsForCaseAndGraphIndex(
-			Connection connection, GroupExperimentCase tac, int graphIndex) {
-
-		try (PreparedStatement prStatement = connection
-				.prepareStatement("SELECT graph_index, degree, diameter_hop, diameter_cost, clustering_coefficient, density "
+				.prepareStatement("SELECT degree, diameter_hop, diameter_cost, clustering_coefficient, density "
 						+ "FROM group_anal_results "
 						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ? AND graph_index = ?")) {
 
-			prStatement.setString(1, tac.getTopologyType().toString());
-			prStatement.setInt(2, tac.getNodesCount());
-			prStatement.setInt(3, tac.getGroupSize());
-			prStatement.setString(4, tac.getNodeGroupperType().toString());
-			prStatement.setInt(5, graphIndex);
+			prStatement.setString(1, experimentCase.getTopologyType()
+					.toString());
+			prStatement.setInt(2, experimentCase.getNodesCount());
+			prStatement.setInt(3, experimentCase.getGroupSize());
+			prStatement.setString(4, experimentCase.getNodeGroupperType()
+					.toString());
+			prStatement.setInt(5, experimentCase.getGraphIndex());
 
 			logger.trace("About to execute statement: {}",
 					prStatement.toString());
@@ -92,9 +38,8 @@ public class GroupResultDataAccess {
 			if (!rs.next()) {
 				return null;
 			} else {
-				return new GroupExperiment(tac,
-						CommonDataAccess
-								.groupResultValuesFromPartialResultSet(rs));
+				return CommonDataAccess
+						.groupResultValuesFromPartialResultSet(rs);
 			}
 
 		} catch (SQLException e) {
@@ -104,28 +49,61 @@ public class GroupResultDataAccess {
 		}
 	}
 
-	public static void insert(Connection connection, GroupExperiment result) {
+	public static void insert(Connection connection,
+			GroupExperimentCase experimentCase,
+			GroupExperimentValues experimentValues) {
 
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("INSERT INTO group_anal_results "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 
-			prStatement.setString(1, result.getExperimentCase()
-					.getTopologyType().toString());
-			prStatement.setInt(2, result.getExperimentCase().getNodesCount());
-			prStatement.setInt(3, result.getExperimentCase().getGroupSize());
-			prStatement.setString(4, result.getExperimentCase()
-					.getNodeGroupperType().toString());
-			prStatement.setInt(5, result.getExperimentValues().getGraphIndex());
-			prStatement.setDouble(6, result.getExperimentValues().getDegree());
-			prStatement.setDouble(7, result.getExperimentValues()
-					.getDiameterHop());
-			prStatement.setDouble(8, result.getExperimentValues()
-					.getDiameterCost());
-			prStatement.setDouble(9, result.getExperimentValues()
-					.getClusteringCoefficient());
-			prStatement
-					.setDouble(10, result.getExperimentValues().getDensity());
+			prStatement.setString(1, experimentCase.getTopologyType()
+					.toString());
+			prStatement.setInt(2, experimentCase.getNodesCount());
+			prStatement.setInt(3, experimentCase.getGroupSize());
+			prStatement.setString(4, experimentCase.getNodeGroupperType()
+					.toString());
+			prStatement.setInt(5, experimentCase.getGraphIndex());
+			prStatement.setDouble(6, experimentValues.getDegree());
+			prStatement.setDouble(7, experimentValues.getDiameterHop());
+			prStatement.setDouble(8, experimentValues.getDiameterCost());
+			prStatement.setDouble(9,
+					experimentValues.getClusteringCoefficient());
+			prStatement.setDouble(10, experimentValues.getDensity());
+
+			logger.trace("About to execute statement: {}",
+					prStatement.toString());
+			prStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			logger.fatal("Sql error: {}", e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public static void update(Connection connection,
+			GroupExperimentCase experimentCase,
+			GroupExperimentValues experimentValues) {
+
+		try (PreparedStatement prStatement = connection
+				.prepareStatement("UPDATE group_anal_results "
+						+ "SET degree = ?, diameter_hop = ?, diameter_cost = ?, clustering_coefficient = ?, density = ? "
+						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ? AND graph_index = ?")) {
+
+			prStatement.setDouble(1, experimentValues.getDegree());
+			prStatement.setDouble(2, experimentValues.getDiameterHop());
+			prStatement.setDouble(3, experimentValues.getDiameterCost());
+			prStatement.setDouble(4,
+					experimentValues.getClusteringCoefficient());
+			prStatement.setDouble(5, experimentValues.getDensity());
+
+			prStatement.setString(6, experimentCase.getTopologyType()
+					.toString());
+			prStatement.setInt(7, experimentCase.getNodesCount());
+			prStatement.setInt(8, experimentCase.getGroupSize());
+			prStatement.setString(9, experimentCase.getNodeGroupperType()
+					.toString());
+			prStatement.setInt(10, experimentCase.getGraphIndex());
 
 			logger.trace("About to execute statement: {}",
 					prStatement.toString());

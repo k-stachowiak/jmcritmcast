@@ -2,26 +2,19 @@ package apps.groupanal;
 
 public class GroupExperimentValues {
 
-	private final int graphIndex;
 	private final double degree;
 	private final double diameterHop;
 	private final double diameterCost;
 	private final double clusteringCoefficient;
 	private final double density;
 
-	public GroupExperimentValues(int graphIndex, double degree,
-			double diameterHop, double diameterCost,
-			double clusteringCoefficient, double density) {
-		this.graphIndex = graphIndex;
+	public GroupExperimentValues(double degree, double diameterHop,
+			double diameterCost, double clusteringCoefficient, double density) {
 		this.degree = degree;
 		this.diameterHop = diameterHop;
 		this.diameterCost = diameterCost;
 		this.clusteringCoefficient = clusteringCoefficient;
 		this.density = density;
-	}
-
-	public int getGraphIndex() {
-		return graphIndex;
 	}
 
 	public double getDegree() {
@@ -59,7 +52,6 @@ public class GroupExperimentValues {
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(diameterHop);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + graphIndex;
 		return result;
 	}
 
@@ -87,16 +79,19 @@ public class GroupExperimentValues {
 		if (Double.doubleToLongBits(diameterHop) != Double
 				.doubleToLongBits(other.diameterHop))
 			return false;
-		if (graphIndex != other.graphIndex)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ExperimentValues [graphIndex=" + graphIndex + ", degree="
-				+ degree + ", diameterHop=" + diameterHop + ", diameterCost="
-				+ diameterCost + ", clusteringCoefficient="
-				+ clusteringCoefficient + ", density=" + density + "]";
+		return "ExperimentValues [degree=" + degree + ", diameterHop="
+				+ diameterHop + ", diameterCost=" + diameterCost
+				+ ", clusteringCoefficient=" + clusteringCoefficient
+				+ ", density=" + density + "]";
+	}
+
+	public boolean isValid() {
+		return degree != -1 && density != -1 && diameterCost != -1
+				&& diameterHop != -1 && clusteringCoefficient != -1;
 	}
 }

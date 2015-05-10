@@ -1,15 +1,13 @@
 package apps.topanal;
 
 public class TopologyExperimentValues {
-	private final int graphIndex;
 	private Double degree;
 	private Double diameterHop;
 	private Double diameterCost;
 	private Double clusteringCoefficient;
 
-	public TopologyExperimentValues(int graphIndex, Double degree, Double diameterHop,
+	public TopologyExperimentValues(Double degree, Double diameterHop,
 			Double diameterCost, Double clusteringCoefficient) {
-		this.graphIndex = graphIndex;
 		this.degree = degree;
 		this.diameterHop = diameterHop;
 		this.diameterCost = diameterCost;
@@ -48,10 +46,6 @@ public class TopologyExperimentValues {
 		this.clusteringCoefficient = clusteringCoefficient;
 	}
 
-	public int getGraphIndex() {
-		return graphIndex;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -65,7 +59,6 @@ public class TopologyExperimentValues {
 				+ ((diameterCost == null) ? 0 : diameterCost.hashCode());
 		result = prime * result
 				+ ((diameterHop == null) ? 0 : diameterHop.hashCode());
-		result = prime * result + graphIndex;
 		return result;
 	}
 
@@ -98,16 +91,18 @@ public class TopologyExperimentValues {
 				return false;
 		} else if (!diameterHop.equals(other.diameterHop))
 			return false;
-		if (graphIndex != other.graphIndex)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ResultValues [graphIndex=" + graphIndex + ", degree=" + degree
-				+ ", diameterHop=" + diameterHop + ", diameterCost="
-				+ diameterCost + ", clusteringCoefficient="
-				+ clusteringCoefficient + "]";
+		return "ResultValues [degree=" + degree + ", diameterHop="
+				+ diameterHop + ", diameterCost=" + diameterCost
+				+ ", clusteringCoefficient=" + clusteringCoefficient + "]";
+	}
+
+	public boolean isValid() {
+		return degree != null && diameterHop != null && diameterCost != null
+				&& clusteringCoefficient != null;
 	}
 }

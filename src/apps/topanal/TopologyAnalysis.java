@@ -3,8 +3,9 @@ package apps.topanal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,33 +15,43 @@ import dal.TopologyType;
 
 public class TopologyAnalysis {
 
+	private static final int neededGraphResults = 30;
+
 	private static final Logger logger = LogManager
 			.getLogger(TopologyAnalysis.class);
 
-	public static void forEachCase(Executor executor) {
+	public static void forEachCase(ExecutorService executor) {
 
 		try (Connection connection = DriverManager.getConnection(
 				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
 
-			for (Integer nodesCount : CommonConfig.nodesCounts) {
-				for (TopologyType type : TopologyType.values()) {
+			for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
 
-					if (nodesCount < 3037 && type == TopologyType.Inet) {
-						logger.trace("Too small graph for INET to support -- skipping.");
-						continue;
+				for (Integer nodesCount : CommonConfig.nodesCounts) {
+					for (TopologyType type : TopologyType.values()) {
+
+						if (nodesCount < 3037 && type == TopologyType.Inet) {
+							logger.trace("Too small graph for INET to support -- skipping.");
+							continue;
+						}
+
+						executor.execute(new TopologyAnalysisRunnable(
+								new TopologyExperimentCase(type, nodesCount, graphIndex),
+								connection));
 					}
-
-					executor.execute(new TopologyAnalysisRunnable(
-							new TopologyExperimentCase(type, nodesCount),
-							connection));
-
-					connection.close();
 				}
+
 			}
+			
+			executor.shutdown();
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.fatal("Sql error: {}", e.getMessage());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -53,6 +64,7 @@ public class TopologyAnalysis {
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			logger.fatal("Computation interrupted!");
 		}
 	}
 }

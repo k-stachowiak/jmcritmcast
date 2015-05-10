@@ -15,11 +15,11 @@ public class CommonDataAccess {
 
 	private static TopologyExperimentValues topologyResultValuesFromAnyResultSet(
 			ResultSet rs, int offset) throws SQLException {
-		return new TopologyExperimentValues(rs.getInt(offset + 1),
+		return new TopologyExperimentValues(
+				(Double) rs.getObject(offset + 1),
 				(Double) rs.getObject(offset + 2),
 				(Double) rs.getObject(offset + 3),
-				(Double) rs.getObject(offset + 4),
-				(Double) rs.getObject(offset + 5));
+				(Double) rs.getObject(offset + 4));
 	}
 
 	public static TopologyExperimentValues topologyResultValuesFromPartialResultSet(
@@ -29,21 +29,21 @@ public class CommonDataAccess {
 
 	public static TopologyExperimentValues topologyResultValuesFromFullResultSet(
 			ResultSet rs) throws SQLException {
-		return topologyResultValuesFromAnyResultSet(rs, 2);
+		return topologyResultValuesFromAnyResultSet(rs, 3);
 	}
 
 	public static TopologyExperimentCase topologyResultCaseFromResultSet(
 			ResultSet rs) throws SQLException {
 		return new TopologyExperimentCase(
-				TopologyType.valueOf(rs.getString(1)), rs.getInt(2));
+				TopologyType.valueOf(rs.getString(1)), rs.getInt(2), rs.getInt(3));
 	}
 
 	private static GroupExperimentValues groupResultValuesFromAnyResultSet(
 			ResultSet rs, int offset) throws SQLException {
-		return new GroupExperimentValues(rs.getInt(offset + 1),
-				rs.getDouble(offset + 2), rs.getDouble(offset + 3),
-				rs.getDouble(offset + 4), rs.getDouble(offset + 5),
-				rs.getDouble(offset + 6));
+		return new GroupExperimentValues(
+				rs.getDouble(offset + 1), rs.getDouble(offset + 2),
+				rs.getDouble(offset + 3), rs.getDouble(offset + 4),
+				rs.getDouble(offset + 5));
 	}
 
 	public static GroupExperimentValues groupResultValuesFromPartialResultSet(
@@ -53,13 +53,13 @@ public class CommonDataAccess {
 
 	public static GroupExperimentValues groupResultValuesFromFullResultSet(
 			ResultSet rs) throws SQLException {
-		return groupResultValuesFromAnyResultSet(rs, 4);
+		return groupResultValuesFromAnyResultSet(rs, 5);
 	}
 
 	public static GroupExperimentCase groupResultCaseFromResultSet(ResultSet rs)
 			throws SQLException {
 		return new GroupExperimentCase(TopologyType.valueOf(rs.getString(1)),
 				rs.getInt(2), rs.getInt(3), NodeGroupperType.valueOf(rs
-						.getString(4)));
+						.getString(4)), rs.getInt(5));
 	}
 }
