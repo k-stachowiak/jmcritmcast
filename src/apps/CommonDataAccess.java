@@ -4,19 +4,24 @@ import helpers.nodegrp.NodeGroupperType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import dal.TopologyType;
+import apps.alganal.AlgorithmExperimentValues;
 import apps.groupanal.GroupExperimentCase;
 import apps.groupanal.GroupExperimentValues;
 import apps.topanal.TopologyExperimentCase;
 import apps.topanal.TopologyExperimentValues;
+import dal.TopologyType;
 
 public class CommonDataAccess {
 
+	// Topology analysis results.
+	// ==========================
+
 	private static TopologyExperimentValues topologyResultValuesFromAnyResultSet(
 			ResultSet rs, int offset) throws SQLException {
-		return new TopologyExperimentValues(
-				(Double) rs.getObject(offset + 1),
+		return new TopologyExperimentValues((Double) rs.getObject(offset + 1),
 				(Double) rs.getObject(offset + 2),
 				(Double) rs.getObject(offset + 3),
 				(Double) rs.getObject(offset + 4));
@@ -35,15 +40,18 @@ public class CommonDataAccess {
 	public static TopologyExperimentCase topologyResultCaseFromResultSet(
 			ResultSet rs) throws SQLException {
 		return new TopologyExperimentCase(
-				TopologyType.valueOf(rs.getString(1)), rs.getInt(2), rs.getInt(3));
+				TopologyType.valueOf(rs.getString(1)), rs.getInt(2),
+				rs.getInt(3));
 	}
+
+	// Group analysis results.
+	// =======================
 
 	private static GroupExperimentValues groupResultValuesFromAnyResultSet(
 			ResultSet rs, int offset) throws SQLException {
-		return new GroupExperimentValues(
-				rs.getDouble(offset + 1), rs.getDouble(offset + 2),
-				rs.getDouble(offset + 3), rs.getDouble(offset + 4),
-				rs.getDouble(offset + 5));
+		return new GroupExperimentValues(rs.getDouble(offset + 1),
+				rs.getDouble(offset + 2), rs.getDouble(offset + 3),
+				rs.getDouble(offset + 4), rs.getDouble(offset + 5));
 	}
 
 	public static GroupExperimentValues groupResultValuesFromPartialResultSet(
@@ -62,4 +70,45 @@ public class CommonDataAccess {
 				rs.getInt(2), rs.getInt(3), NodeGroupperType.valueOf(rs
 						.getString(4)), rs.getInt(5));
 	}
+
+	// Algorithm analysis results.
+	// ===========================
+
+	public static List<Double> costListFromStr(String string) {
+		String[] valueStrings = string.split(";");
+		ArrayList<Double> values = new ArrayList<>();
+		for (String valueString : valueStrings) {
+			values.add(Double.parseDouble(valueString));
+		}
+		return values;
+	}
+
+	public static String costListToString(List<Double> costs) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < costs.size(); ++i) {
+			sb.append(costs.get(i));
+			if (i < (costs.size() - 1)) {
+				sb.append(';');
+			}
+		}
+		return sb.toString();
+	}
+
+	private static AlgorithmExperimentValues algorithmResultValuesFromAnyResultSet(
+			ResultSet rs, int offset) throws SQLException {
+		return new AlgorithmExperimentValues(
+				costListFromStr(rs.getString(offset + 1)),
+				rs.getInt(offset + 2));
+	}
+
+	public static AlgorithmExperimentValues algorithmResultValuesFromPartialResultSet(
+			ResultSet rs) throws SQLException {
+		return algorithmResultValuesFromAnyResultSet(rs, 0);
+	}
+
+	public static AlgorithmExperimentValues algorithmResultValuesFromFullResultSet(
+			ResultSet rs) throws SQLException {
+		return algorithmResultValuesFromAnyResultSet(rs, 2);
+	}
+
 }

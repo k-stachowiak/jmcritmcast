@@ -3,6 +3,7 @@ package apps.topanal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,11 +57,25 @@ public class TopologyAnalysis {
 	}
 
 	public static void main(String[] args) {
+		
+		int jobs = 1;
+		if (args.length >= 2 && args[0].equals("-j")) {
+			try (Scanner scanner = new Scanner(args[1]);) {
+				if (scanner.hasNextInt()) {
+					jobs = scanner.nextInt();
+					logger.trace("Client requested {} jobs", jobs);
+				} else {
+					logger.debug("Client specified incorrect jobs parameter: \"{}\"", args[1]);
+				}
+			}
+		} else {
+			logger.debug("Client did not specify the jobs argument. {} assumed by default", jobs);
+		}
 
 		try {
 			Class.forName("org.postgresql.Driver");
 			forEachCase(Executors
-					.newFixedThreadPool(CommonConfig.threadsPerWorker));
+					.newFixedThreadPool(jobs));
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

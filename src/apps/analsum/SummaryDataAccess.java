@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.CommonDataAccess;
+import apps.alganal.AlgorithmExperiment;
 import apps.groupanal.GroupExperiment;
 import apps.topanal.TopologyExperiment;
 
@@ -79,5 +80,11 @@ public class SummaryDataAccess {
 			logger.fatal("Sql error: {}", e.getMessage());
 			return null;
 		}
+	}
+
+	public static List<AlgorithmExperiment> selectFinishedAlgorithmExperiments(
+			Connection connection) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -1,6 +1,5 @@
 package apps.topanal;
 
-import helpers.PathMetric;
 import helpers.TopologyAnalyser;
 
 import java.sql.Connection;
@@ -93,18 +92,22 @@ public class TopologyAnalysisRunnable implements Runnable {
 		}
 		TopologyResultDataAccess.update(connection, experimentCase,
 				experimentValues);
-
+		/*
 		if (experimentValues.getDiameterHop() == null
 				|| experimentValues.getDiameterCost() == null) {
 			timeMeasurement.begin();
+			
 			PathMetric diameterResult = TopologyAnalyser.diameter(graph);
 			experimentValues.setDiameterHop(diameterResult.getHop());
 			experimentValues.setDiameterCost(diameterResult.getCost());
 			timeMeasurement.end();
 			logger.debug("Computed graph diameter in {}",
 					timeMeasurement.getDurationString());
+			
 		}
 		TopologyResultDataAccess.update(connection, experimentCase,
 				experimentValues);
+		*/
+		logger.debug("Skipping diameter metrics due to computation constraints.");
 	}
 }
