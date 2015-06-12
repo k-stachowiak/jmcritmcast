@@ -77,17 +77,13 @@ public class MultiCostDrainApp {
 			MultiCostDrainExecutor exec) {
 
 		final TimeMeasurement timeMeasurement = new TimeMeasurement();
-		final StringBuilder resultString = new StringBuilder();
 		final PrintWriter debugWriter = new PrintWriter(System.err, true);
+		final PrintWriter outWriter = new PrintWriter(System.out, true);
 		final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM HH:mm:ss");
 
 		final Map<Integer, String> streamerNames = new HashMap<>();
-		streamerNames.put(100, "n_100_W___1000");
-		streamerNames.put(200, "n_200_W___1000");
-		streamerNames.put(300, "n_300_W___1000");
-		streamerNames.put(400, "n_400_W___1000");
-		streamerNames.put(500, "n_500_W___1000");
-		streamerNames.put(1000, "n_1000_W___1000");
+		streamerNames.put(100, "LMST_100_L___1000");
+		streamerNames.put(200, "LMST_200_L___1000");
 
 		final GraphFactory graphFactory = new AdjacencyListFactory();
 		final MetricRedistribution metricRedistribution = new MetricRedistributionImpl(
@@ -198,21 +194,16 @@ public class MultiCostDrainApp {
 							debugWriter.println(" Elapsed : "
 									+ timeMeasurement.getDurationString());
 
-							resultString.append(partialResultStringBuilder);
+							outWriter.print(partialResultStringBuilder.toString());
 						}
 					}
 				}
 			}
-		}
-
-		PrintWriter outWriter = new PrintWriter(System.out, true);
-		outWriter.print(resultString.toString());
+		}		
+		
 		outWriter.close();
-
 		debugWriter.println("Terminated normally");
-
 		debugWriter.close();
-
 	}
 
 	private static InputGraphStreamer prepareGraphStreamer(
