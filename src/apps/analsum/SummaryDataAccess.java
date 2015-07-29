@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.CommonDataAccess;
+import apps.alganal.AlgorithmExperiment;
 import apps.groupanal.GroupExperiment;
 import apps.topanal.TopologyExperiment;
 
@@ -70,6 +71,37 @@ public class SummaryDataAccess {
 				result.add(new GroupExperiment(CommonDataAccess
 						.groupResultCaseFromResultSet(rs), CommonDataAccess
 						.groupResultValuesFromFullResultSet(rs)));
+			}
+
+			return result;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.fatal("Sql error: {}", e.getMessage());
+			return null;
+		}
+	}
+
+	public static List<AlgorithmExperiment> selectFinishedAlgorithmExperiments(
+			Connection connection) {
+		try (PreparedStatement prStatement = connection
+				.prepareStatement("SELECT "
+						+ "type, nodes, group_size, group_type, graph_index, constraint_base, tree_finder_type, "
+						+ "first_costs, success_count "
+						+ "FROM alg_anal_results "
+						+ "WHERE "
+						+ "success_count <> -1")) {
+
+			ArrayList<AlgorithmExperiment> result = new ArrayList<>();
+
+			logger.trace("About to execute statement: {}",
+					prStatement.toString());
+			ResultSet rs = prStatement.executeQuery();
+
+			while (rs.next()) {
+				result.add(new AlgorithmExperiment(CommonDataAccess
+						.algorithmResultCaseFromResultSet(rs), CommonDataAccess
+						.algorithmResultValuesFromFullResultSet(rs)));
 			}
 
 			return result;

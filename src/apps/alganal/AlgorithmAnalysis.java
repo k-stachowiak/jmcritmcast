@@ -22,33 +22,32 @@ public class AlgorithmAnalysis {
 	private static final Logger logger = LogManager
 			.getLogger(AlgorithmAnalysis.class);
 
-	private static final int neededGraphResults = 20;
+	private static final int neededGraphResults = 5;
 
 	private static void forEachCase(ExecutorService executor) {
 
 		try (Connection connection = DriverManager.getConnection(
 				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
 
-			for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
+			for (Integer nodesCount : CommonConfig.nodesCounts) {
 
-				for (Integer nodesCount : CommonConfig.nodesCounts) {
+				for (TopologyType tType : TopologyType.values()) {
 
-					for (TopologyType tType : TopologyType.values()) {
+					if (nodesCount < 3037 && tType == TopologyType.Inet) {
+						logger.trace("Too small graph for INET to support -- skipping.");
+						continue;
+					}
 
-						if (nodesCount < 3037 && tType == TopologyType.Inet) {
-							logger.trace("Too small graph for INET to support -- skipping.");
-							continue;
-						}
+					for (Integer groupSize : CommonConfig.groupSizes) {
 
-						for (Integer groupSize : CommonConfig.groupSizes) {
+						for (NodeGroupperType gType : NodeGroupperType.values()) {
 
-							for (NodeGroupperType gType : NodeGroupperType
-									.values()) {
+							for (double constraintsBase : CommonConfig.constraintBases) {
 
-								for (double constraintsBase : CommonConfig.constraintBases) {
+								for (TreeFinderType treeFinderType : TreeFinderType
+										.values()) {
 
-									for (TreeFinderType treeFinderType : TreeFinderType
-											.values()) {
+									for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
 
 										executor.submit(new AlgorithmAnalysisRunnable(
 												new AlgorithmExperimentCase(
