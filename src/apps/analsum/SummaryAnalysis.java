@@ -24,14 +24,13 @@ import dal.TopologyType;
 
 public class SummaryAnalysis {
 
-	private static final Logger logger = LogManager
-			.getLogger(SummaryAnalysis.class);
+	private static final Logger logger = LogManager.getLogger(SummaryAnalysis.class);
 
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			//printTopologySummary(System.out);
-			//printGroupSummary(System.out);
+			// printTopologySummary(System.out);
+			// printGroupSummary(System.out);
 			printAlgorithmSummary(System.out);
 
 		} catch (ClassNotFoundException e) {
@@ -39,36 +38,28 @@ public class SummaryAnalysis {
 		}
 	}
 
-	private static void printGroupSummaryForAttribute(PrintStream out,
-			SummaryGroupResultTable resultsTable,
+	private static void printGroupSummaryForAttribute(PrintStream out, SummaryGroupResultTable resultsTable,
 			SummaryGroupResultAttributeSelector attributeSelector) {
 		/*
-		 * Expected data:
-		 * for(topology type 1, nodes count 1)
-		 * M	groupper1	groupper2	...
-		 * 4	attr		attr		...
-		 * 8	attr		attr		...
-		 * ...	...			...			...
+		 * Expected data: for(topology type 1, nodes count 1) M groupper1
+		 * groupper2 ... 4 attr attr ... 8 attr attr ... ... ... ... ...
 		 * 
 		 * ...
 		 * 
-		 * for(topology type x, nodes count y)
-		 * ...
+		 * for(topology type x, nodes count y) ...
 		 */
 
 		for (TopologyType topologyType : TopologyType.values()) {
 			for (int nodesCount : CommonConfig.nodesCounts) {
 
 				// 1. Print table header
-				out.printf("Attribute: %s, Topology: %s, Nodes count: %d",
-						attributeSelector.getName(), topologyType.toString(),
-						nodesCount);
+				out.printf("Attribute: %s, Topology: %s, Nodes count: %d", attributeSelector.getName(),
+						topologyType.toString(), nodesCount);
 				out.println();
 
 				// 2. Print data header
 				out.print("M\t");
-				for (NodeGroupperType nodeGroupperType : NodeGroupperType
-						.values()) {
+				for (NodeGroupperType nodeGroupperType : NodeGroupperType.values()) {
 					out.printf("%s(n)\t", nodeGroupperType.toString());
 					out.printf("%s(mean)\t", nodeGroupperType.toString());
 					out.printf("%s(ci)\t", nodeGroupperType.toString());
@@ -81,22 +72,16 @@ public class SummaryAnalysis {
 					Iterator<Entry<NodeGroupperType, SummaryGroupResults>> rowIterator = resultsTable
 							.selectRow(topologyType, nodesCount, groupSize);
 					while (rowIterator.hasNext()) {
-						Entry<NodeGroupperType, SummaryGroupResults> entry = rowIterator
-								.next();
-						SummaryStatistics attribute = attributeSelector
-								.select(entry.getValue());
+						Entry<NodeGroupperType, SummaryGroupResults> entry = rowIterator.next();
+						SummaryStatistics attribute = attributeSelector.select(entry.getValue());
 
 						if (attribute.getN() == 0) {
 							out.print("0\t-\t-\t");
 						} else if (attribute.getN() == 1) {
 							out.printf("1\t%f\t-\t", attribute.getMean());
 						} else {
-							out.printf(
-									"%d\t%f\t%f\t",
-									attribute.getN(),
-									attribute.getMean(),
-									getConfidenceIntervalWidth(attribute,
-											CommonConfig.significance));
+							out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
+									getConfidenceIntervalWidth(attribute, CommonConfig.significance));
 						}
 					}
 					out.println();
@@ -109,13 +94,11 @@ public class SummaryAnalysis {
 
 		SummaryGroupResultTable resultsTable = new SummaryGroupResultTable();
 
-		try (Connection connection = DriverManager.getConnection(
-				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
+		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
+				CommonConfig.dbPass);) {
 
-			for (GroupExperiment experiment : SummaryDataAccess
-					.selectFinishedGroupExperiments(connection)) {
-				SummaryGroupResults results = resultsTable
-						.selectResults(experiment.getExperimentCase());
+			for (GroupExperiment experiment : SummaryDataAccess.selectFinishedGroupExperiments(connection)) {
+				SummaryGroupResults results = resultsTable.selectResults(experiment.getExperimentCase());
 				results.insert(experiment.getExperimentValues());
 			}
 
@@ -124,28 +107,20 @@ public class SummaryAnalysis {
 			logger.fatal("Sql error: {}", e.getMessage());
 		}
 
+		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.Degree());
+		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.DiameterHop());
+		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.DiameterCost());
 		printGroupSummaryForAttribute(out, resultsTable,
-				new SummaryGroupResultAttributeSelectorDegree());
-		printGroupSummaryForAttribute(out, resultsTable,
-				new SummaryGroupResultAttributeSelectorDiameterHop());
-		printGroupSummaryForAttribute(out, resultsTable,
-				new SummaryGroupResultAttributeSelectorDiameterCost());
-		printGroupSummaryForAttribute(out, resultsTable,
-				new SummaryGroupResultAttributeSelectorClusteringCoefficient());
-		printGroupSummaryForAttribute(out, resultsTable,
-				new SummaryGroupResultAttributeSelectorDensity());
+				new SummaryGroupResultAttributeSelector.ClusteringCoefficient());
+		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.Density());
 	}
 
-	private static void printTopologySummaryForAttribute(PrintStream out,
-			SummaryTopologyResultTable resultsTable,
+	private static void printTopologySummaryForAttribute(PrintStream out, SummaryTopologyResultTable resultsTable,
 			SummaryTopologyResultAttributeSelector attributeSelector) {
 
-		/* 
-		 * Expected data:
-		 * N	top1	top2	...
-		 * 50	attr	attr	...
-		 * 150  attr	attr	...
-		 * ...	...		...		...
+		/*
+		 * Expected data: N top1 top2 ... 50 attr attr ... 150 attr attr ... ...
+		 * ... ... ...
 		 */
 
 		// 1. Print table header
@@ -164,25 +139,18 @@ public class SummaryAnalysis {
 		// 3. Print data rows
 		for (int nodesCount : CommonConfig.nodesCounts) {
 			out.printf("%d\t", nodesCount);
-			Iterator<Entry<TopologyType, SummaryTopologyResults>> rowIterator = resultsTable
-					.selectRow(nodesCount);
+			Iterator<Entry<TopologyType, SummaryTopologyResults>> rowIterator = resultsTable.selectRow(nodesCount);
 			while (rowIterator.hasNext()) {
-				Entry<TopologyType, SummaryTopologyResults> entry = rowIterator
-						.next();
-				SummaryStatistics attribute = attributeSelector.select(entry
-						.getValue());
+				Entry<TopologyType, SummaryTopologyResults> entry = rowIterator.next();
+				SummaryStatistics attribute = attributeSelector.select(entry.getValue());
 
 				if (attribute.getN() == 0) {
 					out.print("0\t-\t-\t");
 				} else if (attribute.getN() == 1) {
 					out.printf("1\t%f\t-\t", attribute.getMean());
 				} else {
-					out.printf(
-							"%d\t%f\t%f\t",
-							attribute.getN(),
-							attribute.getMean(),
-							getConfidenceIntervalWidth(attribute,
-									CommonConfig.significance));
+					out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
+							getConfidenceIntervalWidth(attribute, CommonConfig.significance));
 				}
 			}
 			out.println();
@@ -194,13 +162,11 @@ public class SummaryAnalysis {
 
 		SummaryTopologyResultTable resultsTable = new SummaryTopologyResultTable();
 
-		try (Connection connection = DriverManager.getConnection(
-				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
+		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
+				CommonConfig.dbPass);) {
 
-			for (TopologyExperiment experiment : SummaryDataAccess
-					.selectFinishedTopologyExperiments(connection)) {
-				SummaryTopologyResults results = resultsTable
-						.selectResults(experiment.getExperimentCase());
+			for (TopologyExperiment experiment : SummaryDataAccess.selectFinishedTopologyExperiments(connection)) {
+				SummaryTopologyResults results = resultsTable.selectResults(experiment.getExperimentCase());
 				results.insert(experiment.getExperimentValues());
 			}
 
@@ -209,52 +175,38 @@ public class SummaryAnalysis {
 			logger.fatal("Sql error: {}", e.getMessage());
 		}
 
+		printTopologySummaryForAttribute(out, resultsTable, new SummaryTopologyResultAttributeSelector.Degree());
+		printTopologySummaryForAttribute(out, resultsTable, new SummaryTopologyResultAttributeSelector.DiameterHop());
+		printTopologySummaryForAttribute(out, resultsTable, new SummaryTopologyResultAttributeSelector.DiameterCost());
 		printTopologySummaryForAttribute(out, resultsTable,
-				new SummaryTopologyResultAttributeSelectorDegree());
-		printTopologySummaryForAttribute(out, resultsTable,
-				new SummaryTopologyResultAttributeSelectorDiameterHop());
-		printTopologySummaryForAttribute(out, resultsTable,
-				new SummaryTopologyResultAttributeSelectorDiameterCost());
-		printTopologySummaryForAttribute(
-				out,
-				resultsTable,
-				new SummaryTopologyResultAttributeSelectorClusteringCoefficient());
+				new SummaryTopologyResultAttributeSelector.ClusteringCoefficient());
 	}
 
-	private static void printAlgorithmSummaryForAttribute(PrintStream out,
-			SummaryAlgorithmResultTable resultsTable,
+	private static void printAlgorithmSummaryForAttribute(PrintStream out, SummaryAlgorithmResultTable resultsTable,
 			SummaryAlgorithmResultAttributeSelector attributeSelector) {
 		/*
-		 * Expected data:
-		 * for(topology type 1, nodes count 1, groupper type 1, constraint base 1)
-		 * M	alg1	alg2	...
-		 * 4	attr	attr	...
-		 * 8	attr	attr	...
-		 * ...	...		...		...
+		 * Expected data: for(topology type 1, nodes count 1, groupper type 1,
+		 * constraint base 1) M alg1 alg2 ... 4 attr attr ... 8 attr attr ...
+		 * ... ... ... ...
 		 * 
 		 * ...
 		 * 
-		 * for(topology type x, nodes count y)
-		 * ...
+		 * for(topology type x, nodes count y) ...
 		 */
 		for (TopologyType topologyType : TopologyType.values()) {
 			for (int nodesCount : CommonConfig.nodesCounts) {
-				for (NodeGroupperType nodeGroupperType : NodeGroupperType
-						.values()) {
+				for (NodeGroupperType nodeGroupperType : NodeGroupperType.values()) {
 					for (double constraintBase : CommonConfig.constraintBases) {
 
 						// 1. Print table header
-						out.printf(
-								"Attribute: %s, Topology: %s, Nodes count: %d, Groupper: %s",
-								attributeSelector.getName(),
-								topologyType.toString(), nodesCount,
-								nodeGroupperType.toString());
+						out.printf("Attribute: %s, Topology: %s, Nodes count: %d, Groupper: %s, Constraint base: %f",
+								attributeSelector.getName(), topologyType.toString(), nodesCount,
+								nodeGroupperType.toString(), constraintBase);
 						out.println();
 
 						// 2. Print data header
 						out.print("M\t");
-						for (TreeFinderType treeFinderType : TreeFinderType
-								.values()) {
+						for (TreeFinderType treeFinderType : TreeFinderType.values()) {
 							out.printf("%s(n)\t", treeFinderType.toString());
 							out.printf("%s(mean)\t", treeFinderType.toString());
 							out.printf("%s(ci)\t", treeFinderType.toString());
@@ -265,28 +217,18 @@ public class SummaryAnalysis {
 						for (int groupSize : CommonConfig.groupSizes) {
 							out.printf("%d\t", groupSize);
 							Iterator<Entry<TreeFinderType, SummaryAlgorithmResults>> rowIterator = resultsTable
-									.selectRow(topologyType, nodesCount,
-											groupSize, nodeGroupperType,
-											constraintBase);
+									.selectRow(topologyType, nodesCount, groupSize, nodeGroupperType, constraintBase);
 							while (rowIterator.hasNext()) {
-								Entry<TreeFinderType, SummaryAlgorithmResults> entry = rowIterator
-										.next();
-								SummaryStatistics attribute = attributeSelector
-										.select(entry.getValue());
+								Entry<TreeFinderType, SummaryAlgorithmResults> entry = rowIterator.next();
+								SummaryStatistics attribute = attributeSelector.select(entry.getValue());
 
 								if (attribute.getN() == 0) {
 									out.print("0\t-\t-\t");
 								} else if (attribute.getN() == 1) {
-									out.printf("1\t%f\t-\t",
-											attribute.getMean());
+									out.printf("1\t%f\t-\t", attribute.getMean());
 								} else {
-									out.printf(
-											"%d\t%f\t%f\t",
-											attribute.getN(),
-											attribute.getMean(),
-											getConfidenceIntervalWidth(
-													attribute,
-													CommonConfig.significance));
+									out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
+											getConfidenceIntervalWidth(attribute, CommonConfig.significance));
 								}
 							}
 							out.println();
@@ -301,13 +243,11 @@ public class SummaryAnalysis {
 
 		SummaryAlgorithmResultTable resultsTable = new SummaryAlgorithmResultTable();
 
-		try (Connection connection = DriverManager.getConnection(
-				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
+		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
+				CommonConfig.dbPass);) {
 
-			for (AlgorithmExperiment experiment : SummaryDataAccess
-					.selectFinishedAlgorithmExperiments(connection)) {
-				SummaryAlgorithmResults results = resultsTable
-						.selectResults(experiment.getExperimentCase());
+			for (AlgorithmExperiment experiment : SummaryDataAccess.selectFinishedAlgorithmExperiments(connection)) {
+				SummaryAlgorithmResults results = resultsTable.selectResults(experiment.getExperimentCase());
 				results.insert(experiment.getExperimentValues());
 			}
 
@@ -316,23 +256,21 @@ public class SummaryAnalysis {
 			logger.fatal("Sql error: {}", e.getMessage());
 		}
 
-		printAlgorithmSummaryForAttribute(out, resultsTable,
-				new SummaryAlgorithmResultAttributeSelector.FirstCost0());
-		printAlgorithmSummaryForAttribute(out, resultsTable,
-				new SummaryAlgorithmResultAttributeSelector.FirstCost1());
-		printAlgorithmSummaryForAttribute(out, resultsTable,
-				new SummaryAlgorithmResultAttributeSelector.FirstCost2());
-		printAlgorithmSummaryForAttribute(out, resultsTable,
-				new SummaryAlgorithmResultAttributeSelector.FirstCost3());
+		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost0());
+		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost1());
+		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost2());
+		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost3());
 		printAlgorithmSummaryForAttribute(out, resultsTable,
 				new SummaryAlgorithmResultAttributeSelector.SuccessCount());
 	}
 
-	public static double getConfidenceIntervalWidth(
-			StatisticalSummary statistics, double significance) {
-		TDistribution tDist = new TDistribution(statistics.getN() - 1);
+	public static double getConfidenceIntervalWidth(double n, double stdev, double significance) {
+		TDistribution tDist = new TDistribution(n - 1);
 		double a = tDist.inverseCumulativeProbability(1.0 - significance / 2);
-		return a * statistics.getStandardDeviation()
-				/ Math.sqrt(statistics.getN());
+		return a * stdev / Math.sqrt(n);
+	}
+
+	public static double getConfidenceIntervalWidth(StatisticalSummary statistics, double significance) {
+		return getConfidenceIntervalWidth(statistics.getN(), statistics.getStandardDeviation(), significance);
 	}
 }
