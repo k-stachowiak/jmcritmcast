@@ -1,4 +1,4 @@
-package apps;
+package apps.costdrain;
 
 import helpers.gphmut.MetricRedistribution;
 import helpers.gphmut.MetricRedistributionImpl;
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
+import apps.TimeMeasurement;
 import model.topology.AdjacencyListFactory;
 import model.topology.Graph;
 import model.topology.GraphFactory;

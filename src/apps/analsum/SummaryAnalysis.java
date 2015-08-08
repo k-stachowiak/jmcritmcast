@@ -30,8 +30,8 @@ public class SummaryAnalysis {
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			// printTopologySummary(System.out);
-			// printGroupSummary(System.out);
+			//printTopologySummary(System.out);
+			//printGroupSummary(System.out);
 			printAlgorithmSummary(System.out);
 
 		} catch (ClassNotFoundException e) {

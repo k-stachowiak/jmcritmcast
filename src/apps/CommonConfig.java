@@ -21,5 +21,5 @@ public class CommonConfig {
 
 	public static String dbUri = "jdbc:postgresql://localhost:5432/phd";
 	public static String dbUser = "postgres";
-	public static String dbPass = "admin";
+	public static String dbPass = "postgres";
 }

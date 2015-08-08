@@ -1,4 +1,4 @@
-package apps;
+package apps.costdrain;
 
 import helpers.OspfCostResourceTranslation;
 import helpers.TopologyAnalyser;

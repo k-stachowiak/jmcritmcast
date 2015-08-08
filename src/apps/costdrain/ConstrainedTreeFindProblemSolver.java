@@ -1,4 +1,4 @@
-package apps;
+package apps.costdrain;
 
 import helpers.ConstraintsComparer;
 import helpers.PathAggregator;
