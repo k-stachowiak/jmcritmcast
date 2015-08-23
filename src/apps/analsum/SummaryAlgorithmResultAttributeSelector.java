@@ -12,7 +12,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public String getName() {
-			return "Metric0";
+			return "m_0";
 		}
 
 		@Override
@@ -29,7 +29,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public String getName() {
-			return "Metric1";
+			return "m_1";
 		}
 
 		@Override
@@ -46,7 +46,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public String getName() {
-			return "Metric2";
+			return "m_2";
 		}
 
 		@Override
@@ -63,7 +63,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public String getName() {
-			return "Metric3";
+			return "m_3";
 		}
 
 		@Override
@@ -81,7 +81,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public String getName() {
-			return "SuccessCount";
+			return "succ";
 		}
 
 		@Override

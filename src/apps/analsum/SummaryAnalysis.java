@@ -1,12 +1,12 @@
 package apps.analsum;
 
-import helpers.nodegrp.NodeGroupperType;
-
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.distribution.TDistribution;
@@ -15,12 +15,12 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import tfind.TreeFinderType;
 import apps.CommonConfig;
 import apps.alganal.AlgorithmExperiment;
 import apps.groupanal.GroupExperiment;
 import apps.topanal.TopologyExperiment;
 import dal.TopologyType;
+import helpers.nodegrp.NodeGroupperType;
 
 public class SummaryAnalysis {
 
@@ -29,8 +29,8 @@ public class SummaryAnalysis {
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			// printTopologySummary(System.out);
-			// printGroupSummary(System.out);
+			printTopologySummary(System.out);
+			printGroupSummary(System.out);
 			printAlgorithmSummary(System.out);
 
 		} catch (ClassNotFoundException e) {
@@ -117,45 +117,7 @@ public class SummaryAnalysis {
 
 	private static void printTopologySummaryForAttribute(PrintStream out, SummaryTopologyResultTable resultsTable,
 			SummaryTopologyResultAttributeSelector attributeSelector) {
-
-		/*
-		 * Expected data: N top1 top2 ... 50 attr attr ... 150 attr attr ... ...
-		 * ... ... ...
-		 */
-
-		// 1. Print table header
-		out.printf("Attribute: %s", attributeSelector.getName());
-		out.println();
-
-		// 2. Print data header
-		out.print("N\t");
-		for (TopologyType topologyType : TopologyType.values()) {
-			out.printf("%s(n)\t", topologyType.toString());
-			out.printf("%s(mean)\t", topologyType.toString());
-			out.printf("%s(ci)\t", topologyType.toString());
-		}
-		out.println();
-
-		// 3. Print data rows
-		for (int nodesCount : CommonConfig.nodesCounts) {
-			out.printf("%d\t", nodesCount);
-			Iterator<Entry<TopologyType, SummaryTopologyResults>> rowIterator = resultsTable.selectRow(nodesCount);
-			while (rowIterator.hasNext()) {
-				Entry<TopologyType, SummaryTopologyResults> entry = rowIterator.next();
-				SummaryStatistics attribute = attributeSelector.select(entry.getValue());
-
-				if (attribute.getN() == 0) {
-					out.print("0\t-\t-\t");
-				} else if (attribute.getN() == 1) {
-					out.printf("1\t%f\t-\t", attribute.getMean());
-				} else {
-					out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
-							getConfidenceIntervalWidth(attribute, CommonConfig.significance));
-				}
-			}
-			out.println();
-		}
-
+		(new SummaryTopologyReportPrintStream(out)).perform(resultsTable, attributeSelector);
 	}
 
 	private static void printTopologySummary(PrintStream out) {
@@ -182,61 +144,10 @@ public class SummaryAnalysis {
 				new SummaryTopologyResultAttributeSelector.ClusteringCoefficient());
 	}
 
-	private static void printAlgorithmSummaryForAttribute(PrintStream out, SummaryAlgorithmResultTable resultsTable,
-			SummaryAlgorithmResultAttributeSelector attributeSelector) {
-		/*
-		 * Expected data: for(topology type 1, nodes count 1, groupper type 1,
-		 * constraint base 1) M alg1 alg2 ... 4 attr attr ... 8 attr attr ...
-		 * ... ... ... ...
-		 * 
-		 * ...
-		 * 
-		 * for(topology type x, nodes count y) ...
-		 */
-		for (TopologyType topologyType : TopologyType.values()) {
-			for (int nodesCount : CommonConfig.nodesCounts) {
-				for (NodeGroupperType nodeGroupperType : NodeGroupperType.values()) {
-					for (double constraintBase : CommonConfig.constraintBases) {
-
-						// 1. Print table header
-						out.printf("Attribute: %s, Topology: %s, Nodes count: %d, Groupper: %s, Constraint base: %f",
-								attributeSelector.getName(), topologyType.toString(), nodesCount,
-								nodeGroupperType.toString(), constraintBase);
-						out.println();
-
-						// 2. Print data header
-						out.print("M\t");
-						for (TreeFinderType treeFinderType : TreeFinderType.values()) {
-							out.printf("%s(n)\t", treeFinderType.toString());
-							out.printf("%s(mean)\t", treeFinderType.toString());
-							out.printf("%s(ci)\t", treeFinderType.toString());
-						}
-						out.println();
-
-						// 3. Print data rows
-						for (int groupSize : CommonConfig.groupSizes) {
-							out.printf("%d\t", groupSize);
-							Iterator<Entry<TreeFinderType, SummaryAlgorithmResults>> rowIterator = resultsTable
-									.selectRow(topologyType, nodesCount, groupSize, nodeGroupperType, constraintBase);
-							while (rowIterator.hasNext()) {
-								Entry<TreeFinderType, SummaryAlgorithmResults> entry = rowIterator.next();
-								SummaryStatistics attribute = attributeSelector.select(entry.getValue());
-
-								if (attribute.getN() == 0) {
-									out.print("0\t-\t-\t");
-								} else if (attribute.getN() == 1) {
-									out.printf("1\t%f\t-\t", attribute.getMean());
-								} else {
-									out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
-											getConfidenceIntervalWidth(attribute, CommonConfig.significance));
-								}
-							}
-							out.println();
-						}
-					}
-				}
-			}
-		}
+	private static void printAlgorithmSummaryForAttributes(PrintStream out, SummaryAlgorithmResultTable resultsTable,
+			List<SummaryAlgorithmResultAttributeSelector> attributeSelectors) {
+		(new SummaryAlgorithmReportPrintStream(out)).perform(resultsTable, attributeSelectors);
+		(new SummaryAlgorithmReportGnuplot()).perform(resultsTable, attributeSelectors);
 	}
 
 	private static void printAlgorithmSummary(PrintStream out) {
@@ -256,12 +167,18 @@ public class SummaryAnalysis {
 			logger.fatal("Sql error: {}", e.getMessage());
 		}
 
-		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost0());
-		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost1());
-		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost2());
-		printAlgorithmSummaryForAttribute(out, resultsTable, new SummaryAlgorithmResultAttributeSelector.FirstCost3());
-		printAlgorithmSummaryForAttribute(out, resultsTable,
-				new SummaryAlgorithmResultAttributeSelector.SuccessCount());
+		printAlgorithmSummaryForAttributes(out, resultsTable,
+				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.FirstCost0(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost1(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost2(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost3()));
+
+		printAlgorithmSummaryForAttributes(out, resultsTable,
+				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.FirstCost0(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost1()));
+
+		printAlgorithmSummaryForAttributes(out, resultsTable,
+				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.SuccessCount()));
 	}
 
 	public static double getConfidenceIntervalWidth(double n, double stdev, double significance) {
