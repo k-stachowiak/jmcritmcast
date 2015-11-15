@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.algo;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -6,8 +6,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.CommonConfig;
+import apps.analsum.SummaryUtils;
 import dal.TopologyType;
-import helpers.gnuplot.GnuPlotResult;
+import helpers.gnuplot.GnuPlotLines;
 import helpers.nodegrp.NodeGroupperType;
 import tfind.TreeFinderType;
 
@@ -31,7 +33,7 @@ public class SummaryAlgorithmReportGnuplot extends SummaryAlgorithmReportTemplat
 
 		StringBuilder filenameBaseBuilder = new StringBuilder();
 
-		filenameBaseBuilder.append(String.format("%s_%d_%s_%d", topologyType.toString(), nodesCount,
+		filenameBaseBuilder.append(String.format("alg_%s_%d_%s_%d", topologyType.toString(), nodesCount,
 				nodeGroupperType.toString(), (int) constraintBase));
 		filenameBaseBuilder.append('_');
 		for (SummaryAlgorithmResultAttributeSelector attributeSelector : attributeSelectors) {
@@ -92,15 +94,15 @@ public class SummaryAlgorithmReportGnuplot extends SummaryAlgorithmReportTemplat
 	@Override
 	protected void onDone() {
 
-		GnuplotUtils.createDirIfNotExists();
+		SummaryUtils.createDirIfNotExists(CommonConfig.GNUPLOT_DIR_NAME);
 
 		try {
 			PrintStream scriptWriter = new PrintStream(
-					new FileOutputStream(String.format("%s/%s.gp", GnuplotUtils.DIR_NAME, filenameBase)));
+					new FileOutputStream(String.format("%s/%s.gp", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 			PrintStream dataWriter = new PrintStream(
-					new FileOutputStream(String.format("%s/%s.txt", GnuplotUtils.DIR_NAME, filenameBase)));
+					new FileOutputStream(String.format("%s/%s.txt", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 
-			GnuPlotResult result = new GnuPlotResult(filenameBase, xLabel, yLabel, domainHeader, domain,
+			GnuPlotLines result = new GnuPlotLines(filenameBase, xLabel, yLabel, domainHeader, domain,
 					dataHeaders, data, inGroup);
 
 			result.writeGnuplotScript(scriptWriter);

@@ -94,7 +94,7 @@ public class TopologyAnalysisRunnable implements Runnable {
 		TopologyResultDataAccess.update(connection, experimentCase,
 				experimentValues);
 		
-		if (experimentCase.getNodesCount() > 1500) {
+		if (experimentCase.getNodesCount() > 3037) {
 			logger.trace("Graph too big for complete analysis -- skipping diameter computeation.");
 			return;
 		}

@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.group;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -6,10 +6,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import apps.CommonConfig;
+import apps.analsum.SummaryUtils;
 import dal.TopologyType;
-import helpers.gnuplot.GnuPlotResult;
+import helpers.gnuplot.GnuPlotLines;
+import helpers.nodegrp.NodeGroupperType;
 
-public class SummaryTopologyReportGnuplot extends SummaryTopologyReportTemplate {
+public class SummaryGroupReportGroupSizeGnuplot extends SummaryGroupReportGroupSizeTemplate {
 
 	private String filenameBase;
 	private String xLabel;
@@ -24,27 +27,28 @@ public class SummaryTopologyReportGnuplot extends SummaryTopologyReportTemplate 
 	private int inGroup;
 
 	@Override
-	protected void onInit(SummaryTopologyResultAttributeSelector attributeSelector) {
-
+	protected void onInit(SummaryGroupResultAttributeSelector attributeSelector, TopologyType topologyType,
+			int nodesCount) {
 		StringBuilder filenameBaseBuilder = new StringBuilder();
 
-		filenameBaseBuilder.append(String.format("top_%s", attributeSelector.getName()));
-
-		xLabel = "Topology size";
+		filenameBaseBuilder.append(String.format("grp_grp_%s_%d_%s", topologyType.toString(), nodesCount, attributeSelector.getName()));
+		filenameBase = filenameBaseBuilder.toString();
+		
+		xLabel = "Multicast group size";
 		yLabel = String.format("%s value", attributeSelector.getName());
-
+		
 		domainHeader = "N";
 		domain = new ArrayList<>();
-
+		
 		dataHeaders = new ArrayList<>();
 		data = new ArrayList<>();
-
+		
 		inGroup = 1;
 	}
 
 	@Override
-	protected void onDataHeader(TopologyType topologyType) {
-		dataHeaders.add(String.format("\"%s\"", topologyType.toString()));
+	protected void onDataHeader(NodeGroupperType nodeGroupperType) {
+		dataHeaders.add(String.format("\"%s\"", nodeGroupperType.toString()));
 		dataHeaders.add(String.format("CI"));
 	}
 
@@ -53,9 +57,8 @@ public class SummaryTopologyReportGnuplot extends SummaryTopologyReportTemplate 
 	}
 
 	@Override
-	protected void onDataRowBegin(int nodesCount) {
-		domain.add((double) nodesCount);
-
+	protected void onDataRowBegin(int groupSize) {
+		domain.add((double) groupSize);
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class SummaryTopologyReportGnuplot extends SummaryTopologyReportTemplate 
 	}
 
 	@Override
-	protected void onDataMultiple(double n, double mean, double confidenceIntervalWidth) {
+	protected void onDataMultiple(long n, double mean, double confidenceIntervalWidth) {
 		data.add(mean);
 		data.add(confidenceIntervalWidth);
 	}
@@ -83,15 +86,15 @@ public class SummaryTopologyReportGnuplot extends SummaryTopologyReportTemplate 
 	@Override
 	protected void onDone() {
 
-		GnuplotUtils.createDirIfNotExists();
+		SummaryUtils.createDirIfNotExists(CommonConfig.GNUPLOT_DIR_NAME);
 
 		try {
 			PrintStream scriptWriter = new PrintStream(
-					new FileOutputStream(String.format("%s/%s.gp", GnuplotUtils.DIR_NAME, filenameBase)));
+					new FileOutputStream(String.format("%s/%s.gp", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 			PrintStream dataWriter = new PrintStream(
-					new FileOutputStream(String.format("%s/%s.txt", GnuplotUtils.DIR_NAME, filenameBase)));
+					new FileOutputStream(String.format("%s/%s.txt", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 
-			GnuPlotResult result = new GnuPlotResult(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
+			GnuPlotLines result = new GnuPlotLines(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
 					data, inGroup);
 
 			result.writeGnuplotScript(scriptWriter);

@@ -15,7 +15,7 @@ import dal.TopologyType;
 
 public class TopologyAnalysis {
 
-	private static final int neededGraphResults = 30;
+	private static final int neededGraphResults = 10;
 
 	private static final Logger logger = LogManager
 			.getLogger(TopologyAnalysis.class);

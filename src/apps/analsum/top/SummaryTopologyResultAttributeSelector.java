@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.top;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 

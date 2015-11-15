@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.algo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import apps.CommonConfig;
+import apps.analsum.SummaryUtils;
 import dal.TopologyType;
 import helpers.nodegrp.NodeGroupperType;
 import tfind.TreeFinderType;

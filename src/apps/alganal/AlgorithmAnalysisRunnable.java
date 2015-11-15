@@ -1,5 +1,17 @@
 package apps.alganal;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import apps.TimeMeasurement;
+import dal.TopologyDAO;
+import dto.GraphDTO;
 import helpers.ConstraintsComparer;
 import helpers.OspfCostResourceTranslation;
 import helpers.PathAggregator;
@@ -11,22 +23,11 @@ import helpers.nodegrp.CentroidNodeGroupper;
 import helpers.nodegrp.DegreeNodeGroupper;
 import helpers.nodegrp.NodeGroupper;
 import helpers.nodegrp.RandomNodeGroupper;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import model.topology.AdjacencyListFactory;
 import model.topology.Graph;
 import model.topology.GraphFactory;
 import model.topology.Node;
 import model.topology.Tree;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import pfnd.PathFinderFactory;
 import pfnd.PathFinderFactoryImpl;
 import pfnd.mlarac.ExpensiveNonBreakingPathSubstitutor;
@@ -38,9 +39,6 @@ import tfind.hmcmc.HmcmcTreeFinder;
 import tfind.paggr.ConstrainedPathAggrTreeFinder;
 import tfind.prim.PrimTreeFinder;
 import tfind.rdp.RdpQuasiExact;
-import apps.TimeMeasurement;
-import dal.TopologyDAO;
-import dto.GraphDTO;
 
 public class AlgorithmAnalysisRunnable implements Runnable {
 

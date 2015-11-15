@@ -17,19 +17,18 @@ import dal.TopologyType;
 
 public class GroupAnalysis {
 
-	private static final int neededGraphResults = 30;
+	private static final int neededGraphResults = 15;
 
-	private static final Logger logger = LogManager
-			.getLogger(GroupAnalysis.class);
+	private static final Logger logger = LogManager.getLogger(GroupAnalysis.class);
 
 	private static void forEachCase(ExecutorService executor) {
 
-		try (Connection connection = DriverManager.getConnection(
-				CommonConfig.dbUri, CommonConfig.dbUser, CommonConfig.dbPass);) {
+		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
+				CommonConfig.dbPass);) {
 
-			for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
+			for (Integer nodesCount : CommonConfig.nodesCounts) {
 
-				for (Integer nodesCount : CommonConfig.nodesCounts) {
+				for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
 
 					for (TopologyType tType : TopologyType.values()) {
 
@@ -39,19 +38,17 @@ public class GroupAnalysis {
 						}
 
 						for (Integer groupSize : CommonConfig.groupSizes) {
-							for (NodeGroupperType gType : NodeGroupperType
-									.values()) {
+							for (NodeGroupperType gType : NodeGroupperType.values()) {
 
 								executor.submit(new GroupAnalysisRunnable(
-										new GroupExperimentCase(tType,
-												nodesCount, groupSize, gType,
-												graphIndex), connection));
+										new GroupExperimentCase(tType, nodesCount, groupSize, gType, graphIndex),
+										connection));
 							}
 						}
 					}
 				}
 			}
-			
+
 			executor.shutdown();
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 
@@ -67,8 +64,7 @@ public class GroupAnalysis {
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			forEachCase(Executors
-					.newFixedThreadPool(CommonConfig.threadsPerWorker));
+			forEachCase(Executors.newFixedThreadPool(CommonConfig.threadsPerWorker));
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

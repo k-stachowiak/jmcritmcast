@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.top;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

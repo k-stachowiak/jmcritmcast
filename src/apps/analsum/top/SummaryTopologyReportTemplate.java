@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.top;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import apps.CommonConfig;
+import apps.analsum.SummaryUtils;
 import dal.TopologyType;
 
 public abstract class SummaryTopologyReportTemplate {

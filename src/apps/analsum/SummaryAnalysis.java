@@ -7,20 +7,34 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.CommonConfig;
 import apps.alganal.AlgorithmExperiment;
+import apps.analsum.algo.SummaryAlgorithmReportGnuplot;
+import apps.analsum.algo.SummaryAlgorithmReportPrintStream;
+import apps.analsum.algo.SummaryAlgorithmResultAttributeSelector;
+import apps.analsum.algo.SummaryAlgorithmResultTable;
+import apps.analsum.group.SummaryGroupReportGraphSizeGnuplot;
+import apps.analsum.group.SummaryGroupReportGroupSizePrintStream;
+import apps.analsum.group.SummaryGroupResultAttributeSelector;
+import apps.analsum.group.SummaryGroupResultGraphSizeTable;
+import apps.analsum.group.SummaryGroupResultGroupSizeTable;
+import apps.analsum.top.SummaryTopologyReportGnuplot;
+import apps.analsum.top.SummaryTopologyReportPrintStream;
+import apps.analsum.top.SummaryTopologyResultAttributeSelector;
+import apps.analsum.top.SummaryTopologyResultTable;
 import apps.groupanal.GroupExperiment;
 import apps.topanal.TopologyExperiment;
+import dal.TopologyDAO;
+import dal.TopologyDAO.EdgeStatistic;
 import dal.TopologyType;
-import helpers.nodegrp.NodeGroupperType;
 
 public class SummaryAnalysis {
 
@@ -29,77 +43,64 @@ public class SummaryAnalysis {
 	public static void main(String[] args) {
 		try {
 			Class.forName("org.postgresql.Driver");
-			printTopologySummary(System.out);
-			printGroupSummary(System.out);
-			printAlgorithmSummary(System.out);
+			// printTopologySummary(System.out);
+			// printGroupSummary(System.out);
+			// printAlgorithmSummary(System.out);
+			printMetricsSummary(System.out);
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void printGroupSummaryForAttribute(PrintStream out, SummaryGroupResultTable resultsTable,
-			SummaryGroupResultAttributeSelector attributeSelector) {
-		/*
-		 * Expected data: for(topology type 1, nodes count 1) M groupper1
-		 * groupper2 ... 4 attr attr ... 8 attr attr ... ... ... ... ...
-		 * 
-		 * ...
-		 * 
-		 * for(topology type x, nodes count y) ...
-		 */
+	private static void printMetricsSummary(PrintStream out) {
+		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
+				CommonConfig.dbPass);) {
 
-		for (TopologyType topologyType : TopologyType.values()) {
-			for (int nodesCount : CommonConfig.nodesCounts) {
+			TopologyDAO topologyDao = new TopologyDAO(connection);
 
-				// 1. Print table header
-				out.printf("Attribute: %s, Topology: %s, Nodes count: %d", attributeSelector.getName(),
-						topologyType.toString(), nodesCount);
-				out.println();
+			EdgeStatistic statisticBarabasi50 = topologyDao.selectStatistics(TopologyType.ASBarabasi, 50, 0.1);
+			Map<Double, Integer> histogramBarabasi50 = statisticBarabasi50.getMetric1().getHistogram();
+			printHistogram(histogramBarabasi50);
 
-				// 2. Print data header
-				out.print("M\t");
-				for (NodeGroupperType nodeGroupperType : NodeGroupperType.values()) {
-					out.printf("%s(n)\t", nodeGroupperType.toString());
-					out.printf("%s(mean)\t", nodeGroupperType.toString());
-					out.printf("%s(ci)\t", nodeGroupperType.toString());
-				}
-				out.println();
+			EdgeStatistic statisticWaxman50 = topologyDao.selectStatistics(TopologyType.ASWaxman, 50, 0.1);
+			Map<Double, Integer> histogramWaxman50 = statisticWaxman50.getMetric1().getHistogram();
+			printHistogram(histogramWaxman50);
 
-				// 3. Print data rows
-				for (int groupSize : CommonConfig.groupSizes) {
-					out.printf("%d\t", groupSize);
-					Iterator<Entry<NodeGroupperType, SummaryGroupResults>> rowIterator = resultsTable
-							.selectRow(topologyType, nodesCount, groupSize);
-					while (rowIterator.hasNext()) {
-						Entry<NodeGroupperType, SummaryGroupResults> entry = rowIterator.next();
-						SummaryStatistics attribute = attributeSelector.select(entry.getValue());
-
-						if (attribute.getN() == 0) {
-							out.print("0\t-\t-\t");
-						} else if (attribute.getN() == 1) {
-							out.printf("1\t%f\t-\t", attribute.getMean());
-						} else {
-							out.printf("%d\t%f\t%f\t", attribute.getN(), attribute.getMean(),
-									getConfidenceIntervalWidth(attribute, CommonConfig.significance));
-						}
-					}
-					out.println();
-				}
-			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.fatal("Sql error: {}", e.getMessage());
 		}
+	}
+
+	private static void printHistogram(Map<Double, Integer> histogram) {
+		Iterator<Entry<Double, Integer>> iterator = histogram.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<Double, Integer> entry = iterator.next();
+			System.out.printf("%f\t%d\n", entry.getKey(), entry.getValue());
+		}
+	}
+
+	private static void printGroupSummaryForAttribute(PrintStream out,
+			SummaryGroupResultGroupSizeTable groupResultsTable, SummaryGroupResultGraphSizeTable graphResultsTable,
+			SummaryGroupResultAttributeSelector attributeSelector) {
+		(new SummaryGroupReportGroupSizePrintStream(out)).perform(groupResultsTable, attributeSelector);
+		(new SummaryGroupReportGraphSizeGnuplot()).perform(graphResultsTable, attributeSelector);
 	}
 
 	private static void printGroupSummary(PrintStream out) {
 
-		SummaryGroupResultTable resultsTable = new SummaryGroupResultTable();
+		SummaryGroupResultGroupSizeTable gropuResultsTable = new SummaryGroupResultGroupSizeTable();
+		SummaryGroupResultGraphSizeTable graphResultsTable = new SummaryGroupResultGraphSizeTable();
 
 		try (Connection connection = DriverManager.getConnection(CommonConfig.dbUri, CommonConfig.dbUser,
 				CommonConfig.dbPass);) {
 
 			for (GroupExperiment experiment : SummaryDataAccess.selectFinishedGroupExperiments(connection)) {
-				SummaryGroupResults results = resultsTable.selectResults(experiment.getExperimentCase());
-				results.insert(experiment.getExperimentValues());
+				gropuResultsTable.selectResults(experiment.getExperimentCase())
+						.insert(experiment.getExperimentValues());
+				graphResultsTable.selectResults(experiment.getExperimentCase())
+						.insert(experiment.getExperimentValues());
 			}
 
 		} catch (SQLException e) {
@@ -107,17 +108,22 @@ public class SummaryAnalysis {
 			logger.fatal("Sql error: {}", e.getMessage());
 		}
 
-		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.Degree());
-		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.DiameterHop());
-		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.DiameterCost());
-		printGroupSummaryForAttribute(out, resultsTable,
+		printGroupSummaryForAttribute(out, gropuResultsTable, graphResultsTable,
+				new SummaryGroupResultAttributeSelector.Degree());
+		printGroupSummaryForAttribute(out, gropuResultsTable, graphResultsTable,
+				new SummaryGroupResultAttributeSelector.DiameterHop());
+		printGroupSummaryForAttribute(out, gropuResultsTable, graphResultsTable,
+				new SummaryGroupResultAttributeSelector.DiameterCost());
+		printGroupSummaryForAttribute(out, gropuResultsTable, graphResultsTable,
 				new SummaryGroupResultAttributeSelector.ClusteringCoefficient());
-		printGroupSummaryForAttribute(out, resultsTable, new SummaryGroupResultAttributeSelector.Density());
+		printGroupSummaryForAttribute(out, gropuResultsTable, graphResultsTable,
+				new SummaryGroupResultAttributeSelector.Density());
 	}
 
 	private static void printTopologySummaryForAttribute(PrintStream out, SummaryTopologyResultTable resultsTable,
 			SummaryTopologyResultAttributeSelector attributeSelector) {
 		(new SummaryTopologyReportPrintStream(out)).perform(resultsTable, attributeSelector);
+		(new SummaryTopologyReportGnuplot()).perform(resultsTable, attributeSelector);
 	}
 
 	private static void printTopologySummary(PrintStream out) {
@@ -128,8 +134,7 @@ public class SummaryAnalysis {
 				CommonConfig.dbPass);) {
 
 			for (TopologyExperiment experiment : SummaryDataAccess.selectFinishedTopologyExperiments(connection)) {
-				SummaryTopologyResults results = resultsTable.selectResults(experiment.getExperimentCase());
-				results.insert(experiment.getExperimentValues());
+				resultsTable.selectResults(experiment.getExperimentCase()).insert(experiment.getExperimentValues());
 			}
 
 		} catch (SQLException e) {
@@ -158,8 +163,7 @@ public class SummaryAnalysis {
 				CommonConfig.dbPass);) {
 
 			for (AlgorithmExperiment experiment : SummaryDataAccess.selectFinishedAlgorithmExperiments(connection)) {
-				SummaryAlgorithmResults results = resultsTable.selectResults(experiment.getExperimentCase());
-				results.insert(experiment.getExperimentValues());
+				resultsTable.selectResults(experiment.getExperimentCase()).insert(experiment.getExperimentValues());
 			}
 
 		} catch (SQLException e) {
@@ -174,8 +178,12 @@ public class SummaryAnalysis {
 						new SummaryAlgorithmResultAttributeSelector.FirstCost3()));
 
 		printAlgorithmSummaryForAttributes(out, resultsTable,
-				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.FirstCost0(),
-						new SummaryAlgorithmResultAttributeSelector.FirstCost1()));
+				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.FirstCost0()));
+
+		printAlgorithmSummaryForAttributes(out, resultsTable,
+				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.FirstCost1(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost2(),
+						new SummaryAlgorithmResultAttributeSelector.FirstCost3()));
 
 		printAlgorithmSummaryForAttributes(out, resultsTable,
 				Arrays.asList(new SummaryAlgorithmResultAttributeSelector.SuccessCount()));

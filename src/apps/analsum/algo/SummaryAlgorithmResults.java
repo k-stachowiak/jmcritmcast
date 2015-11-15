@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.algo;
 
 import java.util.ArrayList;
 import java.util.List;

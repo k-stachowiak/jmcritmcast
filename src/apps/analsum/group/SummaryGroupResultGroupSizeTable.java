@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.group;
 
 import helpers.nodegrp.NodeGroupperType;
 
@@ -10,11 +10,11 @@ import dal.TopologyType;
 import apps.CommonConfig;
 import apps.groupanal.GroupExperimentCase;
 
-public class SummaryGroupResultTable {
+public class SummaryGroupResultGroupSizeTable {
 
 	private final LinkedHashMap<TopologyType, LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<NodeGroupperType, SummaryGroupResults>>>> impl;
 
-	public SummaryGroupResultTable() {
+	public SummaryGroupResultGroupSizeTable() {
 		impl = new LinkedHashMap<>();
 		for (TopologyType topologyType : TopologyType.values()) {
 			LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<NodeGroupperType, SummaryGroupResults>>> nodesMap = new LinkedHashMap<>();

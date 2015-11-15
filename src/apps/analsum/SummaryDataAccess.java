@@ -28,7 +28,7 @@ public class SummaryDataAccess {
 						+ "degree, diameter_hop, diameter_cost, clustering_coefficient "
 						+ "FROM top_anal_results "
 						+ "WHERE "
-						+ "degree IS NOT NULL AND diameter_hop IS NOT NULL AND diameter_cost IS NOT NULL AND clustering_coefficient IS NOT NULL ")) {
+						+ "degree IS NOT NULL OR diameter_hop IS NOT NULL OR diameter_cost IS NOT NULL OR clustering_coefficient IS NOT NULL ")) {
 
 			ArrayList<TopologyExperiment> result = new ArrayList<>();
 

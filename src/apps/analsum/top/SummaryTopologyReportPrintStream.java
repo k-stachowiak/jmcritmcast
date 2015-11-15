@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.top;
 
 import java.io.PrintStream;
 
@@ -50,7 +50,7 @@ public class SummaryTopologyReportPrintStream extends SummaryTopologyReportTempl
 
 	@Override
 	protected void onDataMultiple(double n, double mean, double confidenceIntervalWidth) {
-		out.printf("%d\t%f\t%f\t", n, mean, confidenceIntervalWidth);
+		out.printf("%d\t%f\t%f\t", (int)n, mean, confidenceIntervalWidth);
 	}
 
 	@Override

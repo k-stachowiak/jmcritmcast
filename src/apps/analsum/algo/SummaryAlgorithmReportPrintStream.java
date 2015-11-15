@@ -1,4 +1,4 @@
-package apps.analsum;
+package apps.analsum.algo;
 
 import java.io.PrintStream;
 import java.util.List;
