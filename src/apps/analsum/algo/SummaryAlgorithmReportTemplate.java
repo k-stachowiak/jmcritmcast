@@ -20,10 +20,10 @@ public abstract class SummaryAlgorithmReportTemplate {
 		for (TopologyType topologyType : TopologyType.values()) {
 			for (int nodesCount : CommonConfig.nodesCounts) {
 				for (NodeGroupperType nodeGroupperType : NodeGroupperType.values()) {
-					for (double constraintBase : CommonConfig.constraintBases) {
+					for (List<Double> constraints : CommonConfig.constraintSets) {
 
 						// Handle basic initialization here
-						onInit(topologyType, nodesCount, nodeGroupperType, constraintBase, attributeSelectors);
+						onInit(topologyType, nodesCount, nodeGroupperType, constraints, attributeSelectors);
 
 						// Header related data
 						for (SummaryAlgorithmResultAttributeSelector attributeSelector : attributeSelectors) {
@@ -39,7 +39,8 @@ public abstract class SummaryAlgorithmReportTemplate {
 							onDataRowBegin(groupSize);
 
 							Iterator<Entry<TreeFinderType, SummaryAlgorithmResults>> rowIterator = resultsTable
-									.selectRow(topologyType, nodesCount, groupSize, nodeGroupperType, constraintBase);
+									.selectRow(topologyType, nodesCount, groupSize, nodeGroupperType,
+											constraints.get(0), constraints.get(1));
 
 							while (rowIterator.hasNext()) {
 								Entry<TreeFinderType, SummaryAlgorithmResults> entry = rowIterator.next();
@@ -52,8 +53,8 @@ public abstract class SummaryAlgorithmReportTemplate {
 									} else if (attribute.getN() == 1) {
 										onDataSingle(attribute.getMean());
 									} else {
-										onDataMultiple(attribute.getN(), attribute.getMean(),
-												SummaryUtils.getConfidenceIntervalWidth(attribute, CommonConfig.significance));
+										onDataMultiple(attribute.getN(), attribute.getMean(), SummaryUtils
+												.getConfidenceIntervalWidth(attribute, CommonConfig.significance));
 									}
 								}
 							}
@@ -68,8 +69,18 @@ public abstract class SummaryAlgorithmReportTemplate {
 		}
 	}
 
+	protected String constraintsString(List<Double> constraints) {
+		StringBuilder result = new StringBuilder();
+		result.append(constraints.get(0).toString());
+		for (int i = 1; i < constraints.size(); ++i) {
+			result.append('-');
+			result.append(constraints.get(i).intValue());
+		}
+		return result.toString();
+	}
+
 	protected abstract void onInit(TopologyType topologyType, int nodesCount, NodeGroupperType nodeGroupperType,
-			double constraintBase, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors);
+			List<Double> constraints, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors);
 
 	protected abstract void onDataHeader(SummaryAlgorithmResultAttributeSelector attributeSelector,
 			TreeFinderType treeFinderType);

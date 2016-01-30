@@ -17,10 +17,10 @@ public class SummaryAlgorithmReportPrintStream extends SummaryAlgorithmReportTem
 
 	@Override
 	protected void onInit(TopologyType topologyType, int nodesCount, NodeGroupperType nodeGroupperType,
-			double constraintBase, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors) {
+			List<Double> constraints, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors) {
 
-		out.printf("Topology: %s, Nodes count: %d, Groupper: %s, Constraint base: %f, Attributes: ",
-				topologyType.toString(), nodesCount, nodeGroupperType.toString(), constraintBase);
+		out.printf("Topology: %s, Nodes count: %d, Groupper: %s, Constraints: %s, Attributes: ",
+				topologyType.toString(), nodesCount, nodeGroupperType.toString(), constraintsString(constraints));
 
 		for (SummaryAlgorithmResultAttributeSelector attributeSelector : attributeSelectors) {
 			out.printf(" %s", attributeSelector.getName());

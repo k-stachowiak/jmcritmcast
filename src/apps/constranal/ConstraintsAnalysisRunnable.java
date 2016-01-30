@@ -1,4 +1,4 @@
-package apps.analconstr;
+package apps.constranal;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,7 +14,6 @@ import apps.TimeMeasurement;
 import apps.groupanal.GroupAnalysisRunnable;
 import dal.TopologyDAO;
 import dto.GraphDTO;
-import helpers.TopologyAnalyser;
 import helpers.cstrch.FengGroupConstraintsChooser;
 import helpers.nodegrp.CentroidNodeGroupper;
 import helpers.nodegrp.DegreeNodeGroupper;
@@ -59,7 +58,6 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 			logger.trace("No result found, commencing...");
 			ConstraintResultDataAccess.insert(connection, experimentCase,
 					new ConstraintExperimentValues(new ConstraintExperimentValues.Range(-1, -1),
-							new ConstraintExperimentValues.Range(-1, -1),
 							new ConstraintExperimentValues.Range(-1, -1)));
 		} else if (experimentValues.isValid()) {
 			logger.trace("Valid result for case found, aborting...");
@@ -87,8 +85,12 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 			experimentValues = compute(graph, new DegreeNodeGroupper());
 			break;
 
-		case Centroid:
-			experimentValues = compute(graph, genCentroidGrouppers(graph, neededConstraintResults));
+		case Centroid02:
+			experimentValues = compute(graph, new CentroidNodeGroupper(0.2));
+			break;
+			
+		case Centroid06:
+			experimentValues = compute(graph, new CentroidNodeGroupper(0.6));
 			break;
 
 		case Random:
@@ -108,8 +110,7 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 		List<FengGroupConstraintsChooser.Range> ranges = cch.chooseRanges(graph, group);
 		return new ConstraintExperimentValues(
 				new ConstraintExperimentValues.Range(ranges.get(0).getMin(), ranges.get(0).getMax()),
-				new ConstraintExperimentValues.Range(ranges.get(1).getMin(), ranges.get(1).getMax()),
-				new ConstraintExperimentValues.Range(ranges.get(2).getMin(), ranges.get(2).getMax()));
+				new ConstraintExperimentValues.Range(ranges.get(1).getMin(), ranges.get(1).getMax()));
 	}
 
 	private ConstraintExperimentValues compute(Graph graph, ArrayList<NodeGroupper> grouppers) {
@@ -118,8 +119,6 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 		SummaryStatistics max0Stat = new SummaryStatistics();
 		SummaryStatistics min1Stat = new SummaryStatistics();
 		SummaryStatistics max1Stat = new SummaryStatistics();
-		SummaryStatistics min2Stat = new SummaryStatistics();
-		SummaryStatistics max2Stat = new SummaryStatistics();
 
 		for (NodeGroupper groupper : grouppers) {
 			ConstraintExperimentValues partialValues = compute(graph, groupper);
@@ -127,14 +126,11 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 			max0Stat.addValue(partialValues.getRange0().getMax());
 			min1Stat.addValue(partialValues.getRange1().getMin());
 			max1Stat.addValue(partialValues.getRange1().getMax());
-			min2Stat.addValue(partialValues.getRange2().getMin());
-			max2Stat.addValue(partialValues.getRange2().getMax());
 		}
 
 		return new ConstraintExperimentValues(
 				new ConstraintExperimentValues.Range(min0Stat.getMean(), max0Stat.getMean()),
-				new ConstraintExperimentValues.Range(min1Stat.getMean(), max1Stat.getMean()),
-				new ConstraintExperimentValues.Range(min2Stat.getMean(), max2Stat.getMean()));
+				new ConstraintExperimentValues.Range(min1Stat.getMean(), max1Stat.getMean()));
 	}
 
 	private ArrayList<NodeGroupper> genRandomGrouppers(int count) {
@@ -142,21 +138,6 @@ public class ConstraintsAnalysisRunnable implements Runnable {
 		for (int i = 0; i < count; ++i) {
 			result.add(new RandomNodeGroupper(r));
 		}
-		return result;
-	}
-
-	private ArrayList<NodeGroupper> genCentroidGrouppers(Graph graph, int count) {
-
-		Double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
-		TopologyAnalyser.minMaxCoordinates(graph, minX, maxX, minY, maxY);
-
-		ArrayList<NodeGroupper> result = new ArrayList<>();
-		for (int i = 0; i < count; ++i) {
-			double cx = minX + (maxX - minX) * r.nextDouble();
-			double cy = minY + (maxY - minY) * r.nextDouble();
-			result.add(new CentroidNodeGroupper(cx, cy));
-		}
-
 		return result;
 	}
 

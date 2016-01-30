@@ -7,8 +7,8 @@ import java.util.List;
 
 import apps.alganal.AlgorithmExperimentCase;
 import apps.alganal.AlgorithmExperimentValues;
-import apps.analconstr.ConstraintExperimentCase;
-import apps.analconstr.ConstraintExperimentValues;
+import apps.constranal.ConstraintExperimentCase;
+import apps.constranal.ConstraintExperimentValues;
 import apps.groupanal.GroupExperimentCase;
 import apps.groupanal.GroupExperimentValues;
 import apps.topanal.TopologyExperimentCase;
@@ -57,10 +57,14 @@ public class CommonDataAccess {
 	}
 
 	public static List<Double> costListFromStr(String string) {
-		String[] valueStrings = string.split(";");
 		ArrayList<Double> values = new ArrayList<>();
-		for (String valueString : valueStrings) {
-			values.add(Double.parseDouble(valueString));
+		if (string.isEmpty()) {
+			return null;
+		} else {
+			String[] valueStrings = string.split(";");
+			for (String valueString : valueStrings) {
+				values.add(Double.parseDouble(valueString));
+			}
 		}
 		return values;
 	}
@@ -77,9 +81,15 @@ public class CommonDataAccess {
 	}
 
 	public static AlgorithmExperimentCase algorithmResultCaseFromResultSet(ResultSet rs) throws SQLException {
-		return new AlgorithmExperimentCase(TopologyType.valueOf(rs.getString(1)), rs.getInt(2), rs.getInt(3),
-				NodeGroupperType.valueOf(rs.getString(4)), rs.getInt(5), rs.getDouble(6),
-				TreeFinderType.valueOf(rs.getString(7)));
+		return new AlgorithmExperimentCase(
+				TopologyType.valueOf(rs.getString(1)),
+				rs.getInt(2),
+				rs.getInt(3),
+				NodeGroupperType.valueOf(rs.getString(4)),
+				rs.getInt(5),
+				rs.getDouble(6),
+				rs.getDouble(7),
+				TreeFinderType.valueOf(rs.getString(8)));
 	}
 
 	private static AlgorithmExperimentValues algorithmResultValuesFromAnyResultSet(ResultSet rs, int offset)
@@ -93,15 +103,14 @@ public class CommonDataAccess {
 	}
 
 	public static AlgorithmExperimentValues algorithmResultValuesFromFullResultSet(ResultSet rs) throws SQLException {
-		return algorithmResultValuesFromAnyResultSet(rs, 7);
+		return algorithmResultValuesFromAnyResultSet(rs, 8);
 	}
 
 	private static ConstraintExperimentValues constraintResultValuesFromAnyResultSet(ResultSet rs, int offset)
 			throws SQLException {
 		return new ConstraintExperimentValues(
 				new ConstraintExperimentValues.Range(rs.getDouble(offset + 1), rs.getDouble(offset + 2)),
-				new ConstraintExperimentValues.Range(rs.getDouble(offset + 3), rs.getDouble(offset + 4)),
-				new ConstraintExperimentValues.Range(rs.getDouble(offset + 5), rs.getDouble(offset + 6)));
+				new ConstraintExperimentValues.Range(rs.getDouble(offset + 3), rs.getDouble(offset + 4)));
 	}
 
 	public static ConstraintExperimentValues constraintResultValuesFromPartialResultSet(ResultSet rs)

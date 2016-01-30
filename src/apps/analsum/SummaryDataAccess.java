@@ -86,7 +86,7 @@ public class SummaryDataAccess {
 			Connection connection) {
 		try (PreparedStatement prStatement = connection
 				.prepareStatement("SELECT "
-						+ "type, nodes, group_size, group_type, graph_index, constraint_base, tree_finder_type, "
+						+ "type, nodes, group_size, group_type, graph_index, constraint1, constraint2, tree_finder_type, "
 						+ "first_costs, success_count "
 						+ "FROM alg_anal_results "
 						+ "WHERE "

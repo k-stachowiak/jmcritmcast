@@ -75,7 +75,7 @@ public class TopologyAnalysisRunnable implements Runnable {
 
 		if (experimentValues.getDegree() == null) {
 			timeMeasurement.begin();
-			experimentValues.setDegree(TopologyAnalyser.averageDegree(graph));
+			experimentValues.setDegree(TopologyAnalyser.degreeStatistics(graph).getMean());
 			timeMeasurement.end();
 			logger.debug("Computed graph average degree in {}",
 					timeMeasurement.getDurationString());

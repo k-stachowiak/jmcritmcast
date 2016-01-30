@@ -81,9 +81,12 @@ public class GroupAnalysisRunnable implements Runnable {
 			experimentValues = compute(graph, new DegreeNodeGroupper());
 			break;
 
-		case Centroid:
-			experimentValues = compute(graph, genCentroidGrouppers(graph, neededGroupResults));
+		case Centroid02:
+			experimentValues = compute(graph, new CentroidNodeGroupper(0.2));
 			break;
+
+		case Centroid06:
+			experimentValues = compute(graph, new CentroidNodeGroupper(0.6));
 
 		case Random:
 			experimentValues = compute(graph, genRandomGrouppers(neededGroupResults));
@@ -100,7 +103,7 @@ public class GroupAnalysisRunnable implements Runnable {
 
 		List<Node> group = nodeGroupper.group(graph, experimentCase.getGroupSize());
 
-		double degree = TopologyAnalyser.averageDegree(graph, group);
+		double degree = TopologyAnalyser.degreeStatistics(graph).getMean();
 		double clusteringCoefficient = TopologyAnalyser.clusteringCoefficient(graph, group);
 		double density = TopologyAnalyser.nodeGroupoDensity(graph, group);
 
@@ -136,21 +139,6 @@ public class GroupAnalysisRunnable implements Runnable {
 		for (int i = 0; i < count; ++i) {
 			result.add(new RandomNodeGroupper(r));
 		}
-		return result;
-	}
-
-	private ArrayList<NodeGroupper> genCentroidGrouppers(Graph graph, int count) {
-
-		Double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
-		TopologyAnalyser.minMaxCoordinates(graph, minX, maxX, minY, maxY);
-
-		ArrayList<NodeGroupper> result = new ArrayList<>();
-		for (int i = 0; i < count; ++i) {
-			double cx = minX + (maxX - minX) * r.nextDouble();
-			double cy = minY + (maxY - minY) * r.nextDouble();
-			result.add(new CentroidNodeGroupper(cx, cy));
-		}
-
 		return result;
 	}
 

@@ -1,4 +1,4 @@
-package apps.analconstr;
+package apps.constranal;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +18,7 @@ import helpers.nodegrp.NodeGroupperType;
 
 public class ConstraintAnalysis {
 
-	private static final int neededGraphResults = 5;
+	private static final int neededGraphResults = 15;
 
 	private static final Logger logger = LogManager.getLogger(AlgorithmAnalysis.class);
 
@@ -31,6 +31,10 @@ public class ConstraintAnalysis {
 				for (Integer nodesCount : CommonConfig.nodesCounts) {
 					for (Integer groupSize : CommonConfig.groupSizes) {
 						for (TopologyType tType : TopologyType.values()) {
+							if (tType == TopologyType.Inet && nodesCount < 3037) {
+								logger.trace("Not enough nodes for INET.");
+								continue;
+							}
 							for (NodeGroupperType gType : NodeGroupperType.values()) {
 
 								executor.submit(new ConstraintsAnalysisRunnable(

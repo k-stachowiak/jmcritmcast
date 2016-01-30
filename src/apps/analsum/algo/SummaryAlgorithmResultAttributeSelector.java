@@ -17,7 +17,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public SummaryStatistics select(SummaryAlgorithmResults value) {
-			if (value.firstCosts.size() > 0) {
+			if (value.successCount.getSum() > 0 && value.firstCosts.size() > 0) {
 				return value.firstCosts.get(0);
 			} else {
 				return new SummaryStatistics();
@@ -34,7 +34,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public SummaryStatistics select(SummaryAlgorithmResults value) {
-			if (value.firstCosts.size() > 1) {
+			if (value.successCount.getSum() > 0 && value.firstCosts.size() > 1) {
 				return value.firstCosts.get(1);
 			} else {
 				return new SummaryStatistics();
@@ -51,7 +51,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public SummaryStatistics select(SummaryAlgorithmResults value) {
-			if (value.firstCosts.size() > 2) {
+			if (value.successCount.getSum() > 0 && value.firstCosts.size() > 2) {
 				return value.firstCosts.get(2);
 			} else {
 				return new SummaryStatistics();
@@ -68,7 +68,7 @@ public interface SummaryAlgorithmResultAttributeSelector {
 
 		@Override
 		public SummaryStatistics select(SummaryAlgorithmResults value) {
-			if (value.firstCosts.size() > 3) {
+			if (value.successCount.getSum() > 0 && value.firstCosts.size() > 3) {
 				return value.firstCosts.get(3);
 			} else {
 				return new SummaryStatistics();

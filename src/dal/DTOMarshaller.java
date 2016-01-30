@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
@@ -12,6 +14,34 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 public class DTOMarshaller<T> {
+	
+	public String writeToString(T object) {		
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(object.getClass());
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			StringWriter writer = new StringWriter();
+			marshaller.marshal(object, writer);
+			return writer.toString();
+			
+		} catch (JAXBException exception) {
+			System.err.print("JAXB Exception : " + exception.getMessage());
+			System.err.print(exception.getStackTrace());
+			return null;
+		}
+	}
+	
+	public T readFromString(String string, Class<T> clazz) {
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			T result = clazz.cast(unmarshaller.unmarshal(new StringReader(string)));
+			return result;
+		} catch (JAXBException exception) {
+			System.err.print("JAXB Exception : " + exception.getMessage());
+			System.err.print(exception.getStackTrace());
+			return null;
+		}
+	}
 
 	public boolean writeToFile(String path, T object) {
 

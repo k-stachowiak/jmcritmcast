@@ -20,9 +20,11 @@ public class SummaryAlgorithmResults {
 	}
 
 	public void insert(AlgorithmExperimentValues experimentValues) {
-		for (int i = 0; i < firstCosts.size(); ++i) {
-			firstCosts.get(i).addValue(experimentValues.getFirstCosts().get(i));
-		}
 		successCount.addValue(experimentValues.getSuccessCount());
+		if (experimentValues.getSuccessCount() > 0) {
+			for (int i = 0; i < firstCosts.size(); ++i) {
+				firstCosts.get(i).addValue(experimentValues.getFirstCosts().get(i));
+			}
+		}
 	}
 }

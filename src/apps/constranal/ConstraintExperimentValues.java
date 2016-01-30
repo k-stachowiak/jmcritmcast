@@ -1,4 +1,4 @@
-package apps.analconstr;
+package apps.constranal;
 
 public class ConstraintExperimentValues {
 	public static class Range {
@@ -55,12 +55,10 @@ public class ConstraintExperimentValues {
 
 	private final Range range0;
 	private final Range range1;
-	private final Range range2;
 
-	public ConstraintExperimentValues(Range range0, Range range1, Range range2) {
+	public ConstraintExperimentValues(Range range0, Range range1) {
 		this.range0 = range0;
 		this.range1 = range1;
-		this.range2 = range2;
 	}
 
 	public Range getRange0() {
@@ -71,13 +69,8 @@ public class ConstraintExperimentValues {
 		return range1;
 	}
 
-	public Range getRange2() {
-		return range2;
-	}
-
 	public boolean isValid() {
-		return range0.getMin() != -1 && range0.getMax() != -1 && range1.getMin() != -1 && range1.getMax() != -1
-				&& range2.getMin() != -1 && range2.getMax() != -1;
+		return range0.getMin() != -1 && range0.getMax() != -1 && range1.getMin() != -1 && range1.getMax() != -1;
 	}
 
 }

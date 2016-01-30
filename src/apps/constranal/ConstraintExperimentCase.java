@@ -1,4 +1,4 @@
-package apps.analconstr;
+package apps.constranal;
 
 import dal.TopologyType;
 import helpers.nodegrp.NodeGroupperType;

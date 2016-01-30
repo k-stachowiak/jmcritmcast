@@ -1,4 +1,4 @@
-package apps.alganal;
+package apps.algorthoanal;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import apps.TimeMeasurement;
 import dal.TopologyDAO;
 import dto.GraphDTO;
+import dto.GroupDTO;
+import dto.SubgraphDTO;
 import helpers.ConstraintsComparer;
 import helpers.OspfCostResourceTranslation;
 import helpers.PathAggregator;
@@ -40,9 +42,9 @@ import tfind.paggr.ConstrainedPathAggrTreeFinder;
 import tfind.prim.PrimTreeFinder;
 import tfind.rdp.RdpQuasiExact;
 
-public class AlgorithmAnalysisRunnable implements Runnable {
+public class AlgorithmOrthogonalAnalysisRunnable implements Runnable {
 
-	private final AlgorithmExperimentCase experimentCase;
+	private final AlgorithmOrthogonalExperimentCase experimentCase;
 	private final Connection connection;
 
 	private static final double DRAINED_BANDWIDTH = 100.0;
@@ -51,19 +53,17 @@ public class AlgorithmAnalysisRunnable implements Runnable {
 
 	private final GraphFactory graphFactory = new AdjacencyListFactory();
 	private final PathFinderFactory pathFinderFactory = new PathFinderFactoryImpl();
-	private final SpanningTreeFinder spanningTreeFinder = new PrimTreeFinder(
-			new IndexMetricProvider(0));
+	private final SpanningTreeFinder spanningTreeFinder = new PrimTreeFinder(new IndexMetricProvider(0));
 	private final ResourceDrainer resourceDrainer = new IndexResourceDrainer(
 			new OspfCostResourceTranslation(BASE_BANDWIDTH), 0, graphFactory);
 
 	private final TimeMeasurement timeMeasurement = new TimeMeasurement();
 
-	private static final Logger logger = LogManager
-			.getLogger(AlgorithmAnalysisRunnable.class);
+	private static final Logger logger = LogManager.getLogger(AlgorithmOrthogonalAnalysisRunnable.class);
 
 	private static Random r = new Random(System.currentTimeMillis());
 
-	public AlgorithmAnalysisRunnable(AlgorithmExperimentCase experimentCase,
+	public AlgorithmOrthogonalAnalysisRunnable(AlgorithmOrthogonalExperimentCase experimentCase,
 			Connection connection) {
 		this.experimentCase = experimentCase;
 		this.connection = connection;
@@ -71,85 +71,82 @@ public class AlgorithmAnalysisRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		logger.trace("Begin analysis for case {}", experimentCase);
 
-		AlgorithmExperimentValues experimentValues = AlgorithmResultDataAccess
-				.selectResultForCase(connection, experimentCase);
+		try {
 
-		if (experimentValues == null) {
-			logger.trace("No result found, commencing...");
-			AlgorithmResultDataAccess.insert(connection, experimentCase,
-					new AlgorithmExperimentValues(new ArrayList<Double>(), -1));
-		} else if (experimentValues.isValid()) {
-			logger.trace("Valid result for case found, aborting...");
-			return;
-		} else {
-			logger.trace("Found invalid result, resuming...");
+			logger.trace("Begin analysis for case {}", experimentCase);
+
+			AlgorithmOrthogonalAnalysisDataAccess.synchronize(connection, experimentCase);
+
+			if (experimentCase.isPerformed()) {
+				logger.trace("Experiment already performed, aborting...");
+				return;
+			}
+
+			AlgorithmOrthogonalAnalysisDataAccess.clearResults(connection, experimentCase); // remove
+																							// remains
+																							// of
+																							// unfinished
+																							// experiment
+
+			Graph graph = getGraph();
+			if (graph == null) {
+				return;
+			}
+
+			ConstrainedSteinerTreeFinder treeFinder = getTreeFinder();
+			if (treeFinder == null) {
+				return;
+			}
+
+			NodeGroupper nodeGroupper = getNodeGroupper(graph);
+
+			ArrayList<Double> constraints = new ArrayList<>();
+			constraints.add(experimentCase.getConstraint1());
+			constraints.add(experimentCase.getConstraint2());
+
+			List<AlgorithmOrthogonalExperimentResult> experimentResults = compute(experimentCase, graph, treeFinder,
+					nodeGroupper, constraints);
+
+			AlgorithmOrthogonalAnalysisDataAccess.putResults(connection, experimentCase, experimentResults);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.fatal("Runnable error: {}", e.getMessage());
 		}
-
-		Graph graph = getGraph();
-		if (graph == null) {
-			return;
-		}
-
-		ConstrainedSteinerTreeFinder treeFinder = getTreeFinder();
-		if (treeFinder == null) {
-			return;
-		}
-
-		NodeGroupper nodeGroupper = getNodeGroupper(graph);
-
-		ArrayList<Double> constraints = new ArrayList<>();
-		constraints.add(experimentCase.getConstraint1());
-		constraints.add(experimentCase.getConstraint2());
-
-		timeMeasurement.begin();
-		experimentValues = compute(graph, treeFinder, nodeGroupper,
-				experimentCase, constraints);
-		timeMeasurement.end();
-
-		logger.debug("Computed multicast group parameters for a graph in {}",
-				timeMeasurement.getDurationString());
-
-		AlgorithmResultDataAccess.update(connection, experimentCase,
-				experimentValues);
 	}
 
-	private AlgorithmExperimentValues compute(Graph graph,
-			ConstrainedSteinerTreeFinder treeFinder, NodeGroupper nodeGroupper,
-			AlgorithmExperimentCase experimentCase, List<Double> constraints) {
+	private List<AlgorithmOrthogonalExperimentResult> compute(AlgorithmOrthogonalExperimentCase experimentCase,
+			Graph graph, ConstrainedSteinerTreeFinder treeFinder, NodeGroupper nodeGroupper, List<Double> constraints) {
 
-		boolean isFirstPass = true;
 		int G = experimentCase.getGroupSize();
 		Graph copy = graph.copy();
+		List<AlgorithmOrthogonalExperimentResult> results = new ArrayList<>();
 
-		ArrayList<Double> firstCosts = new ArrayList<>();
-		int successCount = 0;
-
-		while (TopologyAnalyser.isConnected(copy, spanningTreeFinder)
-				&& copy.getNodes().size() >= G) {
+		while (TopologyAnalyser.isConnected(copy, spanningTreeFinder) && copy.getNodes().size() >= G) {
 
 			List<Node> group = nodeGroupper.group(copy, G);
 
+			timeMeasurement.begin();
 			Tree tree = treeFinder.find(copy, group, constraints);
+			timeMeasurement.end();
+
 			if (tree == null) {
 				break;
 			}
 
-			if (isFirstPass) {
-				for (Double m : tree.getMetrics()) {
-					firstCosts.add(m);
-				}
-				isFirstPass = false;
-			}
+			GroupDTO groupDTO = GroupDTO.fromNodeList(group);
+			SubgraphDTO treeDTO = SubgraphDTO.fromSubgraph(tree);
 
-			++successCount;
+			double seconds = (double) timeMeasurement.getNanos() / 1000000000.0;
+			results.add(
+					new AlgorithmOrthogonalExperimentResult(
+							experimentCase.getId(), treeDTO, groupDTO, seconds));
 
-			copy = resourceDrainer.drain(copy, tree, DRAINED_BANDWIDTH,
-					MIN_BANDWIDTH);
+			copy = resourceDrainer.drain(copy, tree, DRAINED_BANDWIDTH, MIN_BANDWIDTH);
 		}
 
-		return new AlgorithmExperimentValues(firstCosts, successCount);
+		return results;
 	}
 
 	private NodeGroupper getNodeGroupper(Graph graph) {
@@ -159,7 +156,7 @@ public class AlgorithmAnalysisRunnable implements Runnable {
 
 		case Centroid02:
 			return new CentroidNodeGroupper(0.2);
-			
+
 		case Centroid06:
 			return new CentroidNodeGroupper(0.6);
 
@@ -175,16 +172,14 @@ public class AlgorithmAnalysisRunnable implements Runnable {
 		ConstrainedSteinerTreeFinder result = null;
 		switch (experimentCase.getTreeFinderType()) {
 		case AggrMLARAC:
-			result = new ConstrainedPathAggrTreeFinder(new MlaracPathFinder(
-					new ExpensiveNonBreakingPathSubstitutor(),
-					new IntersectLambdaEstimator(), pathFinderFactory,
-					new ConstraintsComparer()), new PathAggregator(
-					new PrimTreeFinder(new IndexMetricProvider(0))));
+			result = new ConstrainedPathAggrTreeFinder(
+					new MlaracPathFinder(new ExpensiveNonBreakingPathSubstitutor(), new IntersectLambdaEstimator(),
+							pathFinderFactory, new ConstraintsComparer()),
+					new PathAggregator(new PrimTreeFinder(new IndexMetricProvider(0))));
 			break;
 		case HMCMC:
-			result = new HmcmcTreeFinder(new ConstraintsComparer(),
-					pathFinderFactory, new PathAggregator(new PrimTreeFinder(
-							new IndexMetricProvider(0))));
+			result = new HmcmcTreeFinder(new ConstraintsComparer(), pathFinderFactory,
+					new PathAggregator(new PrimTreeFinder(new IndexMetricProvider(0))));
 			break;
 		case RDP:
 			result = new RdpQuasiExact(new ConstraintsComparer());
@@ -198,8 +193,7 @@ public class AlgorithmAnalysisRunnable implements Runnable {
 		TopologyDAO topologyDAO = new TopologyDAO(connection);
 		GraphDTO graphDTO;
 		try {
-			graphDTO = topologyDAO.select(experimentCase.getTopologyType(),
-					experimentCase.getNodesCount(),
+			graphDTO = topologyDAO.select(experimentCase.getTopologyType(), experimentCase.getNodesCount(),
 					experimentCase.getGraphIndex());
 		} catch (SQLException e) {
 			e.printStackTrace();

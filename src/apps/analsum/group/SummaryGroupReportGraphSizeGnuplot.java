@@ -9,7 +9,7 @@ import java.util.List;
 import apps.CommonConfig;
 import apps.analsum.SummaryUtils;
 import dal.TopologyType;
-import helpers.gnuplot.GnuPlotLines;
+import helpers.gnuplot.GnuPlotWriter;
 import helpers.nodegrp.NodeGroupperType;
 
 public class SummaryGroupReportGraphSizeGnuplot extends SummaryGroupReportGraphSizeTemplate {
@@ -95,7 +95,7 @@ public class SummaryGroupReportGraphSizeGnuplot extends SummaryGroupReportGraphS
 			PrintStream dataWriter = new PrintStream(
 					new FileOutputStream(String.format("%s/%s.txt", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 
-			GnuPlotLines result = new GnuPlotLines(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
+			GnuPlotWriter result = new GnuPlotWriter(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
 					data, inGroup);
 
 			result.writeGnuplotScript(scriptWriter);

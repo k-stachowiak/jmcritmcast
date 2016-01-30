@@ -1,4 +1,4 @@
-package apps.alganal;
+package apps.algorthoanal;
 
 import helpers.nodegrp.NodeGroupperType;
 
@@ -18,10 +18,10 @@ import tfind.TreeFinderType;
 import apps.CommonConfig;
 import dal.TopologyType;
 
-public class AlgorithmAnalysis {
+public class AlgorithmOrthogonalAnalysis {
 
 	private static final Logger logger = LogManager
-			.getLogger(AlgorithmAnalysis.class);
+			.getLogger(AlgorithmOrthogonalAnalysis.class);
 
 	private static final int neededGraphResults = 5;
 
@@ -50,8 +50,8 @@ public class AlgorithmAnalysis {
 
 									for (int graphIndex = 1; graphIndex <= neededGraphResults; ++graphIndex) {
 
-										executor.submit(new AlgorithmAnalysisRunnable(
-												new AlgorithmExperimentCase(
+										executor.submit(new AlgorithmOrthogonalAnalysisRunnable(
+												new AlgorithmOrthogonalExperimentCase(
 														tType, nodesCount,
 														groupSize, gType,
 														graphIndex,
@@ -60,7 +60,6 @@ public class AlgorithmAnalysis {
 														treeFinderType),
 												connection));
 									}
-
 								}
 							}
 						}

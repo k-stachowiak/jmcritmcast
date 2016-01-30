@@ -9,7 +9,7 @@ import java.util.List;
 import apps.CommonConfig;
 import apps.analsum.SummaryUtils;
 import dal.TopologyType;
-import helpers.gnuplot.GnuPlotLines;
+import helpers.gnuplot.GnuPlotWriter;
 import helpers.nodegrp.NodeGroupperType;
 
 public class SummaryGroupReportGroupSizeGnuplot extends SummaryGroupReportGroupSizeTemplate {
@@ -94,11 +94,11 @@ public class SummaryGroupReportGroupSizeGnuplot extends SummaryGroupReportGroupS
 			PrintStream dataWriter = new PrintStream(
 					new FileOutputStream(String.format("%s/%s.txt", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 
-			GnuPlotLines result = new GnuPlotLines(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
+			GnuPlotWriter gnuplotWriter = new GnuPlotWriter(filenameBase, xLabel, yLabel, domainHeader, domain, dataHeaders,
 					data, inGroup);
 
-			result.writeGnuplotScript(scriptWriter);
-			result.writeGnuplotData(dataWriter);
+			gnuplotWriter.writeGnuplotScript(scriptWriter);
+			gnuplotWriter.writeGnuplotData(dataWriter);
 
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();

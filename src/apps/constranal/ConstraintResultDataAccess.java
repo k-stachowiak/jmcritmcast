@@ -1,15 +1,19 @@
-package apps.analconstr;
+package apps.constranal;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import apps.CommonDataAccess;
+import apps.analsum.cstr.SummaryConstraintResults;
 import apps.groupanal.GroupResultDataAccess;
+import dal.TopologyType;
 
 public class ConstraintResultDataAccess {
 
@@ -19,7 +23,7 @@ public class ConstraintResultDataAccess {
 			ConstraintExperimentCase experimentCase) {
 		
 		try (PreparedStatement prStatement = connection
-				.prepareStatement("SELECT range0_min, range0_max, range1_min, range1_max, range2_min, range2_max "
+				.prepareStatement("SELECT range0_min, range0_max, range1_min, range1_max "
 						+ "FROM cstr_anal_results "
 						+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ? AND graph_index = ?")) {
 
@@ -53,7 +57,7 @@ public class ConstraintResultDataAccess {
 			ConstraintExperimentValues experimentValues) {
 
 		try (PreparedStatement prStatement = connection
-				.prepareStatement("INSERT INTO cstr_anal_results " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				.prepareStatement("INSERT INTO cstr_anal_results " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")) {
 
 			prStatement.setString(1, experimentCase.getTopologyType().toString());
 			prStatement.setInt(2, experimentCase.getNodesCount());
@@ -64,8 +68,6 @@ public class ConstraintResultDataAccess {
 			prStatement.setDouble(7, experimentValues.getRange0().getMax());
 			prStatement.setDouble(8, experimentValues.getRange1().getMin());
 			prStatement.setDouble(9, experimentValues.getRange1().getMax());
-			prStatement.setDouble(10, experimentValues.getRange2().getMin());
-			prStatement.setDouble(11, experimentValues.getRange2().getMax());
 
 			logger.trace("About to execute statement: {}", prStatement.toString());
 			prStatement.executeUpdate();
@@ -80,21 +82,19 @@ public class ConstraintResultDataAccess {
 	public static void update(Connection connection, ConstraintExperimentCase experimentCase,
 			ConstraintExperimentValues experimentValues) {
 		try (PreparedStatement prStatement = connection.prepareStatement("UPDATE cstr_anal_results "
-				+ "SET range0_min = ?, range0_max = ?, range1_min = ?, range1_max = ?, range2_min = ?, range2_max = ? "
+				+ "SET range0_min = ?, range0_max = ?, range1_min = ?, range1_max = ? "
 				+ "WHERE type = ? AND nodes = ? AND group_size = ? AND group_type = ? AND graph_index = ?")) {
 
 			prStatement.setDouble(1, experimentValues.getRange0().getMin());
 			prStatement.setDouble(2, experimentValues.getRange0().getMax());
 			prStatement.setDouble(3, experimentValues.getRange1().getMin());
 			prStatement.setDouble(4, experimentValues.getRange1().getMax());
-			prStatement.setDouble(5, experimentValues.getRange2().getMin());
-			prStatement.setDouble(6, experimentValues.getRange2().getMax());
 
-			prStatement.setString(7, experimentCase.getTopologyType().toString());
-			prStatement.setInt(8, experimentCase.getNodesCount());
-			prStatement.setInt(9, experimentCase.getGroupSize());
-			prStatement.setString(10, experimentCase.getNodeGroupperType().toString());
-			prStatement.setInt(11, experimentCase.getGraphIndex());
+			prStatement.setString(5, experimentCase.getTopologyType().toString());
+			prStatement.setInt(6, experimentCase.getNodesCount());
+			prStatement.setInt(7, experimentCase.getGroupSize());
+			prStatement.setString(8, experimentCase.getNodeGroupperType().toString());
+			prStatement.setInt(9, experimentCase.getGraphIndex());
 
 			logger.trace("About to execute statement: {}", prStatement.toString());
 			prStatement.executeUpdate();
@@ -102,6 +102,37 @@ public class ConstraintResultDataAccess {
 		} catch (SQLException e) {
 			logger.fatal("Sql error: {}", e.getMessage());
 			e.printStackTrace();
+		}
+	}
+
+	public static Map<TopologyType, SummaryConstraintResults> selectResults(Connection connection, int nodesCount, int groupSize,
+			String groupperName) {
+		try (PreparedStatement prStatement = connection
+				.prepareStatement("SELECT type, range0_min, range0_max, range1_min, range1_max "
+						+ "FROM cstr_anal_results "
+						+ "WHERE nodes = ? AND group_size = ? AND group_type = ? "
+						+ "AND range0_min <> -1 AND range0_max <> -1 AND range1_min <> -1 AND range1_max <> -1")) {
+			
+			prStatement.setInt(1, nodesCount);
+			prStatement.setInt(2, groupSize);
+			prStatement.setString(3, groupperName);
+
+			Map<TopologyType, SummaryConstraintResults> result = new LinkedHashMap<>();
+			for (TopologyType topologyType : TopologyType.values()) {
+				result.put(topologyType, new SummaryConstraintResults());
+			}
+			
+			ResultSet rs = prStatement.executeQuery();
+			while (rs.next()) {
+				SummaryConstraintResults summaryConstraintsResults = result.get(TopologyType.valueOf(rs.getString(1)));
+				summaryConstraintsResults.put(rs.getDouble(2), rs.getDouble(3), rs.getDouble(4), rs.getDouble(5));
+			}			
+			return result;
+			
+		} catch (SQLException e) {
+			logger.fatal("Sql error: {}", e.getMessage());
+			e.printStackTrace();
+			return null;
 		}
 	}
 

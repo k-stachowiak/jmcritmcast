@@ -11,8 +11,11 @@ public class CommonConfig {
 			.asList(new Integer[] { 50, 100, 250, 500, 1500, 3037, 3600, 4750,
 					6000 });
 
-	public static final List<Double> constraintBases = Arrays
-			.asList(new Double[] { 100.0, 1000.0, 10000.0 });
+	public static final List<List<Double>> constraintSets = Arrays.asList(
+			Arrays.asList(new Double[] { 2.0, 2.0 }),
+			Arrays.asList(new Double[] { 5.0, 4.0 }),
+			Arrays.asList(new Double[] { 10.0, 7.0 }),
+			Arrays.asList(new Double[] { 17.0, 11.0 }));
 
 	public static final List<Integer> groupSizes = Arrays.asList(new Integer[] {
 			4, 8, 12, 16, 20, 24, 28 });

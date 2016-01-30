@@ -203,28 +203,22 @@ public abstract class GraphFactory {
 		nodes.add(new Node(13, 5.0, 6.0));
 
 		List<Edge> edges = new ArrayList<>();
-		edges.add(new Edge(0, 1, Arrays.asList(new Double[] { 1.0, 1.0, 20.0 })));
-		edges.add(new Edge(1, 2, Arrays
-				.asList(new Double[] { 3.0, 130.0, 4.0 })));
-		edges.add(new Edge(1, 4, Arrays.asList(new Double[] { 4.0, 5.0, 12.0 })));
-		edges.add(new Edge(2, 5, Arrays.asList(new Double[] { 6.0, 3.0, 14.0 })));
-		edges.add(new Edge(2, 3, Arrays
-				.asList(new Double[] { 7.0, 5.0, 130.0 })));
-		edges.add(new Edge(3, 4, Arrays
-				.asList(new Double[] { 3.0, 130.0, 2.0 })));
-		edges.add(new Edge(3, 11, Arrays.asList(new Double[] { 6.0, 5.0, 1.0 })));
-		edges.add(new Edge(3, 5, Arrays.asList(new Double[] { 7.0, 10.0, 3.0 })));
-		edges.add(new Edge(4, 7, Arrays.asList(new Double[] { 7.0, 3.0, 25.0 })));
-		edges.add(new Edge(4, 6, Arrays.asList(new Double[] { 4.0, 3.0, 4.0 })));
-		edges.add(new Edge(6, 8, Arrays.asList(new Double[] { 9.0, 3.0, 1.0 })));
-		edges.add(new Edge(8, 9, Arrays.asList(new Double[] { 3.0, 5.0, 32.0 })));
-		edges.add(new Edge(9, 10, Arrays.asList(new Double[] { 3.0, 5.0, 8.0 })));
-		edges.add(new Edge(10, 11, Arrays
-				.asList(new Double[] { 7.0, 3.0, 12.0 })));
-		edges.add(new Edge(11, 12, Arrays
-				.asList(new Double[] { 5.0, 5.0, 13.0 })));
-		edges.add(new Edge(12, 13, Arrays
-				.asList(new Double[] { 6.0, 3.0, 13.0 })));
+		edges.add(new Edge(0,  1,  Arrays.asList(new Double[] { 1.0, 1.0,   20.0  })));
+		edges.add(new Edge(1,  2,  Arrays.asList(new Double[] { 3.0, 130.0, 4.0   })));
+		edges.add(new Edge(1,  4,  Arrays.asList(new Double[] { 4.0, 5.0,   12.0  })));
+		edges.add(new Edge(2,  5,  Arrays.asList(new Double[] { 6.0, 3.0,   14.0  })));
+		edges.add(new Edge(2,  3,  Arrays.asList(new Double[] { 7.0, 5.0,   130.0 })));
+		edges.add(new Edge(3,  4,  Arrays.asList(new Double[] { 3.0, 130.0, 2.0   })));
+		edges.add(new Edge(3,  11, Arrays.asList(new Double[] { 6.0, 5.0,   1.0   })));
+		edges.add(new Edge(3,  5,  Arrays.asList(new Double[] { 7.0, 10.0,  3.0   })));
+		edges.add(new Edge(4,  7,  Arrays.asList(new Double[] { 7.0, 3.0,   25.0  })));
+		edges.add(new Edge(4,  6,  Arrays.asList(new Double[] { 4.0, 3.0,   4.0   })));
+		edges.add(new Edge(6,  8,  Arrays.asList(new Double[] { 9.0, 3.0,   1.0   })));
+		edges.add(new Edge(8,  9,  Arrays.asList(new Double[] { 3.0, 5.0,   32.0  })));
+		edges.add(new Edge(9,  10, Arrays.asList(new Double[] { 3.0, 5.0,   8.0   })));
+		edges.add(new Edge(10, 11, Arrays.asList(new Double[] { 7.0, 3.0,   12.0  })));
+		edges.add(new Edge(11, 12, Arrays.asList(new Double[] { 5.0, 5.0,   13.0  })));
+		edges.add(new Edge(12, 13, Arrays.asList(new Double[] { 6.0, 3.0,   13.0  })));
 
 		return createFromLists(nodes, edges);
 	}

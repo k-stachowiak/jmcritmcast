@@ -51,7 +51,7 @@ public class CentroidNodeGroupperTest {
 		Graph graph = graphFactory.createFromLists(nodes, edges);
 		
 		// Instantiate SUT.
-		NodeGroupper nodeGroupper = new CentroidNodeGroupper(CENTROID_X, CENTROID_Y);
+		NodeGroupper nodeGroupper = new CentroidNodeGroupper(0.5);
 		
 		// Exercise SUT. 
 		List<Node> actualNodes1 = nodeGroupper.group(graph, 1);

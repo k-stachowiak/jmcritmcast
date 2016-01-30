@@ -9,7 +9,7 @@ import java.util.List;
 import apps.CommonConfig;
 import apps.analsum.SummaryUtils;
 import dal.TopologyType;
-import helpers.gnuplot.GnuPlotLines;
+import helpers.gnuplot.GnuPlotWriter;
 import helpers.nodegrp.NodeGroupperType;
 import tfind.TreeFinderType;
 
@@ -29,12 +29,12 @@ public class SummaryAlgorithmReportGnuplot extends SummaryAlgorithmReportTemplat
 
 	@Override
 	protected void onInit(TopologyType topologyType, int nodesCount, NodeGroupperType nodeGroupperType,
-			double constraintBase, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors) {
+			List<Double> constraints, List<SummaryAlgorithmResultAttributeSelector> attributeSelectors) {
 
 		StringBuilder filenameBaseBuilder = new StringBuilder();
 
-		filenameBaseBuilder.append(String.format("alg_%s_%d_%s_%d", topologyType.toString(), nodesCount,
-				nodeGroupperType.toString(), (int) constraintBase));
+		filenameBaseBuilder.append(String.format("alg_%s_%d_%s_%s", topologyType.toString(), nodesCount,
+				nodeGroupperType.toString(), constraintsString(constraints)));
 		filenameBaseBuilder.append('_');
 		for (SummaryAlgorithmResultAttributeSelector attributeSelector : attributeSelectors) {
 			filenameBaseBuilder.append(attributeSelector.getName());
@@ -102,7 +102,7 @@ public class SummaryAlgorithmReportGnuplot extends SummaryAlgorithmReportTemplat
 			PrintStream dataWriter = new PrintStream(
 					new FileOutputStream(String.format("%s/%s.txt", CommonConfig.GNUPLOT_DIR_NAME, filenameBase)));
 
-			GnuPlotLines result = new GnuPlotLines(filenameBase, xLabel, yLabel, domainHeader, domain,
+			GnuPlotWriter result = new GnuPlotWriter(filenameBase, xLabel, yLabel, domainHeader, domain,
 					dataHeaders, data, inGroup);
 
 			result.writeGnuplotScript(scriptWriter);

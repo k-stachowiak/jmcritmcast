@@ -1,20 +1,22 @@
-package apps.alganal;
+package apps.algorthoanal;
 
 import tfind.TreeFinderType;
 import helpers.nodegrp.NodeGroupperType;
 import dal.TopologyType;
 
-public class AlgorithmExperimentCase {
+public class AlgorithmOrthogonalExperimentCase {
+	private Integer id;
 	private final TopologyType topologyType;
 	private final int nodesCount;
 	private final int groupSize;
 	private final NodeGroupperType nodeGroupperType;
 	private final int graphIndex;
+	private final TreeFinderType treeFinderType;
+	private Boolean performed;
 	private final double constraint1;
 	private final double constraint2;
-	private final TreeFinderType treeFinderType;
 
-	public AlgorithmExperimentCase(TopologyType topologyType, int nodesCount,
+	public AlgorithmOrthogonalExperimentCase(TopologyType topologyType, int nodesCount,
 			int groupSize, NodeGroupperType nodeGroupperType, int graphIndex,
 			double constraint1, double constraint2, TreeFinderType treeFinderType) {
 		this.topologyType = topologyType;
@@ -25,6 +27,25 @@ public class AlgorithmExperimentCase {
 		this.constraint1 = constraint1;
 		this.constraint2 = constraint2;
 		this.treeFinderType = treeFinderType;
+		
+		id = null;
+		performed = null;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Boolean isPerformed() {
+		return performed;
+	}
+	
+	public void setPerformed(boolean performed) {
+		this.performed = performed;
 	}
 
 	public TopologyType getTopologyType() {
@@ -85,7 +106,7 @@ public class AlgorithmExperimentCase {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AlgorithmExperimentCase other = (AlgorithmExperimentCase) obj;
+		AlgorithmOrthogonalExperimentCase other = (AlgorithmOrthogonalExperimentCase) obj;
 		if (Double.doubleToLongBits(constraint1) != Double.doubleToLongBits(other.constraint1))
 			return false;
 		if (Double.doubleToLongBits(constraint2) != Double.doubleToLongBits(other.constraint2))

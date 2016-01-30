@@ -1,10 +1,14 @@
 package helpers.nodegrp;
 
 public enum NodeGroupperType {
-	Centroid, Degree, Random;
+	Centroid02, Centroid06, Degree, Random;
 
 	@Override
 	public String toString() {
 		return name();
+	}
+
+	public String argsString() {
+		return "";
 	}
 }
